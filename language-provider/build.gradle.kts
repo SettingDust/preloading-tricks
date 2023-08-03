@@ -9,3 +9,13 @@ dependencies {
     implementation(libs.forge.spi)
     implementation(project(":preloading-callbacks"))
 }
+
+tasks {
+    jar {
+        manifest {
+            attributes(
+                "FMLModType" to "LANGPROVIDER",
+            )
+        }
+    }
+}

@@ -4,8 +4,9 @@ plugins {
 
 dependencies {
     minecraft(libs.minecraft)
-    mappings(libs.yarn.mapping)
-
+    mappings(variantOf(libs.yarn.mapping) {
+        classifier("v2")
+    })
     implementation(libs.fabric.loader)
     implementation(project(":preloading-callbacks"))
 

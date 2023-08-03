@@ -4,11 +4,13 @@ plugins {
 
 dependencies {
     minecraft(libs.minecraft)
-    mappings(libs.yarn.mapping)
+    mappings(variantOf(libs.yarn.mapping) {
+        classifier("v2")
+    })
+    forge(libs.forge)
 
-    implementation(libs.forge.loader)
     implementation(project(":preloading-callbacks"))
 
-    include(project(":language-adapter"))
+    include(project(":language-provider"))
     include(project(":preloading-callbacks"))
 }

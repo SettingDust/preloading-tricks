@@ -11,8 +11,9 @@ repositories {
 
 dependencies {
     minecraft(libs.minecraft)
-    mappings(libs.yarn.mapping)
-
+    mappings(variantOf(libs.yarn.mapping) {
+        classifier("v2")
+    })
     implementation(libs.quilt.loader)
     implementation(project(":preloading-callbacks"))
 

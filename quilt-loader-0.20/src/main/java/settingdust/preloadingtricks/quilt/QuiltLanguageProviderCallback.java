@@ -1,4 +1,4 @@
-package java.settingdust.preloadingtricks.quilt;
+package settingdust.preloadingtricks.quilt;
 
 import com.google.common.collect.Sets;
 import org.quiltmc.loader.api.plugin.ModContainerExt;

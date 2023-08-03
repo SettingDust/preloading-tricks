@@ -1,0 +1,22 @@
+{
+  "$schema": "https://github.com/QuiltMC/quilt-json-schemas/raw/main/quilt.mod.json/schemas/main.json",
+  "schema_version": 1,
+  "quilt_loader": {
+    "group": "${group}",
+    "id": "${id}",
+    "version": "${version}",
+    "metadata": {
+      "name": "${name}",
+      "description": "${description}",
+      "contributors": {
+        "${author}": "${author}"
+      },
+      "contact": {
+        "homepage": "${source}",
+        "sources": "${source}",
+        "issues": "${source}/issues"
+      }
+    },
+    "intermediate_mappings": "net.fabricmc:intermediary"
+  }
+}

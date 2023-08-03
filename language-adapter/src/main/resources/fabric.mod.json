@@ -1,0 +1,26 @@
+{
+  "schemaVersion": 1,
+  "id": "${id}_language_adapter",
+  "version": "${version}",
+  "name": "${name} Dummy Language Adapter",
+  "authors": [
+    "${author}"
+  ],
+  "contact": {
+    "homepage": "${source}",
+    "sources": "${source}",
+    "issues": "${source}/issues"
+  },
+  "license": "MIT",
+  "environment": "*",
+  "languageAdapters": {
+    "preloading_tricks_dummy": "${group}.DummyLanguageAdapter"
+  },
+  "custom": {
+    "modmenu": {
+      "badges": [
+        "library"
+      ]
+    }
+  }
+}

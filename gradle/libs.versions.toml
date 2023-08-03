@@ -1,0 +1,54 @@
+[versions]
+# The latest Quilt versions are available at https://lambdaurora.dev/tools/import_quilt.html
+minecraft = "1.20.1"
+
+yarn_mapping = "1.20.1+build.10"
+
+#fabric
+fabric_loader = "0.14.21"
+# quilt
+quilt_loader = "0.20.0-beta.4"
+quilted_fabric_api = "7.0.6+0.85.0-1.20.1"
+qsl_version = "6.0.4+1.20.1"
+
+modmenu = "7.1.0"
+
+minotaur = "2.+"
+
+neoforge = "1.20.1-47.1.55"
+forge = "1.20.1-47.1.43"
+forge_spi = "7.0.1"
+
+[libraries]
+# common
+minecraft = { module = "com.mojang:minecraft", version.ref = "minecraft" }
+yarn_mapping = { module = "net.fabricmc:yarn", version.ref = "yarn_mapping" }
+
+# fabric
+fabric_loader = { module = "net.fabricmc:fabric-loader", version.ref = "fabric_loader" }
+
+# quilt
+quilt_loader = { module = "org.quiltmc:quilt-loader", version.ref = "quilt_loader" }
+quilted_fabric_api = { module = "org.quiltmc.quilted-fabric-api:quilted-fabric-api", version.ref = "quilted_fabric_api" }
+quilt_standard_libraries_core = { module = "org.quiltmc.qsl:core", version.ref = "qsl_version" }
+
+modmenu = { module = "com.terraformersmc:modmenu", version.ref = "modmenu" }
+
+# Forge
+neoforge = { module = "net.neoforged:forge", version.ref = "neoforge" }
+forge = { module = "net.minecraftforge:forge", version.ref = "forge" }
+forge_spi = { module = "net.minecraftforge:forgespi", version.ref = "forge_spi" }
+forge_loader = { module = "net.minecraftforge:fmlloader", version.ref = "forge" }
+
+
+[plugins]
+architectury_loom = { id = "dev.architectury.loom", version = "1.3.+" }
+architectury = { id = "architectury-plugin", version = "3.+" }
+shadow = { id = "com.github.johnrengelman.shadow", version = "8.1.1" }
+
+minotaur = { id = "com.modrinth.minotaur", version.ref = "minotaur" }
+
+curseforge = { id = "net.darkhax.curseforgegradle", version = "1.+" }
+cursegradle = { id = "io.github.CDAGaming.cursegradle", version = "1.+" }
+
+dotenv = { id = "co.uzzu.dotenv.gradle", version = "2.+" }

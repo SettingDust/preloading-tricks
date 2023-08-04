@@ -9,6 +9,7 @@ import net.minecraftforge.forgespi.locating.IModFile;
 import org.slf4j.LoggerFactory;
 import settingdust.preloadingtricks.LanguageProviderCallback;
 import settingdust.preloadingtricks.SetupModCallback;
+import settingdust.preloadingtricks.SetupModService;
 
 import java.lang.reflect.Field;
 import java.util.*;
@@ -33,17 +34,25 @@ public class ForgeLanguageProviderCallback implements LanguageProviderCallback {
         validator = (ModValidator) fieldModValidator.get(null);
         // Proxy won't work with non interface
         fieldModValidator.set(null, new DummyModValidator());
+
+        new ForgeModSetupService();
     }
 
     private void setupModsInvoking() throws IllegalAccessException {
         fieldModValidator.set(null, validator);
         candidateMods = (List<ModFile>) fieldCandidateMods.get(validator);
-        final var event = new ForgeModSetupCallback();
-        final var logger = LoggerFactory.getLogger("PreloadingTricks/SetupMod");
-        for (final var callback : ForgeModSetupCallback.CALLBACKS) {
-            logger.info("Invoking callback " + callback);
-            callback.accept(event);
-        }
+        final var logger = LoggerFactory.getLogger("PreloadingTricks/ModSetup");
+        ServiceLoader.load(SetupModCallback.class).stream()
+                .map(it -> {
+                    try {
+                        return it.get();
+                    } catch (Throwable t) {
+                        logger.debug("Invoke " + it.type().getName() + " failed", t);
+                        return null;
+                    }
+                })
+                .filter(Objects::nonNull)
+                .forEach(it -> logger.info("Invoked " + it));
     }
 
     private class DummyModValidator extends ModValidator {
@@ -86,8 +95,12 @@ public class ForgeLanguageProviderCallback implements LanguageProviderCallback {
         }
     }
 
-    public class ForgeModSetupCallback implements SetupModCallback<ModFile> {
-        public static final Set<Consumer<ForgeModSetupCallback>> CALLBACKS = new HashSet<>();
+    public class ForgeModSetupService implements SetupModService<ModFile> {
+        public static ForgeModSetupService INSTANCE;
+
+        public ForgeModSetupService() {
+            INSTANCE = this;
+        }
 
         @Override
         public Collection<ModFile> all() {

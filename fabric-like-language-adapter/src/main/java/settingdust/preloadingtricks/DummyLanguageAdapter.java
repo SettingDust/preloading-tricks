@@ -1,9 +1,8 @@
-package settingdust.preloadingtricks.fabric;
+package settingdust.preloadingtricks;
 
 import net.fabricmc.loader.api.LanguageAdapter;
 import net.fabricmc.loader.api.ModContainer;
 import org.slf4j.LoggerFactory;
-import settingdust.preloadingtricks.LanguageProviderCallback;
 
 import java.util.Objects;
 import java.util.ServiceLoader;

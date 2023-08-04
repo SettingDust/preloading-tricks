@@ -21,5 +21,5 @@ Notice it's not recommend to add mod since it can't load mod from file or classp
 
 ### Language Provider
 
-The callback is using java [`ServiceLoader`](https://docs.oracle.com/javase/jp/8/docs/api/java/util/ServiceLoader.html) for
+The callback is using java [`ServiceLoader`](https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/ServiceLoader.html) for
 language provider/adapter callbacks. It's a bit earlier than setup mod.

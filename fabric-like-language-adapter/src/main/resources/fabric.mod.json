@@ -1,9 +1,9 @@
 {
   "schemaVersion": 1,
-  "id": "${id}",
+  "id": "${id}_language_adapter",
   "version": "${version}",
-  "name": "${name}",
-  "description": "${description}",
+  "name": "${name} Dummy Language Adapter",
+  "description": "Language adapter hook",
   "authors": [
     "${author}"
   ],
@@ -13,13 +13,16 @@
     "issues": "${source}/issues"
   },
   "license": "MIT",
-  "icon": "assets/${id}/icon.png",
   "environment": "*",
   "recommends": {
     "modmenu": "*"
   },
+  "languageAdapters": {
+    "preloading_tricks_dummy": "${group}.DummyLanguageAdapter"
+  },
   "custom": {
     "modmenu": {
+      "parent": "$id",
       "badges": [
         "library"
       ]

@@ -5,16 +5,16 @@ import net.fabricmc.loader.impl.ModContainerImpl;
 import org.slf4j.LoggerFactory;
 import settingdust.preloadingtricks.LanguageProviderCallback;
 import settingdust.preloadingtricks.SetupModCallback;
+import settingdust.preloadingtricks.SetupModService;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
 import java.util.Collection;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
-import java.util.function.Consumer;
+import java.util.Objects;
+import java.util.ServiceLoader;
 import java.util.function.Predicate;
 
 public class FabricLanguageProviderCallback implements LanguageProviderCallback {
@@ -33,16 +33,24 @@ public class FabricLanguageProviderCallback implements LanguageProviderCallback 
                 loader,
                 Proxy.newProxyInstance(
                         mods.getClass().getClassLoader(), mods.getClass().getInterfaces(), new ModsListProxy()));
+
+        new FabricModSetupService();
     }
 
     private void setupModsInvoking() throws IllegalAccessException {
         fieldMods.set(loader, mods);
-        final var event = new FabricModSetupCallback();
         final var logger = LoggerFactory.getLogger("PreloadingTricks/ModSetup");
-        for (final var callback : FabricModSetupCallback.CALLBACKS) {
-            logger.info("Invoking callback " + callback);
-            callback.accept(event);
-        }
+        ServiceLoader.load(SetupModCallback.class).stream()
+                .map(it -> {
+                    try {
+                        return it.get();
+                    } catch (Throwable t) {
+                        logger.debug("Invoke " + it.type().getName() + " failed", t);
+                        return null;
+                    }
+                })
+                .filter(Objects::nonNull)
+                .forEach(it -> logger.info("Invoked " + it));
     }
 
     private class ModsListProxy implements InvocationHandler {
@@ -53,8 +61,12 @@ public class FabricLanguageProviderCallback implements LanguageProviderCallback 
         }
     }
 
-    public class FabricModSetupCallback implements SetupModCallback<ModContainerImpl> {
-        public static final Set<Consumer<FabricModSetupCallback>> CALLBACKS = new HashSet<>();
+    public class FabricModSetupService implements SetupModService<ModContainerImpl> {
+        public static FabricModSetupService INSTANCE;
+
+        public FabricModSetupService() {
+            INSTANCE = this;
+        }
 
         @Override
         public Collection<ModContainerImpl> all() {

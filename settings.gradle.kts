@@ -32,8 +32,8 @@ rootProject.name = "preloading-tricks"
 include("preloading-callbacks")
 
 include("fabric-loader-0.14")
-
 include("quilt-loader-0.20")
+include("fabric-like-language-adapter")
 
 include("fml-45")
 include("forge-language-provider")

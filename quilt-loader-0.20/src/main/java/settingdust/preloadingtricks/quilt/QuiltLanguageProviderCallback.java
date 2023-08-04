@@ -5,15 +5,13 @@ import org.quiltmc.loader.impl.QuiltLoaderImpl;
 import org.slf4j.LoggerFactory;
 import settingdust.preloadingtricks.LanguageProviderCallback;
 import settingdust.preloadingtricks.SetupModCallback;
+import settingdust.preloadingtricks.SetupModService;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
 
@@ -33,16 +31,24 @@ public class QuiltLanguageProviderCallback implements LanguageProviderCallback {
                 loader,
                 Proxy.newProxyInstance(
                         mods.getClass().getClassLoader(), mods.getClass().getInterfaces(), new ModsListProxy()));
+
+        new QuiltModSetupService();
     }
 
     private void setupModsInvoking() throws IllegalAccessException {
         fieldMods.set(loader, mods);
-        final var event = new QuiltModSetupCallback();
         final var logger = LoggerFactory.getLogger("PreloadingTricks/ModSetup");
-        for (final var callback : QuiltModSetupCallback.CALLBACKS) {
-            logger.info("Invoking callback " + callback);
-            callback.accept(event);
-        }
+        ServiceLoader.load(SetupModCallback.class).stream()
+                .map(it -> {
+                    try {
+                        return it.get();
+                    } catch (Throwable t) {
+                        logger.debug("Invoke " + it.type().getName() + " failed", t);
+                        return null;
+                    }
+                })
+                .filter(Objects::nonNull)
+                .forEach(it -> logger.info("Invoked " + it));
     }
 
     private class ModsListProxy implements InvocationHandler {
@@ -53,8 +59,12 @@ public class QuiltLanguageProviderCallback implements LanguageProviderCallback {
         }
     }
 
-    public class QuiltModSetupCallback implements SetupModCallback<ModContainerExt> {
-        public static final Set<Consumer<QuiltModSetupCallback>> CALLBACKS = new HashSet<>();
+    public class QuiltModSetupService implements SetupModService<ModContainerExt> {
+        public static QuiltModSetupService INSTANCE;
+
+        public QuiltModSetupService() {
+            INSTANCE = this;
+        }
 
         @Override
         public Collection<ModContainerExt> all() {

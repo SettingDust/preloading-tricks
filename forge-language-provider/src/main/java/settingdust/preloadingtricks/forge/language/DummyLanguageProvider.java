@@ -22,7 +22,7 @@ public class DummyLanguageProvider implements IModLanguageProvider {
                     try {
                         return p.get();
                     } catch (Throwable t) {
-                        logger.error("Invoke callback " + p + " failed", t);
+                        logger.debug("Invoke callback " + p.type().getName() + " failed", t);
                         return null;
                     }
                 })

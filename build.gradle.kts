@@ -7,6 +7,7 @@ plugins {
     alias(libs.plugins.minotaur)
     alias(libs.plugins.architectury)
     alias(libs.plugins.architectury.loom) apply false
+    alias(libs.plugins.shadow)
 }
 
 val archives_name: String by project
@@ -68,26 +69,45 @@ subprojects {
 }
 
 tasks {
+    shadowJar {
+        val fabricLoader014Jar = project(":fabric-loader-0.14").tasks.named("remapJar")
+        val quiltLoader020Jar = project(":quilt-loader-0.20").tasks.named("remapJar")
+        val fml45 = project(":fml-45").tasks.named("remapJar")
+
+        from(fabricLoader014Jar, quiltLoader020Jar, fml45)
+
+        archiveClassifier.set("")
+        mergeServiceFiles()
+    }
+
+    build {
+        dependsOn(shadowJar)
+    }
+
     jar {
+        enabled = false
         val fabricLoader014Jar = project(":fabric-loader-0.14").tasks.named<RemapJarTask>("remapJar")
         val quiltLoader020Jar = project(":quilt-loader-0.20").tasks.named<RemapJarTask>("remapJar")
         val fml45 = project(":fml-45").tasks.named<RemapJarTask>("remapJar")
-        dependsOn(fabricLoader014Jar, quiltLoader020Jar, fml45)
-        from(
-            zipTree(fabricLoader014Jar.get().archiveFile),
-            zipTree(quiltLoader020Jar.get().archiveFile),
-            zipTree(fml45.get().archiveFile)
+
+        val sources = setOf(
+            zipTree(fabricLoader014Jar.get().outputs.files.singleFile),
+            zipTree(quiltLoader020Jar.get().outputs.files.singleFile),
+            zipTree(fml45.get().outputs.files.singleFile)
         )
 
-            manifest {
-                from(setOf(
-                    zipTree(fabricLoader014Jar.get().outputs.files.singleFile),
-                    zipTree(quiltLoader020Jar.get().outputs.files.singleFile),
-                    zipTree(fml45.get().outputs.files.singleFile)
-                ).map { zip ->
-                    zip.find { it.name.equals("MANIFEST.MF") }
-                })
-            }
+        dependsOn(fabricLoader014Jar, quiltLoader020Jar, fml45)
+        from(
+            zipTree(fabricLoader014Jar.get().outputs.files.singleFile),
+            zipTree(quiltLoader020Jar.get().outputs.files.singleFile),
+            zipTree(fml45.get().outputs.files.singleFile)
+        )
+
+        manifest {
+            from(sources.map { zip ->
+                zip.find { it.name.equals("MANIFEST.MF") }
+            })
+        }
 
         duplicatesStrategy = DuplicatesStrategy.INCLUDE
     }

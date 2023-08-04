@@ -2,6 +2,7 @@ package settingdust.preloadingtricks.quilt;
 
 import org.quiltmc.loader.api.plugin.ModContainerExt;
 import org.quiltmc.loader.impl.QuiltLoaderImpl;
+import org.slf4j.LoggerFactory;
 import settingdust.preloadingtricks.LanguageProviderCallback;
 import settingdust.preloadingtricks.SetupModCallback;
 
@@ -37,7 +38,9 @@ public class QuiltLanguageProviderCallback implements LanguageProviderCallback {
     private void setupModsInvoking() throws IllegalAccessException {
         fieldMods.set(loader, mods);
         final var event = new QuiltModSetupCallback();
+        final var logger = LoggerFactory.getLogger("PreloadingTricks/ModSetup");
         for (final var callback : QuiltModSetupCallback.CALLBACKS) {
+            logger.info("Invoking callback " + callback);
             callback.accept(event);
         }
     }

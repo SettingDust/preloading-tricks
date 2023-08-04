@@ -2,8 +2,7 @@ package settingdust.preloadingtricks.fabric;
 
 import net.fabricmc.loader.impl.FabricLoaderImpl;
 import net.fabricmc.loader.impl.ModContainerImpl;
-import net.fabricmc.loader.impl.util.log.Log;
-import net.fabricmc.loader.impl.util.log.LogCategory;
+import org.slf4j.LoggerFactory;
 import settingdust.preloadingtricks.LanguageProviderCallback;
 import settingdust.preloadingtricks.SetupModCallback;
 
@@ -39,9 +38,9 @@ public class FabricLanguageProviderCallback implements LanguageProviderCallback 
     private void setupModsInvoking() throws IllegalAccessException {
         fieldMods.set(loader, mods);
         final var event = new FabricModSetupCallback();
-        final var category = LogCategory.create("PreloadingTricks/ModSetup");
+        final var logger = LoggerFactory.getLogger("PreloadingTricks/ModSetup");
         for (final var callback : FabricModSetupCallback.CALLBACKS) {
-            Log.info(category, "Invoking callback " + callback);
+            logger.info("Invoking callback " + callback);
             callback.accept(event);
         }
     }

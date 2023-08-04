@@ -108,3 +108,15 @@ modrinth {
     ) // Must be an array, even with only one version
     loaders.addAll("fabric", "quilt", "forge") // Must also be an array - no need to specify this if you're using Loom or ForgeGradle
 }
+
+publishing {
+    publications {
+        create<MavenPublication>("preloading-tricks") {
+            groupId = "${rootProject.group}"
+            artifactId = base.archivesName.get()
+            version = "${rootProject.version}"
+            from(components.getByName("java"))
+            artifact(tasks.shadowJar)
+        }
+    }
+}

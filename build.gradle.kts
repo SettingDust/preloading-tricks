@@ -4,6 +4,8 @@ plugins {
     java
     `maven-publish`
 
+    alias(libs.plugins.dotenv)
+
     alias(libs.plugins.minotaur)
     alias(libs.plugins.architectury)
     alias(libs.plugins.architectury.loom) apply false
@@ -111,4 +113,22 @@ tasks {
 
         duplicatesStrategy = DuplicatesStrategy.INCLUDE
     }
+}
+
+modrinth {
+    token.set(env.MODRINTH_TOKEN.value) // This is the default. Remember to have the MODRINTH_TOKEN environment variable set or else this will fail, or set it to whatever you want - just make sure it stays private!
+    projectId.set("preloading-tricks") // This can be the project ID or the slug. Either will work!
+    syncBodyFrom.set(rootProject.file("README.md").readText())
+    versionType.set("release") // This is the default -- can also be `beta` or `alpha`
+    uploadFile.set(tasks.shadowJar) // With Loom, this MUST be set to `remapJar` instead of `jar`!
+    changelog.set(rootProject.file("CHANGELOG.md").readText())
+    gameVersions.addAll(
+        "1.19",
+        "1.19.2",
+        "1.19.3",
+        "1.19.4",
+        "1.20",
+        "1.20.1",
+    ) // Must be an array, even with only one version
+    loaders.addAll("fabric", "quilt", "forge") // Must also be an array - no need to specify this if you're using Loom or ForgeGradle
 }

@@ -88,30 +88,6 @@ tasks {
 
     jar {
         enabled = false
-        val fabricLoader014Jar = project(":fabric-loader-0.14").tasks.named<RemapJarTask>("remapJar")
-        val quiltLoader020Jar = project(":quilt-loader-0.20").tasks.named<RemapJarTask>("remapJar")
-        val fml45 = project(":fml-45").tasks.named<RemapJarTask>("remapJar")
-
-        val sources = setOf(
-            zipTree(fabricLoader014Jar.get().outputs.files.singleFile),
-            zipTree(quiltLoader020Jar.get().outputs.files.singleFile),
-            zipTree(fml45.get().outputs.files.singleFile)
-        )
-
-        dependsOn(fabricLoader014Jar, quiltLoader020Jar, fml45)
-        from(
-            zipTree(fabricLoader014Jar.get().outputs.files.singleFile),
-            zipTree(quiltLoader020Jar.get().outputs.files.singleFile),
-            zipTree(fml45.get().outputs.files.singleFile)
-        )
-
-        manifest {
-            from(sources.map { zip ->
-                zip.find { it.name.equals("MANIFEST.MF") }
-            })
-        }
-
-        duplicatesStrategy = DuplicatesStrategy.INCLUDE
     }
 }
 

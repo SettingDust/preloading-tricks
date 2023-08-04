@@ -5,7 +5,6 @@ import java.util.function.Predicate;
 
 /**
  * Point is just after language adapters/providers setup and before mods <br>
- * Will be loaded with {@link java.util.ServiceLoader}. <br>
  * <br>
  * Mod adding should be done with platform specific methods like ModLocator or ModCandidateFinder <br>
  */

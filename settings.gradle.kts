@@ -29,8 +29,6 @@ plugins {
 
 rootProject.name = "preloading-tricks"
 
-include("language-adapter")
-include("language-provider")
 include("preloading-callbacks")
 
 include("fabric-loader-0.14")
@@ -38,3 +36,4 @@ include("fabric-loader-0.14")
 include("quilt-loader-0.20")
 
 include("fml-45")
+include("forge-language-provider")

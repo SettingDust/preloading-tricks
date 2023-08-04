@@ -1,21 +1,20 @@
 package settingdust.preloadingtricks.forge;
 
-import com.google.common.collect.Sets;
+import net.minecraftforge.fml.loading.EarlyLoadingException;
 import net.minecraftforge.fml.loading.FMLLoader;
+import net.minecraftforge.fml.loading.moddiscovery.BackgroundScanHandler;
 import net.minecraftforge.fml.loading.moddiscovery.ModFile;
 import net.minecraftforge.fml.loading.moddiscovery.ModValidator;
+import net.minecraftforge.forgespi.locating.IModFile;
+import org.slf4j.LoggerFactory;
 import settingdust.preloadingtricks.LanguageProviderCallback;
 import settingdust.preloadingtricks.SetupModCallback;
 
 import java.lang.reflect.Field;
-import java.lang.reflect.InvocationHandler;
-import java.lang.reflect.Method;
-import java.lang.reflect.Proxy;
-import java.util.Collection;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
+import java.util.stream.Collectors;
 
 public class ForgeLanguageProviderCallback implements LanguageProviderCallback {
     private final Field fieldModValidator;
@@ -24,43 +23,71 @@ public class ForgeLanguageProviderCallback implements LanguageProviderCallback {
     private final Field fieldCandidateMods;
     private List<ModFile> candidateMods;
 
-
     public ForgeLanguageProviderCallback() throws NoSuchFieldException, IllegalAccessException {
         fieldModValidator = FMLLoader.class.getDeclaredField("modValidator");
         fieldModValidator.setAccessible(true);
-
 
         fieldCandidateMods = ModValidator.class.getDeclaredField("candidateMods");
         fieldCandidateMods.setAccessible(true);
 
         validator = (ModValidator) fieldModValidator.get(null);
-        fieldModValidator.set(null, Proxy.newProxyInstance(
-                validator.getClass().getClassLoader(),
-                validator.getClass().getInterfaces(),
-                new ModValidatorProxy()
-        ));
+        // Proxy won't work with non interface
+        fieldModValidator.set(null, new DummyModValidator());
     }
 
     private void setupModsInvoking() throws IllegalAccessException {
         fieldModValidator.set(null, validator);
         candidateMods = (List<ModFile>) fieldCandidateMods.get(validator);
         final var event = new ForgeModSetupCallback();
+        final var logger = LoggerFactory.getLogger("PreloadingTricks/SetupMod");
         for (final var callback : ForgeModSetupCallback.CALLBACKS) {
+            logger.info("Invoking callback " + callback);
             callback.accept(event);
         }
     }
 
+    private class DummyModValidator extends ModValidator {
+        private static final Field fieldModFiles;
 
-    private class ModValidatorProxy implements InvocationHandler {
+        private static final Field fieldBrokenFiles;
+
+        private static final Field fieldDiscoveryErrorData;
+
+        static {
+            try {
+                fieldModFiles = ModValidator.class.getDeclaredField("modFiles");
+                fieldBrokenFiles = ModValidator.class.getDeclaredField("brokenFiles");
+                fieldDiscoveryErrorData = ModValidator.class.getDeclaredField("discoveryErrorData");
+
+                fieldModFiles.setAccessible(true);
+                fieldBrokenFiles.setAccessible(true);
+                fieldDiscoveryErrorData.setAccessible(true);
+            } catch (NoSuchFieldException e) {
+                throw new RuntimeException(e);
+            }
+        }
+
+        public DummyModValidator() throws IllegalAccessException {
+            super(
+                    (Map<IModFile.Type, List<ModFile>>) fieldModFiles.get(validator),
+                    ((List<IModFile>) fieldBrokenFiles.get(validator))
+                            .stream().map(IModFile::getModFileInfo).collect(Collectors.toList()),
+                    (List<EarlyLoadingException.ExceptionData>) fieldDiscoveryErrorData.get(validator));
+        }
+
         @Override
-        public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
-            if (method.getName().equals("stage2Validation")) setupModsInvoking();
-            return method.invoke(validator, args);
+        public BackgroundScanHandler stage2Validation() {
+            try {
+                setupModsInvoking();
+            } catch (IllegalAccessException e) {
+                throw new RuntimeException(e);
+            }
+            return super.stage2Validation();
         }
     }
 
     public class ForgeModSetupCallback implements SetupModCallback<ModFile> {
-        public static final Set<Consumer<ForgeModSetupCallback>> CALLBACKS = Sets.newHashSet();
+        public static final Set<Consumer<ForgeModSetupCallback>> CALLBACKS = new HashSet<>();
 
         @Override
         public Collection<ModFile> all() {

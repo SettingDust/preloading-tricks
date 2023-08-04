@@ -1,8 +1,9 @@
 package settingdust.preloadingtricks.fabric;
 
-import com.google.common.collect.Sets;
 import net.fabricmc.loader.impl.FabricLoaderImpl;
 import net.fabricmc.loader.impl.ModContainerImpl;
+import net.fabricmc.loader.impl.util.log.Log;
+import net.fabricmc.loader.impl.util.log.LogCategory;
 import settingdust.preloadingtricks.LanguageProviderCallback;
 import settingdust.preloadingtricks.SetupModCallback;
 
@@ -11,6 +12,7 @@ import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.function.Consumer;
@@ -28,21 +30,21 @@ public class FabricLanguageProviderCallback implements LanguageProviderCallback 
 
         mods = (List<ModContainerImpl>) fieldMods.get(loader);
 
-        fieldMods.set(loader, Proxy.newProxyInstance(
-                mods.getClass().getClassLoader(),
-                mods.getClass().getInterfaces(),
-                new ModsListProxy()
-        ));
+        fieldMods.set(
+                loader,
+                Proxy.newProxyInstance(
+                        mods.getClass().getClassLoader(), mods.getClass().getInterfaces(), new ModsListProxy()));
     }
 
     private void setupModsInvoking() throws IllegalAccessException {
         fieldMods.set(loader, mods);
         final var event = new FabricModSetupCallback();
+        final var category = LogCategory.create("PreloadingTricks/ModSetup");
         for (final var callback : FabricModSetupCallback.CALLBACKS) {
+            Log.info(category, "Invoking callback " + callback);
             callback.accept(event);
         }
     }
-
 
     private class ModsListProxy implements InvocationHandler {
         @Override
@@ -53,8 +55,7 @@ public class FabricLanguageProviderCallback implements LanguageProviderCallback 
     }
 
     public class FabricModSetupCallback implements SetupModCallback<ModContainerImpl> {
-        public static final Set<Consumer<FabricModSetupCallback>> CALLBACKS = Sets.newHashSet();
-
+        public static final Set<Consumer<FabricModSetupCallback>> CALLBACKS = new HashSet<>();
 
         @Override
         public Collection<ModContainerImpl> all() {

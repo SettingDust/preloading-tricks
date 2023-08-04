@@ -5,6 +5,9 @@
     "group": "${group}",
     "id": "${id}",
     "version": "${version}",
+    "language_adapters": {
+      "preloading_tricks_dummy": "${group}.quilt.DummyLanguageAdapter"
+    },
     "metadata": {
       "name": "${name}",
       "description": "${description}",
@@ -18,5 +21,10 @@
       }
     },
     "intermediate_mappings": "net.fabricmc:intermediary"
+  },
+  "modmenu": {
+    "badges": [
+      "library"
+    ]
   }
 }

@@ -5,14 +5,20 @@ plugins {
     `maven-publish`
 
     alias(libs.plugins.minotaur)
+    alias(libs.plugins.architectury)
     alias(libs.plugins.architectury.loom) apply false
 }
 
 val archives_name: String by project
+val mod_id: String by rootProject
 val mod_name: String by rootProject
 
 group = project.property("group").toString()
 version = project.property("version").toString()
+
+architectury {
+    compileOnly()
+}
 
 subprojects {
     apply(plugin = "java")
@@ -39,7 +45,7 @@ subprojects {
         }
 
         val properties = mapOf(
-            "id" to archives_name,
+            "id" to mod_id,
             "version" to rootProject.version,
             "group" to rootProject.group,
             "name" to mod_name,

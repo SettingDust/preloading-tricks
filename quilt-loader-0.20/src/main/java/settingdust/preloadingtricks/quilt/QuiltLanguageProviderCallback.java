@@ -1,6 +1,5 @@
 package settingdust.preloadingtricks.quilt;
 
-import com.google.common.collect.Sets;
 import org.quiltmc.loader.api.plugin.ModContainerExt;
 import org.quiltmc.loader.impl.QuiltLoaderImpl;
 import settingdust.preloadingtricks.LanguageProviderCallback;
@@ -10,7 +9,10 @@ import java.lang.reflect.Field;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
-import java.util.*;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
 
@@ -26,11 +28,10 @@ public class QuiltLanguageProviderCallback implements LanguageProviderCallback {
 
         mods = (List<ModContainerExt>) fieldMods.get(loader);
 
-        fieldMods.set(loader, Proxy.newProxyInstance(
-                mods.getClass().getClassLoader(),
-                mods.getClass().getInterfaces(),
-                new ModsListProxy()
-        ));
+        fieldMods.set(
+                loader,
+                Proxy.newProxyInstance(
+                        mods.getClass().getClassLoader(), mods.getClass().getInterfaces(), new ModsListProxy()));
     }
 
     private void setupModsInvoking() throws IllegalAccessException {
@@ -50,8 +51,7 @@ public class QuiltLanguageProviderCallback implements LanguageProviderCallback {
     }
 
     public class QuiltModSetupCallback implements SetupModCallback<ModContainerExt> {
-        public static final Set<Consumer<QuiltModSetupCallback>> CALLBACKS = Sets.newHashSet();
-
+        public static final Set<Consumer<QuiltModSetupCallback>> CALLBACKS = new HashSet<>();
 
         @Override
         public Collection<ModContainerExt> all() {

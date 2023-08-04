@@ -18,6 +18,9 @@
   "recommends": {
     "modmenu": "*"
   },
+  "languageAdapters": {
+    "preloading_tricks_dummy": "${group}.fabric.DummyLanguageAdapter"
+  },
   "custom": {
     "modmenu": {
       "badges": [

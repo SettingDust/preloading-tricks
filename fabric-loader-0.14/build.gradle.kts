@@ -1,5 +1,26 @@
 plugins {
+    alias(libs.plugins.architectury)
     alias(libs.plugins.architectury.loom)
+}
+
+architectury {
+    platformSetupLoomIde()
+    fabric()
+}
+
+val mod_id: String by rootProject
+
+loom {
+    mods {
+        register(mod_id) {
+            sourceSet("main")
+            sourceSet("main", project(":preloading-callbacks"))
+        }
+    }
+}
+
+repositories {
+    maven("https://maven.terraformersmc.com/releases")
 }
 
 dependencies {
@@ -7,9 +28,12 @@ dependencies {
     mappings(variantOf(libs.yarn.mapping) {
         classifier("v2")
     })
-    implementation(libs.fabric.loader)
+    modImplementation(libs.fabric.loader)
     implementation(project(":preloading-callbacks"))
 
-    include(project(":language-adapter"))
     include(project(":preloading-callbacks"))
+
+    modRuntimeOnly(libs.modmenu) {
+        exclude(module = "fabric-loader")
+    }
 }

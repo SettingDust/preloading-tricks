@@ -1,3 +1,13 @@
+import com.github.jengelman.gradle.plugins.shadow.transformers.Transformer
+import com.github.jengelman.gradle.plugins.shadow.transformers.TransformerContext
+import net.fabricmc.loom.task.RemapJarTask
+import org.apache.tools.zip.ZipEntry
+import org.apache.tools.zip.ZipOutputStream
+import java.io.ByteArrayOutputStream
+import java.util.jar.JarFile.MANIFEST_NAME
+import java.util.jar.Manifest
+
+
 plugins {
     java
     `maven-publish`
@@ -75,19 +85,23 @@ subprojects {
     }
 }
 
-dependencies {
-    shadow(project(":preloading-callbacks"))
-}
-
 tasks {
     shadowJar {
-        val fabricLoader014Jar = project(":fabric-loader-0.14").tasks.named("remapJar")
-        val quiltLoader020Jar = project(":quilt-loader-0.20").tasks.named("remapJar")
-        val fml45 = project(":fml-45").tasks.named("remapJar")
+        val fabricLoader014Jar = project(":fabric-loader-0.14").tasks.named<RemapJarTask>("remapJar")
+        val quiltLoader020Jar = project(":quilt-loader-0.20").tasks.named<RemapJarTask>("remapJar")
+        val fml45 = project(":fml-45").tasks.named<RemapJarTask>("remapJar")
+        val preloadingCallbacks = project(":preloading-callbacks").tasks.jar
 
-        from(fabricLoader014Jar, quiltLoader020Jar, fml45)
+        dependsOn(fabricLoader014Jar, quiltLoader020Jar, fml45, preloadingCallbacks)
 
-        configurations = listOf(project.configurations.shadow.get())
+        from(
+            zipTree(preloadingCallbacks.get().archiveFile),
+            fabricLoader014Jar.get().archiveFile,
+            quiltLoader020Jar.get().archiveFile,
+            fml45.get().archiveFile
+        )
+
+        transform(ManifestMergeTransformer())
 
         archiveClassifier.set("")
         mergeServiceFiles()
@@ -111,6 +125,7 @@ modrinth {
     changelog.set(rootProject.file("CHANGELOG.md").readText())
     gameVersions.addAll(
         "1.19",
+        "1.19.1",
         "1.19.2",
         "1.19.3",
         "1.19.4",
@@ -131,12 +146,59 @@ publishing {
             artifactId = base.archivesName.get()
             version = "${rootProject.version}"
             artifact(tasks.shadowJar)
+        }
+    }
+}
 
-            pom {
-                withXml {
-                    this.asElement().removeAttribute("dependencies")
+
+// https://stackoverflow.com/questions/66333597/how-to-merge-manifest-sections-with-gradle-and-shadowjar
+class ManifestMergeTransformer : Transformer {
+    @Input
+    var includePackages: String = "" // regular expression that must match a given package
+
+    @Input
+    var excludePackages: String = "" // regular expression that must not match a given package
+    private var manifest: Manifest? = null
+    override fun getName() = "ManifestMergeTransformer"
+
+    override fun canTransformResource(element: FileTreeElement): Boolean {
+        return MANIFEST_NAME.equals(element.relativePath.pathString, ignoreCase = true)
+    }
+
+    override fun transform(context: TransformerContext) {
+        if (manifest == null) {
+            manifest = Manifest(context.`is`)
+        } else {
+            val toMerge = Manifest(context.`is`)
+            for ((key, value) in toMerge.entries) {
+                if (mustInclude(key)) {
+                    manifest!!.entries[key] = value
                 }
             }
+            for ((key, value) in toMerge.mainAttributes) {
+                if (mustInclude(key.toString())) manifest!!.mainAttributes[key] = value
+            }
+        }
+        context.`is`.close()
+    }
+
+    private fun mustInclude(packageName: String) =
+        (includePackages.isBlank() || packageName.matches(includePackages.toRegex())) && (excludePackages.isBlank() || !packageName.matches(
+            excludePackages.toRegex()
+        ))
+
+    override fun hasTransformedResource(): Boolean {
+        return true
+    }
+
+    override fun modifyOutputStream(os: ZipOutputStream, preserveFileTimestamps: Boolean) {
+        val entry = ZipEntry(MANIFEST_NAME)
+        entry.time = TransformerContext.getEntryTimestamp(preserveFileTimestamps, entry.time)
+        os.putNextEntry(entry)
+        if (manifest != null) {
+            val manifestContents = ByteArrayOutputStream()
+            manifest!!.write(manifestContents)
+            os.write(manifestContents.toByteArray())
         }
     }
 }

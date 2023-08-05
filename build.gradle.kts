@@ -21,6 +21,13 @@ architectury {
     compileOnly()
 }
 
+java {
+    sourceCompatibility = JavaVersion.VERSION_17
+    targetCompatibility = JavaVersion.VERSION_17
+
+    withSourcesJar()
+}
+
 subprojects {
     apply(plugin = "java")
 
@@ -110,7 +117,11 @@ modrinth {
         "1.20",
         "1.20.1",
     ) // Must be an array, even with only one version
-    loaders.addAll("fabric", "quilt", "forge") // Must also be an array - no need to specify this if you're using Loom or ForgeGradle
+    loaders.addAll(
+        "fabric",
+        "quilt",
+        "forge"
+    ) // Must also be an array - no need to specify this if you're using Loom or ForgeGradle
 }
 
 publishing {
@@ -119,8 +130,13 @@ publishing {
             groupId = "${rootProject.group}"
             artifactId = base.archivesName.get()
             version = "${rootProject.version}"
-            from(components.getByName("java"))
             artifact(tasks.shadowJar)
+
+            pom {
+                withXml {
+                    this.asElement().removeAttribute("dependencies")
+                }
+            }
         }
     }
 }

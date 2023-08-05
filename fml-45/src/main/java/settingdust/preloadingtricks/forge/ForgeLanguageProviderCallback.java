@@ -47,7 +47,7 @@ public class ForgeLanguageProviderCallback implements LanguageProviderCallback {
                     try {
                         return it.get();
                     } catch (Throwable t) {
-                        logger.debug("Invoke " + it.type().getName() + " failed", t);
+                        logger.error("Invoke " + it.type().getName() + " failed", t);
                         return null;
                     }
                 })

@@ -1,5 +1,3 @@
-import net.fabricmc.loom.task.AbstractRunTask
-
 plugins {
     alias(libs.plugins.architectury)
     alias(libs.plugins.architectury.loom)
@@ -29,7 +27,6 @@ dependencies {
     forge(libs.forge)
 
     implementation(project(":preloading-callbacks"))
-    include(project(":preloading-callbacks"))
 
     implementation(project(":forge-language-provider"))
     include(project(":forge-language-provider"))

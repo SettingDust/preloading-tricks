@@ -1,5 +1,3 @@
-import net.fabricmc.loom.task.RemapJarTask
-
 plugins {
     java
     `maven-publish`
@@ -70,6 +68,10 @@ subprojects {
     }
 }
 
+dependencies {
+    shadow(project(":preloading-callbacks"))
+}
+
 tasks {
     shadowJar {
         val fabricLoader014Jar = project(":fabric-loader-0.14").tasks.named("remapJar")
@@ -77,6 +79,8 @@ tasks {
         val fml45 = project(":fml-45").tasks.named("remapJar")
 
         from(fabricLoader014Jar, quiltLoader020Jar, fml45)
+
+        configurations = listOf(project.configurations.shadow.get())
 
         archiveClassifier.set("")
         mergeServiceFiles()

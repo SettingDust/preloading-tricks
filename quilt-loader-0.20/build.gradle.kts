@@ -26,7 +26,6 @@ dependencies {
     modImplementation(libs.quilt.loader)
 
     implementation(project(":preloading-callbacks"))
-    include(project(":preloading-callbacks"))
 
     runtimeOnly(project(":fabric-like-language-adapter")) {
         exclude(module = "fabric-loader")

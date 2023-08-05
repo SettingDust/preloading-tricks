@@ -20,6 +20,7 @@ pluginManagement {
             url = uri("https://maven.minecraftforge.net/")
         }
         gradlePluginPortal()
+        mavenLocal()
     }
 }
 

@@ -150,7 +150,6 @@ publishing {
     }
 }
 
-
 // https://stackoverflow.com/questions/66333597/how-to-merge-manifest-sections-with-gradle-and-shadowjar
 class ManifestMergeTransformer : Transformer {
     @Input

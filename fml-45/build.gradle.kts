@@ -42,10 +42,4 @@ tasks {
             "FMLModType" to "LIBRARY"
         )
     }
-
-//    afterEvaluate {
-//        withType<AbstractRunTask> {
-//            dependsOn(jar, ":preloading-callbacks:jar")
-//        }
-//    }
 }

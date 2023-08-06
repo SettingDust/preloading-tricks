@@ -10,10 +10,13 @@ import org.slf4j.LoggerFactory;
 import settingdust.preloadingtricks.LanguageProviderCallback;
 import settingdust.preloadingtricks.SetupModCallback;
 import settingdust.preloadingtricks.SetupModService;
+import settingdust.preloadingtricks.util.ServiceLoaderUtil;
 
 import java.lang.reflect.Field;
-import java.util.*;
-import java.util.function.Consumer;
+import java.util.Collection;
+import java.util.List;
+import java.util.Map;
+import java.util.ServiceLoader;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
@@ -41,18 +44,10 @@ public class ForgeLanguageProviderCallback implements LanguageProviderCallback {
     private void setupModsInvoking() throws IllegalAccessException {
         fieldModValidator.set(null, validator);
         candidateMods = (List<ModFile>) fieldCandidateMods.get(validator);
-        final var logger = LoggerFactory.getLogger("PreloadingTricks/ModSetup");
-        ServiceLoader.load(SetupModCallback.class).stream()
-                .map(it -> {
-                    try {
-                        return it.get();
-                    } catch (Throwable t) {
-                        logger.error("Invoke " + it.type().getName() + " failed", t);
-                        return null;
-                    }
-                })
-                .filter(Objects::nonNull)
-                .forEach(it -> logger.info("Invoked " + it));
+        ServiceLoaderUtil.loadServices(
+                SetupModCallback.class,
+                ServiceLoader.load(SetupModCallback.class),
+                LoggerFactory.getLogger("PreloadingTricks/ModSetup"));
     }
 
     private class DummyModValidator extends ModValidator {

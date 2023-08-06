@@ -26,7 +26,9 @@ dependencies {
     })
     forge(libs.forge)
 
-    implementation(project(":preloading-callbacks"))
+    implementation(project(":preloading-callbacks")) {
+        isTransitive = false
+    }
 
     implementation(project(":forge-language-provider"))
     include(project(":forge-language-provider"))

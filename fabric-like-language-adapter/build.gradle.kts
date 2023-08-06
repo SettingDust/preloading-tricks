@@ -13,5 +13,8 @@ dependencies {
         classifier("v2")
     })
     modImplementation(libs.fabric.loader)
-    implementation(project(":preloading-callbacks"))
+
+    implementation(project(":preloading-callbacks")) {
+        isTransitive = false
+    }
 }

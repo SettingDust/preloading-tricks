@@ -16,7 +16,9 @@ dependencies {
     })
     forge(libs.forge)
 
-    implementation(project(":preloading-callbacks"))
+    implementation(project(":preloading-callbacks")) {
+        isTransitive = false
+    }
 }
 
 tasks {

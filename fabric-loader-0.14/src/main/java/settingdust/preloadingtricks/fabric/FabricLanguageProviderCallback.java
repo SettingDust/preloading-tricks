@@ -6,6 +6,7 @@ import org.slf4j.LoggerFactory;
 import settingdust.preloadingtricks.LanguageProviderCallback;
 import settingdust.preloadingtricks.SetupModCallback;
 import settingdust.preloadingtricks.SetupModService;
+import settingdust.preloadingtricks.util.ServiceLoaderUtil;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationHandler;
@@ -13,7 +14,6 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
 import java.util.Collection;
 import java.util.List;
-import java.util.Objects;
 import java.util.ServiceLoader;
 import java.util.function.Predicate;
 
@@ -39,18 +39,10 @@ public class FabricLanguageProviderCallback implements LanguageProviderCallback 
 
     private void setupModsInvoking() throws IllegalAccessException {
         fieldMods.set(loader, mods);
-        final var logger = LoggerFactory.getLogger("PreloadingTricks/ModSetup");
-        ServiceLoader.load(SetupModCallback.class).stream()
-                .map(it -> {
-                    try {
-                        return it.get();
-                    } catch (Throwable t) {
-                        logger.error("Invoke " + it.type().getName() + " failed", t);
-                        return null;
-                    }
-                })
-                .filter(Objects::nonNull)
-                .forEach(it -> logger.info("Invoked " + it));
+        ServiceLoaderUtil.loadServices(
+                SetupModCallback.class,
+                ServiceLoader.load(SetupModCallback.class),
+                LoggerFactory.getLogger("PreloadingTricks/ModSetup"));
     }
 
     private class ModsListProxy implements InvocationHandler {

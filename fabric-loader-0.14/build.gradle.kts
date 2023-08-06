@@ -30,7 +30,9 @@ dependencies {
     })
     modImplementation(libs.fabric.loader)
 
-    implementation(project(":preloading-callbacks"))
+    implementation(project(":preloading-callbacks")) {
+        isTransitive = false
+    }
 
     runtimeOnly(project(":fabric-like-language-adapter"))
     include(project(":fabric-like-language-adapter"))

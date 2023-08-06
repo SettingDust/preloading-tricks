@@ -15,7 +15,6 @@ The callback is using java [`ServiceLoader`](https://docs.oracle.com/en/java/jav
 It will be invoked at just before setup mods.   
   
 Using `SetupModService` implementations for platforms to control the mod loading.  
-It's not recommend to using the service to add mods. Using methods provided by loader is better.  
 
   * Forge: https://github.com/SettingDust/preloading-tricks/blob/main/fml-45/src/main/java/settingdust/preloadingtricks/forge/ForgeLanguageProviderCallback.java#L98
   * Fabric: https://github.com/SettingDust/preloading-tricks/blob/main/fabric-loader-0.14/src/main/java/settingdust/preloadingtricks/fabric/FabricLanguageProviderCallback.java#L64

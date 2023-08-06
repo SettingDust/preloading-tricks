@@ -16,7 +16,6 @@ public class ServiceLoaderUtil {
                 empty = true;
             } catch (Throwable t) {
                 empty = false;
-                iterator.remove();
                 logger.error("Load service of {} failed {}", clazz.getName(), t.getMessage());
                 logger.debug("Load service of " + clazz.getName() + " failed", t);
             }

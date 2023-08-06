@@ -46,7 +46,7 @@ public class ForgeLanguageProviderCallback implements LanguageProviderCallback {
         candidateMods = (List<ModFile>) fieldCandidateMods.get(validator);
         ServiceLoaderUtil.loadServices(
                 SetupModCallback.class,
-                ServiceLoader.load(SetupModCallback.class),
+                ServiceLoader.load(SetupModCallback.class, SetupModCallback.class.getClassLoader()),
                 LoggerFactory.getLogger("PreloadingTricks/ModSetup"));
     }
 

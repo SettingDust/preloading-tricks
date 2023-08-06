@@ -16,7 +16,7 @@ public class DummyLanguageProvider implements IModLanguageProvider {
         // Why forge construct the instance twice?
         ServiceLoaderUtil.loadServices(
                 LanguageProviderCallback.class,
-                ServiceLoader.load(LanguageProviderCallback.class),
+                ServiceLoader.load(LanguageProviderCallback.class, DummyLanguageProvider.class.getClassLoader()),
                 LoggerFactory.getLogger("PreloadingTricks/LanguageProvider"));
     }
 

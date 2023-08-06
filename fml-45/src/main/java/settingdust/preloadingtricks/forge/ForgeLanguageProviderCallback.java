@@ -86,7 +86,7 @@ public class ForgeLanguageProviderCallback implements LanguageProviderCallback {
             } catch (IllegalAccessException e) {
                 throw new RuntimeException(e);
             }
-            return super.stage2Validation();
+            return validator.stage2Validation();
         }
     }
 

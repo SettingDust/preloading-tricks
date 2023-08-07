@@ -2,7 +2,7 @@ package settingdust.preloadingtricks.fabric;
 
 import net.fabricmc.loader.impl.FabricLoaderImpl;
 import net.fabricmc.loader.impl.ModContainerImpl;
-import org.slf4j.LoggerFactory;
+import org.apache.logging.log4j.LogManager;
 import settingdust.preloadingtricks.LanguageProviderCallback;
 import settingdust.preloadingtricks.SetupModCallback;
 import settingdust.preloadingtricks.SetupModService;
@@ -42,7 +42,7 @@ public class FabricLanguageProviderCallback implements LanguageProviderCallback 
         ServiceLoaderUtil.loadServices(
                 SetupModCallback.class,
                 ServiceLoader.load(SetupModCallback.class),
-                LoggerFactory.getLogger("PreloadingTricks/ModSetup"));
+                LogManager.getLogger("PreloadingTricks/ModSetup"));
     }
 
     private class ModsListProxy implements InvocationHandler {

@@ -2,7 +2,7 @@ package settingdust.preloadingtricks;
 
 import net.fabricmc.loader.api.LanguageAdapter;
 import net.fabricmc.loader.api.ModContainer;
-import org.slf4j.LoggerFactory;
+import org.apache.logging.log4j.LogManager;
 import settingdust.preloadingtricks.util.ServiceLoaderUtil;
 
 import java.util.ServiceLoader;
@@ -13,7 +13,7 @@ public class DummyLanguageAdapter implements LanguageAdapter {
         ServiceLoaderUtil.loadServices(
                 LanguageProviderCallback.class,
                 ServiceLoader.load(LanguageProviderCallback.class),
-                LoggerFactory.getLogger("PreloadingTricks/LanguageAdapter"));
+                LogManager.getLogger("PreloadingTricks/LanguageAdapter"));
     }
 
     @Override

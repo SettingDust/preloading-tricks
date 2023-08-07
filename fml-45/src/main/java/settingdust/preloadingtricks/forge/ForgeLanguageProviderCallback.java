@@ -6,7 +6,7 @@ import net.minecraftforge.fml.loading.moddiscovery.BackgroundScanHandler;
 import net.minecraftforge.fml.loading.moddiscovery.ModFile;
 import net.minecraftforge.fml.loading.moddiscovery.ModValidator;
 import net.minecraftforge.forgespi.locating.IModFile;
-import org.slf4j.LoggerFactory;
+import org.apache.logging.log4j.LogManager;
 import settingdust.preloadingtricks.LanguageProviderCallback;
 import settingdust.preloadingtricks.SetupModCallback;
 import settingdust.preloadingtricks.SetupModService;
@@ -47,7 +47,7 @@ public class ForgeLanguageProviderCallback implements LanguageProviderCallback {
         ServiceLoaderUtil.loadServices(
                 SetupModCallback.class,
                 ServiceLoader.load(SetupModCallback.class, SetupModCallback.class.getClassLoader()),
-                LoggerFactory.getLogger("PreloadingTricks/ModSetup"));
+                LogManager.getLogger("PreloadingTricks/ModSetup"));
     }
 
     private class DummyModValidator extends ModValidator {

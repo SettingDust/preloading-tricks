@@ -1,10 +1,11 @@
 package settingdust.preloadingtricks.util;
 
-import org.slf4j.Logger;
+import org.apache.logging.log4j.Logger;
 
 import java.util.ServiceLoader;
 
 public class ServiceLoaderUtil {
+
     public static <T> void loadServices(Class<T> clazz, ServiceLoader<T> serviceLoader, Logger logger) {
         final var iterator = serviceLoader.stream().iterator();
         var hasNext = false;
@@ -22,15 +23,21 @@ public class ServiceLoaderUtil {
         } while (!hasNext);
         while (hasNext) {
             final var provider = iterator.next();
+
+            String providerName = provider.type().getName();
+
+            if (!providerName.startsWith("settingdust.preloadingtricks.")) {
+                logger.info("Preloading-tricks is loading " + provider.type().getName());
+            }
+
             try {
-                logger.info("Loading " + provider.type().getName());
                 provider.get();
             } catch (Throwable t) {
-                logger.error(
-                        "Loading {} failed. Stacktrace is in DEBUG level. {}",
-                        provider.type().getName(),
-                        t.getMessage());
-                logger.debug("Loading " + provider.type().getName() + " failed.", t);
+
+                if (!providerName.startsWith("settingdust.preloadingtricks.")) {
+                    logger.error("Loading " + provider.type().getName() + " failed.");
+                    logger.debug(t)
+                }
             }
 
             try {

@@ -3,7 +3,7 @@ package settingdust.preloadingtricks.forge.language;
 import net.minecraftforge.forgespi.language.ILifecycleEvent;
 import net.minecraftforge.forgespi.language.IModLanguageProvider;
 import net.minecraftforge.forgespi.language.ModFileScanData;
-import org.slf4j.LoggerFactory;
+import org.apache.logging.log4j.LogManager;
 import settingdust.preloadingtricks.LanguageProviderCallback;
 import settingdust.preloadingtricks.util.ServiceLoaderUtil;
 
@@ -17,7 +17,7 @@ public class DummyLanguageProvider implements IModLanguageProvider {
         ServiceLoaderUtil.loadServices(
                 LanguageProviderCallback.class,
                 ServiceLoader.load(LanguageProviderCallback.class, DummyLanguageProvider.class.getClassLoader()),
-                LoggerFactory.getLogger("PreloadingTricks/LanguageProvider"));
+                LogManager.getLogger("PreloadingTricks/LanguageProvider"));
     }
 
     public DummyLanguageProvider() {}

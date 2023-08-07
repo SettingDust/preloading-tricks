@@ -7,6 +7,7 @@ import java.util.ServiceLoader;
 public class ServiceLoaderUtil {
 
     public static <T> void loadServices(Class<T> clazz, ServiceLoader<T> serviceLoader, Logger logger) {
+        final var prefix = String.format("[%s]", logger.getName());
         final var iterator = serviceLoader.stream().iterator();
         var hasNext = false;
         var empty = false;
@@ -17,8 +18,8 @@ public class ServiceLoaderUtil {
                 empty = true;
             } catch (Throwable t) {
                 empty = false;
-                logger.error("Load service of {} failed: {}", clazz.getName(), t.getMessage());
-                logger.debug("Load service of " + clazz.getName() + " failed", t);
+                logger.error(prefix + "Load service of {} failed: {}", clazz.getName(), t.getMessage());
+                logger.debug(prefix + "Load service of " + clazz.getName() + " failed", t);
             }
         } while (!hasNext);
         while (hasNext) {
@@ -26,22 +27,22 @@ public class ServiceLoaderUtil {
 
             String providerName = provider.type().getName();
 
-            logger.info("Loading " + providerName);
+            logger.info(prefix + "Loading " + providerName);
 
             try {
                 provider.get();
             } catch (Throwable t) {
                 if (!providerName.startsWith("settingdust.preloadingtricks.")) {
-                    logger.error("Loading " + providerName + " failed");
+                    logger.error(prefix + "Loading " + providerName + " failed");
                 }
-                logger.debug("Loading " + providerName + " failed", t);
+                logger.debug(prefix + "Loading " + providerName + " failed", t);
             }
 
             try {
                 hasNext = iterator.hasNext();
             } catch (Throwable t) {
-                logger.error("Load service of {} failed: {}", clazz.getName(), t.getMessage());
-                logger.debug("Load service of " + clazz.getName() + " failed", t);
+                logger.error(prefix + "Load service of {} failed: {}", clazz.getName(), t.getMessage());
+                logger.debug(prefix + "Load service of " + clazz.getName() + " failed", t);
             }
         }
     }

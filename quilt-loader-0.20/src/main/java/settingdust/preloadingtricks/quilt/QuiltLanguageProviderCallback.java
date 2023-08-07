@@ -1,8 +1,8 @@
 package settingdust.preloadingtricks.quilt;
 
+import org.apache.logging.log4j.LogManager;
 import org.quiltmc.loader.api.plugin.ModContainerExt;
 import org.quiltmc.loader.impl.QuiltLoaderImpl;
-import org.slf4j.LoggerFactory;
 import settingdust.preloadingtricks.LanguageProviderCallback;
 import settingdust.preloadingtricks.SetupModCallback;
 import settingdust.preloadingtricks.SetupModService;
@@ -42,7 +42,7 @@ public class QuiltLanguageProviderCallback implements LanguageProviderCallback {
         ServiceLoaderUtil.loadServices(
                 SetupModCallback.class,
                 ServiceLoader.load(SetupModCallback.class),
-                LoggerFactory.getLogger("PreloadingTricks/ModSetup"));
+                LogManager.getLogger("PreloadingTricks/ModSetup"));
     }
 
     private class ModsListProxy implements InvocationHandler {

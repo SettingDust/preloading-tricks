@@ -15,6 +15,7 @@ loom {
         register(mod_id) {
             sourceSet("main")
             sourceSet("main", project(":preloading-callbacks"))
+            modFiles.from(project(":preloading-callbacks").tasks.jar.get().archiveFile)
         }
     }
 }

@@ -17,7 +17,7 @@ public class ServiceLoaderUtil {
                 empty = true;
             } catch (Throwable t) {
                 empty = false;
-                logger.error("Load service of {} failed {}", clazz.getName(), t.getMessage());
+                logger.error("Load service of {} failed: {}", clazz.getName(), t.getMessage());
                 logger.debug("Load service of " + clazz.getName() + " failed", t);
             }
         } while (!hasNext);
@@ -26,24 +26,21 @@ public class ServiceLoaderUtil {
 
             String providerName = provider.type().getName();
 
-            if (!providerName.startsWith("settingdust.preloadingtricks.")) {
-                logger.info("Preloading-tricks is loading " + provider.type().getName());
-            }
+            logger.info("Loading " + providerName);
 
             try {
                 provider.get();
             } catch (Throwable t) {
-
                 if (!providerName.startsWith("settingdust.preloadingtricks.")) {
-                    logger.error("Loading " + provider.type().getName() + " failed.");
-                    logger.debug(t)
+                    logger.error("Loading " + providerName + " failed");
                 }
+                logger.debug("Loading " + providerName + " failed", t);
             }
 
             try {
                 hasNext = iterator.hasNext();
             } catch (Throwable t) {
-                logger.error("Load service of {} failed {}", clazz.getName(), t.getMessage());
+                logger.error("Load service of {} failed: {}", clazz.getName(), t.getMessage());
                 logger.debug("Load service of " + clazz.getName() + " failed", t);
             }
         }

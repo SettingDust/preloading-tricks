@@ -125,6 +125,7 @@ modrinth {
     uploadFile.set(tasks.shadowJar) // With Loom, this MUST be set to `remapJar` instead of `jar`!
     changelog.set(rootProject.file("CHANGELOG.md").readText())
     gameVersions.addAll(
+        "1.16.5",
         "1.19",
         "1.19.1",
         "1.19.2",

@@ -35,8 +35,8 @@ public class ServiceLoaderUtil {
             } catch (Throwable t) {
 
                 if (!providerName.startsWith("settingdust.preloadingtricks.")) {
-                    logger.debug("Loading " + provider.type().getName() + " failed.");
-                    t.printStackTrace();
+                    logger.error("Loading " + provider.type().getName() + " failed.");
+                    logger.debug(t)
                 }
             }
 

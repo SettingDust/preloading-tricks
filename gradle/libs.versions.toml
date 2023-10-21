@@ -1,13 +1,15 @@
 [versions]
 # The latest Quilt versions are available at https://lambdaurora.dev/tools/import_quilt.html
-minecraft = "1.20.1"
+minecraft20 = "1.20.1"
+minecraft18 = "1.18.2"
 
-yarn_mapping = "1.20.1+build.10"
+yarn_mapping20 = "1.20.1+build.10"
+yarn_mapping18 = "1.18.2+build.4"
 
 #fabric
-fabric_loader = "0.14.21"
+fabric_loader = "0.14.23"
 # quilt
-quilt_loader = "0.20.0-beta.4"
+quilt_loader = "0.21.0"
 quilted_fabric_api = "7.0.6+0.85.0-1.20.1"
 qsl_version = "6.0.4+1.20.1"
 
@@ -16,13 +18,16 @@ modmenu = "7.1.0"
 minotaur = "2.+"
 
 neoforge = "1.20.1-47.1.55"
-forge = "1.20.1-47.1.43"
+forge47 = "1.20.1-47.1.43"
+forge40 = "1.18.2-40.2.10"
 forge_spi = "7.0.1"
 
 [libraries]
 # common
-minecraft = { module = "com.mojang:minecraft", version.ref = "minecraft" }
-yarn_mapping = { module = "net.fabricmc:yarn", version.ref = "yarn_mapping" }
+minecraft20 = { module = "com.mojang:minecraft", version.ref = "minecraft20" }
+minecraft18 = { module = "com.mojang:minecraft", version.ref = "minecraft18" }
+yarn_mapping20 = { module = "net.fabricmc:yarn", version.ref = "yarn_mapping20" }
+yarn_mapping18 = { module = "net.fabricmc:yarn", version.ref = "yarn_mapping18" }
 
 # fabric
 fabric_loader = { module = "net.fabricmc:fabric-loader", version.ref = "fabric_loader" }
@@ -36,9 +41,11 @@ modmenu = { module = "com.terraformersmc:modmenu", version.ref = "modmenu" }
 
 # Forge
 neoforge = { module = "net.neoforged:forge", version.ref = "neoforge" }
-forge = { module = "net.minecraftforge:forge", version.ref = "forge" }
+forge47 = { module = "net.minecraftforge:forge", version.ref = "forge47" }
+forge40 = { module = "net.minecraftforge:forge", version.ref = "forge40" }
 forge_spi = { module = "net.minecraftforge:forgespi", version.ref = "forge_spi" }
-forge_loader = { module = "net.minecraftforge:fmlloader", version.ref = "forge" }
+forge_loader47 = { module = "net.minecraftforge:fmlloader", version.ref = "forge47" }
+forge_loader40 = { module = "net.minecraftforge:fmlloader", version.ref = "forge40" }
 
 
 [plugins]

@@ -8,8 +8,8 @@ architectury {
 }
 
 dependencies {
-    minecraft(libs.minecraft)
-    mappings(variantOf(libs.yarn.mapping) {
+    minecraft(libs.minecraft20)
+    mappings(variantOf(libs.yarn.mapping20) {
         classifier("v2")
     })
     modImplementation(libs.fabric.loader)

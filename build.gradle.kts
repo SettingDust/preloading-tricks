@@ -81,24 +81,27 @@ subprojects {
 tasks {
     shadowJar {
         val fabricLoader014Jar = project(":fabric-loader-0.14").tasks.named<RemapJarTask>("remapJar")
-        val quiltLoader020Jar = project(":quilt-loader-0.20").tasks.named<RemapJarTask>("remapJar")
-        val fml45 = project(":fml-45").tasks.named<RemapJarTask>("remapJar")
+        val quiltLoader021Jar = project(":quilt-loader-0.21").tasks.named<RemapJarTask>("remapJar")
+        val fml47 = project(":fml-47").tasks.named<RemapJarTask>("remapJar")
+        val fml40 = project(":fml-40").tasks.named<RemapJarTask>("remapJar")
         val preloadingCallbacks = project(":preloading-callbacks").tasks.jar
 
-        dependsOn(fabricLoader014Jar, quiltLoader020Jar, fml45, preloadingCallbacks)
+        dependsOn(fabricLoader014Jar, quiltLoader021Jar, fml47, fml40, preloadingCallbacks)
 
         from(
             zipTree(preloadingCallbacks.get().archiveFile),
             fabricLoader014Jar.get().archiveFile,
-            quiltLoader020Jar.get().archiveFile,
-            fml45.get().archiveFile
+            quiltLoader021Jar.get().archiveFile,
+            fml47.get().archiveFile,
+            fml40.get().archiveFile
         )
 
         manifest {
             from(setOf(
                 zipTree(fabricLoader014Jar.get().outputs.files.singleFile),
-                zipTree(quiltLoader020Jar.get().outputs.files.singleFile),
-                zipTree(fml45.get().outputs.files.singleFile)
+                zipTree(quiltLoader021Jar.get().outputs.files.singleFile),
+                zipTree(fml47.get().outputs.files.singleFile),
+                zipTree(fml40.get().outputs.files.singleFile)
             ).map { zip ->
                 zip.find { it.name.equals("MANIFEST.MF") }
             })

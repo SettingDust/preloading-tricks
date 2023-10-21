@@ -1,44 +1,51 @@
 [versions]
-# The latest Quilt versions are available at https://lambdaurora.dev/tools/import_quilt.html
-minecraft = "1.20.1"
+# The latest Minecraft
+minecraft = "1.20.2"
+yarn_mapping = "1.20.2+build.4"
+# Fabric https://fabricmc.net/develop/
+fabric_loader = "0.14.23"
+# Quilt https://lambdaurora.dev/tools/import_quilt.html
+quilt_loader = "0.21.1-beta.2"
+#quilted_fabric_api = "7.0.6+0.85.0-1.20.1"
+#qsl_version = "6.0.4+1.20.1"
+# Forge https://files.minecraftforge.net/net/minecraftforge/forge/
+forge = "1.20.2-48.0.30"
 
-yarn_mapping = "1.20.1+build.10"
 
-#fabric
-fabric_loader = "0.14.21"
-# quilt
-quilt_loader = "0.20.0-beta.4"
-quilted_fabric_api = "7.0.6+0.85.0-1.20.1"
-qsl_version = "6.0.4+1.20.1"
+# The forge below 41.0.39 that forge SPI below 6
+minecraft_1_19 = "1.19"
+forge_41 = "1.19-41.0.38"
+yarn_mapping_1_19 = "1.19+build.4"
 
 modmenu = "7.1.0"
 
 minotaur = "2.+"
 
 neoforge = "1.20.1-47.1.55"
-forge = "1.20.1-47.1.43"
-forge_spi = "7.0.1"
 
 [libraries]
+# The latest Minecraft
 # common
 minecraft = { module = "com.mojang:minecraft", version.ref = "minecraft" }
 yarn_mapping = { module = "net.fabricmc:yarn", version.ref = "yarn_mapping" }
-
 # fabric
 fabric_loader = { module = "net.fabricmc:fabric-loader", version.ref = "fabric_loader" }
-
 # quilt
 quilt_loader = { module = "org.quiltmc:quilt-loader", version.ref = "quilt_loader" }
-quilted_fabric_api = { module = "org.quiltmc.quilted-fabric-api:quilted-fabric-api", version.ref = "quilted_fabric_api" }
-quilt_standard_libraries_core = { module = "org.quiltmc.qsl:core", version.ref = "qsl_version" }
+#quilted_fabric_api = { module = "org.quiltmc.quilted-fabric-api:quilted-fabric-api", version.ref = "quilted_fabric_api" }
+#quilt_standard_libraries_core = { module = "org.quiltmc.qsl:core", version.ref = "qsl_version" }
+# Forge
+forge = { module = "net.minecraftforge:forge", version.ref = "forge" }
 
 modmenu = { module = "com.terraformersmc:modmenu", version.ref = "modmenu" }
 
 # Forge
 neoforge = { module = "net.neoforged:forge", version.ref = "neoforge" }
-forge = { module = "net.minecraftforge:forge", version.ref = "forge" }
-forge_spi = { module = "net.minecraftforge:forgespi", version.ref = "forge_spi" }
-forge_loader = { module = "net.minecraftforge:fmlloader", version.ref = "forge" }
+
+# The forge below 41.0.39 that forge SPI below 6
+minecraft_1_19 = { module = "com.mojang:minecraft", version.ref = "minecraft_1_19" }
+forge_41 = { module = "net.minecraftforge:forge", version.ref = "forge_41" }
+yarn_mapping_1_19 = { module = "net.fabricmc:yarn", version.ref = "yarn_mapping_1_19" }
 
 
 [plugins]

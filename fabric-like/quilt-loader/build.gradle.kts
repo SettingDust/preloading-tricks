@@ -5,22 +5,16 @@ plugins {
 
 architectury {
     platformSetupLoomIde()
-    fabric()
+    loader("quilt")
 }
 
 val mod_id: String by rootProject
 
-loom {
-    mods {
-        register(mod_id) {
-            sourceSet("main")
-            sourceSet("main", project(":preloading-callbacks"))
-            modFiles.from(project(":preloading-callbacks").tasks.jar.get().archiveFile)
-        }
-    }
-}
-
 repositories {
+    maven {
+        name = "Quilt"
+        url = uri("https://maven.quiltmc.org/repository/release")
+    }
     maven("https://maven.terraformersmc.com/releases")
 }
 
@@ -29,14 +23,15 @@ dependencies {
     mappings(variantOf(libs.yarn.mapping) {
         classifier("v2")
     })
-    modImplementation(libs.fabric.loader)
+    modImplementation(libs.quilt.loader)
 
     implementation(project(":preloading-callbacks")) {
         isTransitive = false
     }
 
-    runtimeOnly(project(":fabric-like-language-adapter"))
-    include(project(":fabric-like-language-adapter"))
+    include(runtimeOnly(project(":fabric-like:language-adapter")) {
+        exclude(module = "fabric-loader")
+    })
 
     modRuntimeOnly(libs.modmenu) {
         exclude(module = "fabric-loader")

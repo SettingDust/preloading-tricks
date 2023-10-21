@@ -20,18 +20,17 @@ loom {
 }
 
 dependencies {
-    minecraft(libs.minecraft)
-    mappings(variantOf(libs.yarn.mapping) {
+    minecraft(libs.minecraft.get1().get19())
+    mappings(variantOf(libs.yarn.mapping.get1().get19()) {
         classifier("v2")
     })
-    forge(libs.forge)
+    forge(libs.forge.get41())
 
     implementation(project(":preloading-callbacks")) {
         isTransitive = false
     }
 
-    implementation(project(":forge-language-provider"))
-    include(project(":forge-language-provider"))
+    include(implementation(project(":forge:language-provider"))!!)
 }
 
 tasks {

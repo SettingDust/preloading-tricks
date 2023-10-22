@@ -10,6 +10,7 @@ import net.minecraftforge.forgespi.locating.IModFile;
 import org.apache.logging.log4j.LogManager;
 import settingdust.preloadingtricks.LanguageProviderCallback;
 import settingdust.preloadingtricks.SetupModCallback;
+import settingdust.preloadingtricks.forge.FMLModSetupService;
 import settingdust.preloadingtricks.util.ServiceLoaderUtil;
 
 import java.lang.reflect.Field;

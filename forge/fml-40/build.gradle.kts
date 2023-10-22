@@ -31,6 +31,7 @@ dependencies {
     }
 
     include(implementation(project(":forge:language-provider"))!!)
+    include(implementation(project(":forge:api"))!!)
 }
 
 tasks {

@@ -10,6 +10,7 @@ import net.minecraftforge.forgespi.locating.IModFile;
 import org.apache.logging.log4j.LogManager;
 import settingdust.preloadingtricks.LanguageProviderCallback;
 import settingdust.preloadingtricks.SetupModCallback;
+import settingdust.preloadingtricks.forge.FMLModSetupService;
 import settingdust.preloadingtricks.util.ServiceLoaderUtil;
 
 import java.lang.reflect.Field;
@@ -40,7 +41,7 @@ public class FML40LanguageProviderCallback implements LanguageProviderCallback {
     private void setupModsInvoking() throws IllegalAccessException {
         fieldModValidator.set(null, validator);
         candidateMods = (List<ModFile>) fieldCandidateMods.get(validator);
-        new ForgeModSetupService(candidateMods);
+        new FMLModSetupService(candidateMods);
         ServiceLoaderUtil.loadServices(
                 SetupModCallback.class,
                 ServiceLoader.load(SetupModCallback.class, SetupModCallback.class.getClassLoader()),

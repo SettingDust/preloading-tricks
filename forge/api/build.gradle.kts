@@ -4,19 +4,7 @@ plugins {
 }
 
 architectury {
-    platformSetupLoomIde()
     forge()
-}
-
-val mod_id: String by rootProject
-
-loom {
-    mods {
-        named("main") {
-            modSourceSets.empty()
-            modFiles.setFrom(tasks.jar)
-        }
-    }
 }
 
 dependencies {
@@ -29,16 +17,9 @@ dependencies {
     implementation(project(":preloading-callbacks")) {
         isTransitive = false
     }
-
-    include(implementation(project(":forge:language-provider"))!!)
-    include(implementation(project(":forge:api"))!!)
 }
 
 tasks {
-    classes {
-        finalizedBy(jar)
-    }
-
     jar {
         manifest.attributes(
             "FMLModType" to "LIBRARY"

@@ -43,8 +43,10 @@ dependencies {
 
 tasks {
     shadowJar {
+        dependsOn(sourcesJar)
         configurations = listOf(project.configurations.shadow.get())
-        archiveClassifier = ""
+        archiveClassifier = "dev"
+        destinationDirectory = layout.buildDirectory.dir("devlibs")
         exclude("fabric.mod.json")
     }
 

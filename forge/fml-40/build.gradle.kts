@@ -44,6 +44,12 @@ tasks {
         archiveClassifier = "dev"
         destinationDirectory = layout.buildDirectory.dir("devlibs")
     }
+
+    remapJar {
+        dependsOn(shadowJar)
+        inputFile.set(shadowJar.get().archiveFile)
+    }
+
     classes {
         finalizedBy(jar)
     }

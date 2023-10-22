@@ -43,7 +43,14 @@ tasks {
         configurations = listOf(project.configurations.shadow.get())
         archiveClassifier = "dev"
         destinationDirectory = layout.buildDirectory.dir("devlibs")
+        exclude("fabric.mod.json")
     }
+
+    remapJar {
+        dependsOn(shadowJar)
+        inputFile.set(shadowJar.get().archiveFile)
+    }
+
     classes {
         finalizedBy(jar)
     }

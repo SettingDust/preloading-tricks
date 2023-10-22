@@ -1,4 +1,4 @@
-package settingdust.preloadingtricks.forge.spi;
+package settingdust.preloadingtricks.forge.fml;
 
 import net.minecraftforge.fml.common.Mod;
 

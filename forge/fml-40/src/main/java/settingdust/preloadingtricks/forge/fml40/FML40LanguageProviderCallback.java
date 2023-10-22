@@ -1,4 +1,4 @@
-package settingdust.preloadingtricks.forge.spi;
+package settingdust.preloadingtricks.forge.fml40;
 
 import cpw.mods.modlauncher.api.ITransformationService;
 import net.minecraftforge.fml.loading.EarlyLoadingException;
@@ -21,14 +21,14 @@ import java.util.ServiceLoader;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
-public class FMLLanguageProviderCallback implements LanguageProviderCallback {
+public class FML40LanguageProviderCallback implements LanguageProviderCallback {
     private final Field fieldModValidator;
     private final ModValidator validator;
 
     private final Field fieldCandidateMods;
     private List<ModFile> candidateMods;
 
-    public FMLLanguageProviderCallback() throws NoSuchFieldException, IllegalAccessException {
+    public FML40LanguageProviderCallback() throws NoSuchFieldException, IllegalAccessException {
         fieldModValidator = FMLLoader.class.getDeclaredField("modValidator");
         fieldModValidator.setAccessible(true);
 
@@ -75,9 +75,10 @@ public class FMLLanguageProviderCallback implements LanguageProviderCallback {
         public DummyModValidator() throws IllegalAccessException {
             super(
                     (Map<IModFile.Type, List<ModFile>>) fieldModFiles.get(validator),
-                    ((List<IModFile>) fieldBrokenFiles.get(validator))
-                            .stream().map(IModFile::getModFileInfo).collect(Collectors.toList()),
                     (List<EarlyLoadingException.ExceptionData>) fieldDiscoveryErrorData.get(validator));
+
+            fieldBrokenFiles.set(this, ((List<IModFile>) fieldBrokenFiles.get(validator))
+                    .stream().map(IModFile::getModFileInfo).collect(Collectors.toList()));
         }
 
         @Override

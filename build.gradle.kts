@@ -1,6 +1,5 @@
 import net.fabricmc.loom.task.RemapJarTask
 
-
 plugins {
     java
     `maven-publish`
@@ -78,35 +77,53 @@ subprojects {
     }
 }
 
+dependencies {
+    shadow(project(":fabric-like:fabric-loader")) { isTransitive = false }
+    shadow(project(":fabric-like:quilt-loader")) { isTransitive = false }
+    shadow(project(":forge:fml")) { isTransitive = false }
+    shadow(project(":forge:fml-40")) { isTransitive = false }
+    shadow(project(":preloading-callbacks")) { isTransitive = false }
+}
+
 tasks {
     shadowJar {
-        val fabricLoader014Jar = project(":fabric-loader-0.14").tasks.named<RemapJarTask>("remapJar")
-        val quiltLoader020Jar = project(":quilt-loader-0.20").tasks.named<RemapJarTask>("remapJar")
-        val fml45 = project(":fml-45").tasks.named<RemapJarTask>("remapJar")
-        val preloadingCallbacks = project(":preloading-callbacks").tasks.jar
-
-        dependsOn(fabricLoader014Jar, quiltLoader020Jar, fml45, preloadingCallbacks)
-
-        from(
-            zipTree(preloadingCallbacks.get().archiveFile),
-            fabricLoader014Jar.get().archiveFile,
-            quiltLoader020Jar.get().archiveFile,
-            fml45.get().archiveFile
-        )
-
-        manifest {
-            from(setOf(
-                zipTree(fabricLoader014Jar.get().outputs.files.singleFile),
-                zipTree(quiltLoader020Jar.get().outputs.files.singleFile),
-                zipTree(fml45.get().outputs.files.singleFile)
-            ).map { zip ->
-                zip.find { it.name.equals("MANIFEST.MF") }
-            })
-        }
-
+        configurations = listOf(project.configurations.shadow.get())
         archiveClassifier.set("")
         mergeServiceFiles()
+
+        manifest {
+            from(configurations.flatMap { it.files }.map { zipTree(it) }
+                .map { zip -> zip.find { it.name.equals("MANIFEST.MF") } })
+        }
     }
+//    shadowJar {
+//        val fabricLoaderJar = project(":fabric-like:fabric-loader").tasks.named<RemapJarTask>("remapJar")
+//        val quiltLoaderJar = project(":fabric-like:quilt-loader").tasks.named<RemapJarTask>("remapJar")
+//        val fml = project(":forge:fml").tasks.named<RemapJarTask>("remapJar")
+//        val preloadingCallbacks = project(":preloading-callbacks").tasks.jar
+//
+//        dependsOn(fabricLoaderJar, quiltLoaderJar, fml, preloadingCallbacks)
+//
+//        from(
+//            zipTree(preloadingCallbacks.get().archiveFile),
+//            fabricLoaderJar.get().archiveFile,
+//            quiltLoaderJar.get().archiveFile,
+//            fml.get().archiveFile
+//        )
+//
+//        manifest {
+//            from(setOf(
+//                zipTree(fabricLoaderJar.get().outputs.files.singleFile),
+//                zipTree(quiltLoaderJar.get().outputs.files.singleFile),
+//                zipTree(fml.get().outputs.files.singleFile)
+//            ).map { zip ->
+//                zip.find { it.name.equals("MANIFEST.MF") }
+//            })
+//        }
+//
+//        archiveClassifier.set("")
+//        mergeServiceFiles()
+//    }
 
     build {
         dependsOn(shadowJar)

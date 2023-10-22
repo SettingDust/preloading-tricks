@@ -7,7 +7,7 @@ import java.util.ServiceLoader;
 public class ServiceLoaderUtil {
 
     public static <T> void loadServices(Class<T> clazz, ServiceLoader<T> serviceLoader, Logger logger) {
-        final var prefix = String.format("[%s]", logger.getName());
+        final var prefix = String.format("[%s] ", logger.getName());
         final var iterator = serviceLoader.stream().iterator();
         var hasNext = false;
         var empty = false;

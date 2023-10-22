@@ -20,11 +20,11 @@ loom {
 }
 
 dependencies {
-    minecraft(libs.minecraft.get1().get19())
-    mappings(variantOf(libs.yarn.mapping.get1().get19()) {
+    minecraft(libs.minecraft.get1().get18().get2())
+    mappings(variantOf(libs.yarn.mapping.get1().get18().get2()) {
         classifier("v2")
     })
-    forge(libs.forge.get41())
+    forge(libs.forge.get40())
 
     implementation(project(":preloading-callbacks")) {
         isTransitive = false

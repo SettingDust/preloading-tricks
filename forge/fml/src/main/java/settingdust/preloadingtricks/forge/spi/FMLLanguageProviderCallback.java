@@ -1,5 +1,6 @@
-package settingdust.preloadingtricks.forge;
+package settingdust.preloadingtricks.forge.spi;
 
+import cpw.mods.modlauncher.api.ITransformationService;
 import net.minecraftforge.fml.loading.EarlyLoadingException;
 import net.minecraftforge.fml.loading.FMLLoader;
 import net.minecraftforge.fml.loading.moddiscovery.BackgroundScanHandler;
@@ -20,14 +21,14 @@ import java.util.ServiceLoader;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
-public class ForgeLanguageProviderCallback implements LanguageProviderCallback {
+public class FMLLanguageProviderCallback implements LanguageProviderCallback {
     private final Field fieldModValidator;
     private final ModValidator validator;
 
     private final Field fieldCandidateMods;
     private List<ModFile> candidateMods;
 
-    public ForgeLanguageProviderCallback() throws NoSuchFieldException, IllegalAccessException {
+    public FMLLanguageProviderCallback() throws NoSuchFieldException, IllegalAccessException {
         fieldModValidator = FMLLoader.class.getDeclaredField("modValidator");
         fieldModValidator.setAccessible(true);
 
@@ -87,6 +88,18 @@ public class ForgeLanguageProviderCallback implements LanguageProviderCallback {
                 throw new RuntimeException(e);
             }
             return validator.stage2Validation();
+        }
+
+        public void stage1Validation() {
+            validator.stage1Validation();
+        }
+
+        public ITransformationService.Resource getPluginResources() {
+            return validator.getPluginResources();
+        }
+
+        public ITransformationService.Resource getModResources() {
+            return validator.getModResources();
         }
     }
 

@@ -36,6 +36,6 @@ include("fabric-like:fabric-loader")
 include("fabric-like:quilt-loader")
 include("fabric-like:language-adapter")
 
-include("forge:spi")
-include("forge:spi-5")
+include("forge:fml")
+include("forge:fml-40")
 include("forge:language-provider")

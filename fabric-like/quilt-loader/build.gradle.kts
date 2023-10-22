@@ -1,6 +1,7 @@
 plugins {
     alias(libs.plugins.architectury)
     alias(libs.plugins.architectury.loom)
+    alias(libs.plugins.shadow)
 }
 
 architectury {
@@ -29,11 +30,26 @@ dependencies {
         isTransitive = false
     }
 
-    include(runtimeOnly(project(":fabric-like:language-adapter")) {
+    shadow(runtimeOnly(project(":fabric-like:language-adapter")) {
         exclude(module = "fabric-loader")
-    })
+    }) {
+        isTransitive = false
+    }
 
     modRuntimeOnly(libs.modmenu) {
         exclude(module = "fabric-loader")
+    }
+}
+
+tasks {
+    shadowJar {
+        configurations = listOf(project.configurations.shadow.get())
+        archiveClassifier = ""
+        exclude("fabric.mod.json")
+    }
+
+    remapJar {
+        dependsOn(shadowJar)
+        inputFile.set(shadowJar.get().archiveFile)
     }
 }

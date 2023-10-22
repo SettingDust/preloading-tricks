@@ -1,6 +1,7 @@
 plugins {
     alias(libs.plugins.architectury)
     alias(libs.plugins.architectury.loom)
+    alias(libs.plugins.shadow)
 }
 
 architectury {
@@ -31,10 +32,18 @@ dependencies {
     }
 
     include(implementation(project(":forge:language-provider"))!!)
-    include(implementation(project(":forge:api"))!!)
+    shadow(implementation(project(":forge:api")) {
+        isTransitive = false
+    })
 }
 
 tasks {
+    shadowJar {
+        dependsOn(sourcesJar)
+        configurations = listOf(project.configurations.shadow.get())
+        archiveClassifier = "dev"
+        destinationDirectory = layout.buildDirectory.dir("devlibs")
+    }
     classes {
         finalizedBy(jar)
     }

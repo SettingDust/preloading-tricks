@@ -4,7 +4,7 @@ A mod that adds a hook before setting up the main mod. Mainly used for [ModSets]
 It only depends on the loader version. It may work on lower versions than these, but that needs testing and feedback.  
 * Fabric 0.14
 * Quilt 0.20
-* Forge 45
+* Forge 40
 
 ## Callbacks
 

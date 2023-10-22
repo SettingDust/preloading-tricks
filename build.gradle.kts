@@ -140,7 +140,10 @@ modrinth {
     uploadFile.set(tasks.shadowJar) // With Loom, this MUST be set to `remapJar` instead of `jar`!
     changelog.set(rootProject.file("CHANGELOG.md").readText())
     gameVersions.addAll(
-        "1.16.5",
+        "1.18",
+        "1.18.1",
+        "1.18.2",
+        "1.18.2",
         "1.19",
         "1.19.1",
         "1.19.2",
@@ -148,6 +151,7 @@ modrinth {
         "1.19.4",
         "1.20",
         "1.20.1",
+        "1.20.2",
     ) // Must be an array, even with only one version
     loaders.addAll(
         "fabric",

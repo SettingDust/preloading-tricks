@@ -17,7 +17,10 @@
         "issues": "${source}/issues"
       }
     },
-    "intermediate_mappings": "net.fabricmc:intermediary"
+    "intermediate_mappings": "net.fabricmc:intermediary",
+    "language_adapters": {
+      "preloading_tricks_dummy": "${group}.DummyLanguageAdapter"
+    }
   },
   "modmenu": {
     "badges": [

@@ -15,27 +15,22 @@ import java.util.List;
 import java.util.ServiceLoader;
 
 public class QuiltLanguageProviderCallback implements LanguageProviderCallback {
-    private final Field fieldMods;
-
     private final QuiltLoaderImpl loader = QuiltLoaderImpl.INSTANCE;
     private final List<ModContainerExt> mods;
 
-    public QuiltLanguageProviderCallback() throws NoSuchFieldException, IllegalAccessException {
-        fieldMods = QuiltLoaderImpl.class.getDeclaredField("mods");
-        fieldMods.setAccessible(true);
+    public QuiltLanguageProviderCallback() throws IllegalAccessException {
+        mods = (List<ModContainerExt>) QuiltLoaderImplAccessor.FIELD_MODS.get(loader);
 
-        mods = (List<ModContainerExt>) fieldMods.get(loader);
-
-        fieldMods.set(
+        QuiltLoaderImplAccessor.FIELD_MODS.set(
                 loader,
                 Proxy.newProxyInstance(
                         mods.getClass().getClassLoader(), mods.getClass().getInterfaces(), new ModsListProxy()));
 
-        new QuiltModSetupService(mods);
+        new QuiltModSetupService();
     }
 
     private void setupModsInvoking() throws IllegalAccessException {
-        fieldMods.set(loader, mods);
+        QuiltLoaderImplAccessor.FIELD_MODS.set(loader, mods);
         ServiceLoaderUtil.loadServices(
                 SetupModCallback.class,
                 ServiceLoader.load(SetupModCallback.class),

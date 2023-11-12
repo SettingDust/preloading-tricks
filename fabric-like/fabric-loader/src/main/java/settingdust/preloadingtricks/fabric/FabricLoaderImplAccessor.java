@@ -20,6 +20,7 @@ public final class FabricLoaderImplAccessor {
             FIELD_MOD_MAP = FabricLoaderImpl.class.getDeclaredField("modMap");
             FIELD_MOD_MAP.setAccessible(true);
             METHOD_ADD_MOD = FabricLoaderImpl.class.getDeclaredMethod("addMod", ModCandidate.class);
+            METHOD_ADD_MOD.setAccessible(true);
         } catch (NoSuchFieldException | NoSuchMethodException e) {
             throw new RuntimeException(e);
         }

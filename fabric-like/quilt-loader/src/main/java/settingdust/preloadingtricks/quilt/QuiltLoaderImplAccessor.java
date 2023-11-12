@@ -20,6 +20,7 @@ public final class QuiltLoaderImplAccessor {
             FIELD_MOD_MAP = QuiltLoaderImpl.class.getDeclaredField("modMap");
             FIELD_MOD_MAP.setAccessible(true);
             METHOD_ADD_MOD = QuiltLoaderImpl.class.getDeclaredMethod("addMod", ModContainerExt.class);
+            METHOD_ADD_MOD.setAccessible(true);
         } catch (NoSuchFieldException | NoSuchMethodException e) {
             throw new RuntimeException(e);
         }

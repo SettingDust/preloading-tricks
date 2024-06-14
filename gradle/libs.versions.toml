@@ -1,27 +1,14 @@
 [versions]
-# The latest Minecraft
-minecraft = "1.20.2"
-yarn_mapping = "1.20.2+build.4"
-# Fabric https://fabricmc.net/develop/
-fabric_loader = "0.14.23"
-# Quilt https://lambdaurora.dev/tools/import_quilt.html
-quilt_loader = "0.21.1-beta.2"
-#quilted_fabric_api = "7.0.6+0.85.0-1.20.1"
-#qsl_version = "6.0.4+1.20.1"
-# Forge https://files.minecraftforge.net/net/minecraftforge/forge/
-forge = "1.20.2-48.0.30"
+minecraft = "1.21"
+yarn_mapping = "1.21+build.1"
+# https://fabricmc.net/develop/
+fabric_loader = "0.15.11"
+# https://lambdaurora.dev/tools/import_quilt.html
+quilt_loader = "0.26.0"
+# https://linkie.shedaniel.dev/dependencies?loader=neoforge&version=1.21
+neoforge = "21.0.4-beta"
 
-
-# The forge below 41.0.39 that forge SPI below 6
-minecraft_1_18_2 = "1.18.2"
-forge_40 = "1.18.2-40.2.10"
-yarn_mapping_1_18_2 = "1.18.2+build.4"
-
-modmenu = "7.1.0"
-
-minotaur = "2.+"
-
-neoforge = "1.20.1-47.1.55"
+modmenu = "11.0.0-beta.1"
 
 [libraries]
 # The latest Minecraft
@@ -32,31 +19,23 @@ yarn_mapping = { module = "net.fabricmc:yarn", version.ref = "yarn_mapping" }
 fabric_loader = { module = "net.fabricmc:fabric-loader", version.ref = "fabric_loader" }
 # quilt
 quilt_loader = { module = "org.quiltmc:quilt-loader", version.ref = "quilt_loader" }
-#quilted_fabric_api = { module = "org.quiltmc.quilted-fabric-api:quilted-fabric-api", version.ref = "quilted_fabric_api" }
-#quilt_standard_libraries_core = { module = "org.quiltmc.qsl:core", version.ref = "qsl_version" }
-# Forge
-forge = { module = "net.minecraftforge:forge", version.ref = "forge" }
-
-modmenu = { module = "com.terraformersmc:modmenu", version.ref = "modmenu" }
 
 # Forge
 neoforge = { module = "net.neoforged:forge", version.ref = "neoforge" }
 
-# The forge below 41.0.39 that forge SPI below 6
-minecraft_1_18_2 = { module = "com.mojang:minecraft", version.ref = "minecraft_1_18_2" }
-forge_40 = { module = "net.minecraftforge:forge", version.ref = "forge_40" }
-yarn_mapping_1_18_2 = { module = "net.fabricmc:yarn", version.ref = "yarn_mapping_1_18_2" }
+modmenu = { module = "com.terraformersmc:modmenu", version.ref = "modmenu" }
 
 
 [plugins]
+fabric_loom = { id = "fabric-loom", version = "1.6.+" }
+
+neoforge_gradle = { id = "net.neoforged.gradle.userdev", version = "7.+" }
+neoforge_gradle_vanilla = { id = "net.neoforged.gradle.vanilla", version = "7.+" }
+neoforge_gradle_mixin = { id = "net.neoforged.gradle.mixin", version = "7.+" }
+
 architectury_loom = { id = "dev.architectury.loom", version = "1.3.+" }
 architectury = { id = "architectury-plugin", version = "3.+" }
-shadow = { id = "com.github.johnrengelman.shadow", version = "8.1.1" }
-gr8 = {id="com.gradleup.gr8", version="0.10"}
+shadow = { id = "com.github.johnrengelman.shadow", version = "8.+" }
 
-minotaur = { id = "com.modrinth.minotaur", version.ref = "minotaur" }
-
-curseforge = { id = "net.darkhax.curseforgegradle", version = "1.+" }
-cursegradle = { id = "io.github.CDAGaming.cursegradle", version = "1.+" }
-
-dotenv = { id = "co.uzzu.dotenv.gradle", version = "2.+" }
+# https://github.com/jmongard/Git.SemVersioning.Gradle
+semver = { id = "com.github.jmongard.git-semver-plugin", version = "0.12.8" }

@@ -2,12 +2,8 @@ plugins {
     java
     `maven-publish`
 
-    alias(libs.plugins.dotenv)
-
-    alias(libs.plugins.minotaur)
-    alias(libs.plugins.architectury)
-    alias(libs.plugins.architectury.loom) apply false
     alias(libs.plugins.shadow)
+    alias(libs.plugins.semver)
 }
 
 val archives_name: String by project
@@ -15,35 +11,27 @@ val mod_id: String by rootProject
 val mod_name: String by rootProject
 
 group = project.property("group").toString()
-version = project.property("version").toString()
+project.version = "${semver.semVersion}"
 
-architectury {
-    compileOnly()
-}
+allprojects {
+    apply(plugin = "java")
+    java {
+        sourceCompatibility = JavaVersion.VERSION_21
+        targetCompatibility = JavaVersion.VERSION_21
 
-java {
-    sourceCompatibility = JavaVersion.VERSION_17
-    targetCompatibility = JavaVersion.VERSION_17
+        withSourcesJar()
 
-    withSourcesJar()
+        toolchain {
+            languageVersion = JavaLanguageVersion.of(21)
+        }
+    }
 }
 
 subprojects {
-    apply(plugin = "java")
-
     group = rootProject.group
     version = rootProject.version
 
-    base {
-        archivesName.set("$archives_name-${name}")
-    }
-
-    java {
-        sourceCompatibility = JavaVersion.VERSION_17
-        targetCompatibility = JavaVersion.VERSION_17
-
-        withSourcesJar()
-    }
+    base { archivesName.set("${rootProject.base.archivesName.get()}${project.path.replace(":", "-")}") }
 
     tasks {
         jar {
@@ -76,11 +64,11 @@ subprojects {
 }
 
 dependencies {
-    shadow(project(":fabric-like:fabric-loader")) { isTransitive = false }
-    shadow(project(":fabric-like:quilt-loader")) { isTransitive = false }
-    shadow(project(":forge:fml")) { isTransitive = false }
-    shadow(project(":forge:fml-40")) { isTransitive = false }
-    shadow(project(":preloading-callbacks")) { isTransitive = false }
+    shadow(project(":services")) { isTransitive = false }
+    //    shadow(project(":fabric-like:fabric-loader")) { isTransitive = false }
+//    shadow(project(":fabric-like:quilt-loader")) { isTransitive = false }
+//    shadow(project(":forge:fml")) { isTransitive = false }
+//    shadow(project(":forge:fml-40")) { isTransitive = false }
 }
 
 tasks {
@@ -130,33 +118,6 @@ tasks {
     jar {
         enabled = false
     }
-}
-
-modrinth {
-    token.set(env.MODRINTH_TOKEN.value) // This is the default. Remember to have the MODRINTH_TOKEN environment variable set or else this will fail, or set it to whatever you want - just make sure it stays private!
-    projectId.set("preloading-tricks") // This can be the project ID or the slug. Either will work!
-    syncBodyFrom.set(rootProject.file("README.md").readText())
-    versionType.set("release") // This is the default -- can also be `beta` or `alpha`
-    uploadFile.set(tasks.shadowJar) // With Loom, this MUST be set to `remapJar` instead of `jar`!
-    changelog.set(rootProject.file("CHANGELOG.md").readText())
-    gameVersions.addAll(
-        "1.18",
-        "1.18.1",
-        "1.18.2",
-        "1.19",
-        "1.19.1",
-        "1.19.2",
-        "1.19.3",
-        "1.19.4",
-        "1.20",
-        "1.20.1",
-        "1.20.2",
-    ) // Must be an array, even with only one version
-    loaders.addAll(
-        "fabric",
-        "quilt",
-        "forge"
-    ) // Must also be an array - no need to specify this if you're using Loom or ForgeGradle
 }
 
 publishing {

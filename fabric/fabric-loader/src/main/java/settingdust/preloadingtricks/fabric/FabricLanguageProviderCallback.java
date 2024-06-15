@@ -17,10 +17,10 @@ public class FabricLanguageProviderCallback implements LanguageProviderCallback 
     private final FabricLoaderImpl loader = FabricLoaderImpl.INSTANCE;
     private final List<ModContainerImpl> mods;
 
-    public FabricLanguageProviderCallback() throws NoSuchFieldException, IllegalAccessException {
+    public FabricLanguageProviderCallback() throws IllegalAccessException {
         mods = (List<ModContainerImpl>) FabricLoaderImplAccessor.FIELD_MODS.get(loader);
 
-        new FabricModSetupService();
+        FabricModSetupService.INSTANCE = new FabricModSetupService();
 
         FabricLoaderImplAccessor.FIELD_MODS.set(
                 loader,
@@ -28,7 +28,10 @@ public class FabricLanguageProviderCallback implements LanguageProviderCallback 
                         mods.getClass().getClassLoader(), mods.getClass().getInterfaces(), new ModsListProxy()));
     }
 
-    private void setupModsInvoking() throws IllegalAccessException {
+    /**
+     * {@link FabricLoaderImpl#setupMods()}
+     */
+    private void setupModsInvoked() throws IllegalAccessException {
         FabricLoaderImplAccessor.FIELD_MODS.set(loader, mods);
         ServiceLoaderUtil.loadServices(
                 SetupModCallback.class,
@@ -39,7 +42,7 @@ public class FabricLanguageProviderCallback implements LanguageProviderCallback 
     private class ModsListProxy implements InvocationHandler {
         @Override
         public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
-            if (method.getName().equals("iterator")) setupModsInvoking();
+            if (method.getName().equals("iterator")) setupModsInvoked();
             return method.invoke(mods, args);
         }
     }

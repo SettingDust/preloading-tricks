@@ -24,7 +24,6 @@ public class FabricModSetupService implements SetupModService<ModContainerImpl> 
         this.mods = (List<ModContainerImpl>) FabricLoaderImplAccessor.FIELD_MODS.get(FabricLoaderImpl.INSTANCE);
         this.modMap =
                 (Map<String, ModContainerImpl>) FabricLoaderImplAccessor.FIELD_MOD_MAP.get(FabricLoaderImpl.INSTANCE);
-        INSTANCE = this;
     }
 
     @Override

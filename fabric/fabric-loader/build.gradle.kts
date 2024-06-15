@@ -1,11 +1,5 @@
 plugins {
-    alias(libs.plugins.architectury)
-    alias(libs.plugins.architectury.loom)
-}
-
-architectury {
-    platformSetupLoomIde()
-    fabric()
+    alias(libs.plugins.fabric.loom)
 }
 
 val mod_id: String by rootProject
@@ -14,8 +8,13 @@ loom {
     mods {
         register(mod_id) {
             sourceSet("main")
-            sourceSet("main", project(":preloading-callbacks"))
-            modFiles.from(project(":preloading-callbacks").tasks.jar.get().archiveFile)
+            sourceSet("main", project(":services"))
+        }
+    }
+
+    runs {
+        named("client") {
+            ideConfigGenerated(true)
         }
     }
 }
@@ -30,14 +29,21 @@ dependencies {
         classifier("v2")
     })
     modImplementation(libs.fabric.loader)
+    modImplementation(libs.fabric.api)
 
-    implementation(project(":preloading-callbacks")) {
+    implementation(project(":services")) {
         isTransitive = false
     }
 
-    include(runtimeOnly(project(":fabric-like:language-adapter"))!!)
+    include(implementation(project(":fabric:language-adapter"))!!)
 
     modRuntimeOnly(libs.modmenu) {
         exclude(module = "fabric-loader")
+    }
+}
+
+tasks {
+    ideaSyncTask {
+        enabled = true
     }
 }

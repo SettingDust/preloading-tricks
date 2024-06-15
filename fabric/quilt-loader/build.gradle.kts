@@ -1,15 +1,24 @@
 plugins {
-    alias(libs.plugins.architectury)
-    alias(libs.plugins.architectury.loom)
+    alias(libs.plugins.quilt.loom)
     alias(libs.plugins.shadow)
 }
 
-architectury {
-    platformSetupLoomIde()
-    loader("quilt")
-}
-
 val mod_id: String by rootProject
+
+loom {
+    mods {
+        register(mod_id) {
+            sourceSet("main")
+            sourceSet("main", project(":services"))
+        }
+    }
+
+    runs {
+        named("client") {
+            ideConfigGenerated(true)
+        }
+    }
+}
 
 repositories {
     maven {
@@ -26,11 +35,11 @@ dependencies {
     })
     modImplementation(libs.quilt.loader)
 
-    implementation(project(":preloading-callbacks")) {
+    implementation(project(":services")) {
         isTransitive = false
     }
 
-    shadow(runtimeOnly(project(":fabric-like:language-adapter")) {
+    shadow(runtimeOnly(project(":fabric:language-adapter")) {
         exclude(module = "fabric-loader")
     }) {
         isTransitive = false

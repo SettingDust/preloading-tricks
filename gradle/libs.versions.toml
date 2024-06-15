@@ -1,6 +1,6 @@
 [versions]
 minecraft = "1.21"
-yarn_mapping = "1.21+build.1"
+yarn_mapping = "1.21+build.2"
 # https://fabricmc.net/develop/
 fabric_loader = "0.15.11"
 # https://lambdaurora.dev/tools/import_quilt.html
@@ -35,7 +35,7 @@ neoforge_gradle_mixin = { id = "net.neoforged.gradle.mixin", version = "7.+" }
 
 architectury_loom = { id = "dev.architectury.loom", version = "1.3.+" }
 architectury = { id = "architectury-plugin", version = "3.+" }
-shadow = { id = "com.github.johnrengelman.shadow", version = "8.+" }
+shadow = { id = "io.github.goooler.shadow", version = "8.+" }
 
 # https://github.com/jmongard/Git.SemVersioning.Gradle
 semver = { id = "com.github.jmongard.git-semver-plugin", version = "0.12.8" }

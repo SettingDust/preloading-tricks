@@ -1,10 +1,5 @@
 plugins {
-    alias(libs.plugins.architectury)
-    alias(libs.plugins.architectury.loom)
-}
-
-architectury {
-    fabric()
+    alias(libs.plugins.fabric.loom)
 }
 
 dependencies {
@@ -14,7 +9,7 @@ dependencies {
     })
     modImplementation(libs.fabric.loader)
 
-    implementation(project(":preloading-callbacks")) {
+    implementation(project(":services")) {
         isTransitive = false
     }
 }

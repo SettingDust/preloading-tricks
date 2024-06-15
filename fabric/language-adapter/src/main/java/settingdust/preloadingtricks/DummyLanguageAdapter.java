@@ -13,8 +13,8 @@ public class DummyLanguageAdapter implements LanguageAdapter {
         final var logger = LogManager.getLogger("PreloadingTricks/LanguageAdapter");
         final var prefix = String.format("[%s] ", logger.getName());
         logger.warn(
-                prefix
-                        + "Errors when loading preloading tricks may be intended since the implementations may targeting multiple mod loaders");
+            "{}Errors when loading preloading tricks may be intended since the implementations may targeting multiple mod loaders",
+            prefix);
         ServiceLoaderUtil.loadServices(
                 LanguageProviderCallback.class, ServiceLoader.load(LanguageProviderCallback.class), logger);
     }

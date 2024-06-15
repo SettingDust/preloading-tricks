@@ -19,8 +19,11 @@ public class ServiceLoaderUtil {
                 empty = true;
             } catch (Throwable t) {
                 empty = false;
-                logger.error(prefix + "Load service of {} failed: {}", clazz.getName(), Throwables.getRootCause(t).toString());
-                logger.debug(prefix + "Load service of " + clazz.getName() + " failed", t);
+                logger.error("{}Load service of {} failed: {}",
+                    prefix,
+                    clazz.getName(),
+                    Throwables.getRootCause(t).toString());
+                logger.debug("{}Load service of {} failed", prefix, clazz.getName(), t);
             }
         } while (!hasNext);
         while (hasNext) {
@@ -28,20 +31,23 @@ public class ServiceLoaderUtil {
 
             String providerName = provider.type().getName();
 
-            logger.info(prefix + "Loading " + providerName);
+            logger.info("{}Loading {}", prefix, providerName);
 
             try {
                 provider.get();
             } catch (Throwable t) {
-                logger.error(prefix + "Loading {} failed: {}", providerName, Throwables.getRootCause(t).toString());
-                logger.debug(prefix + "Loading " + providerName + " failed", t);
+                logger.error("{}Loading {} failed: {}", prefix, providerName, Throwables.getRootCause(t).toString());
+                logger.debug("{}Loading {} failed", prefix, providerName, t);
             }
 
             try {
                 hasNext = iterator.hasNext();
             } catch (Throwable t) {
-                logger.error(prefix + "Load service of {} failed: {}", clazz.getName(), Throwables.getRootCause(t).toString());
-                logger.debug(prefix + "Load service of " + clazz.getName() + " failed", t);
+                logger.error("{}Load service of {} failed: {}",
+                    prefix,
+                    clazz.getName(),
+                    Throwables.getRootCause(t).toString());
+                logger.debug("{}Load service of {} failed", prefix, clazz.getName(), t);
             }
         }
     }

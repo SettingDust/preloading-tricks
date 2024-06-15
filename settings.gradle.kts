@@ -21,3 +21,6 @@ rootProject.name = mod_name
 include("services")
 include("fabric:language-adapter")
 include("fabric:fabric-loader")
+include("fabric:quilt-loader")
+include("neoforge:api")
+include("neoforge:language-loader")

@@ -7,7 +7,7 @@ fabric_api = "0.100.1+1.21"
 # https://lambdaurora.dev/tools/import_quilt.html
 quilt_loader = "0.26.0"
 # https://linkie.shedaniel.dev/dependencies?loader=neoforge&version=1.21
-neoforge = "21.0.4-beta"
+neoforge = "21.0.8-beta"
 
 modmenu = "11.0.0-beta.2"
 
@@ -23,13 +23,15 @@ fabric_api = { module = "net.fabricmc.fabric-api:fabric-api", version.ref = "fab
 quilt_loader = { module = "org.quiltmc:quilt-loader", version.ref = "quilt_loader" }
 
 # Forge
-neoforge = { module = "net.neoforged:forge", version.ref = "neoforge" }
+neoforge = { module = "net.neoforged:neoforge", version.ref = "neoforge" }
 
 modmenu = { module = "com.terraformersmc:modmenu", version.ref = "modmenu" }
 
 
 [plugins]
 fabric_loom = { id = "fabric-loom", version = "1.6.+" }
+
+quilt_loom = { id = "org.quiltmc.loom", version = "1.6.+" }
 
 neoforge_gradle = { id = "net.neoforged.gradle.userdev", version = "7.+" }
 neoforge_gradle_vanilla = { id = "net.neoforged.gradle.vanilla", version = "7.+" }

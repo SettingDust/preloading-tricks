@@ -4,6 +4,9 @@ plugins {
 
     alias(libs.plugins.shadow)
     alias(libs.plugins.semver)
+    alias(libs.plugins.fabric.loom) apply false
+    alias(libs.plugins.quilt.loom) apply false
+    alias(libs.plugins.neoforge.gradle) apply false
 }
 
 val archives_name: String by project

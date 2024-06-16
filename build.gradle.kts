@@ -1,12 +1,11 @@
+import groovy.lang.Closure
+
 plugins {
     java
     `maven-publish`
 
     alias(libs.plugins.shadow)
-    alias(libs.plugins.semver)
-    alias(libs.plugins.fabric.loom) apply false
-    alias(libs.plugins.quilt.loom) apply false
-    alias(libs.plugins.neoforge.gradle) apply false
+    alias(libs.plugins.git.version)
 }
 
 val archives_name: String by project
@@ -14,7 +13,12 @@ val mod_id: String by rootProject
 val mod_name: String by rootProject
 
 group = project.property("group").toString()
-project.version = "${semver.semVersion}"
+val gitVersion: Closure<String> by extra
+version = gitVersion()
+
+base {
+    archivesName.set(properties["archive_base_name"].toString())
+}
 
 allprojects {
     apply(plugin = "java")

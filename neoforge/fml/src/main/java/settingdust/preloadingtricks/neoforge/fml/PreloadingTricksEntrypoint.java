@@ -1,4 +1,4 @@
-package settingdust.preloadingtricks.forge.fml;
+package settingdust.preloadingtricks.neoforge.fml;
 
 
 import net.neoforged.fml.common.Mod;

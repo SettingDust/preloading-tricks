@@ -1,4 +1,4 @@
-package settingdust.preloadingtricks.forge.fml;
+package settingdust.preloadingtricks.neoforge.fml;
 
 import cpw.mods.modlauncher.api.ITransformationService;
 import net.neoforged.fml.ModLoadingIssue;
@@ -10,7 +10,7 @@ import net.neoforged.neoforgespi.locating.IModFile;
 import org.apache.logging.log4j.LogManager;
 import settingdust.preloadingtricks.LanguageProviderCallback;
 import settingdust.preloadingtricks.SetupModCallback;
-import settingdust.preloadingtricks.forge.FMLModSetupService;
+import settingdust.preloadingtricks.neoforge.FMLModSetupService;
 import settingdust.preloadingtricks.util.ServiceLoaderUtil;
 
 import java.lang.reflect.Field;

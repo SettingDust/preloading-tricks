@@ -1,4 +1,4 @@
-package settingdust.preloadingtricks.forge.language;
+package settingdust.preloadingtricks.neoforge.language;
 
 import net.neoforged.fml.ModContainer;
 import net.neoforged.fml.ModLoadingException;

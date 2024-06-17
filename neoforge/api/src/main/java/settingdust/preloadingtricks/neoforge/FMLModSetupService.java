@@ -1,4 +1,4 @@
-package settingdust.preloadingtricks.forge;
+package settingdust.preloadingtricks.neoforge;
 
 import net.neoforged.fml.loading.moddiscovery.ModFile;
 import settingdust.preloadingtricks.SetupModService;

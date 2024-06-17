@@ -40,8 +40,8 @@ jobs:
           modrinth-token: ${{ secrets.MODRINTH_TOKEN }}
 
           files: |
-            publish/**/!(*-@(dev|sources|javadoc|common|fabric|neoforge)).jar
-            publish/**/*-@(dev|sources|javadoc|common|fabric|neoforge).jar
+            build/libs/!(*-@(dev|sources|javadoc)).jar
+            build/libs/*-@(dev|sources|javadoc).jar
 
           version: ${{ github.ref_name }}
 

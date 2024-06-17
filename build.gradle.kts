@@ -1,3 +1,4 @@
+import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
 import groovy.lang.Closure
 
 plugins {
@@ -79,6 +80,18 @@ dependencies {
 }
 
 tasks {
+    val shadowSourcesJar by creating(ShadowJar::class) {
+        mergeServiceFiles()
+        archiveClassifier.set("sources")
+        from(subprojects.map { it.sourceSets.main.get().allSource })
+
+        doFirst {
+            manifest {
+                from(source.filter { it.name.equals("MANIFEST.MF") }.toList())
+            }
+        }
+    }
+
     shadowJar {
         configurations = listOf(project.configurations.shadow.get())
         archiveClassifier.set("")
@@ -90,10 +103,11 @@ tasks {
                     .map { zip -> zip.find { it.name.equals("MANIFEST.MF") } })
             }
         }
+        finalizedBy(shadowSourcesJar)
     }
 
     build {
-        dependsOn(shadowJar)
+        dependsOn(shadowJar, shadowSourcesJar)
     }
 }
 

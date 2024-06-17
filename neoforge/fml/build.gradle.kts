@@ -40,8 +40,11 @@ dependencies {
 
 tasks {
     shadowJar {
-        dependsOn(sourcesJar)
         configurations = listOf(project.configurations.shadow.get())
-        archiveClassifier = "dev"
+        archiveClassifier = ""
+    }
+
+    this.jarJar {
+        from(shadowJar.get().archiveFile)
     }
 }

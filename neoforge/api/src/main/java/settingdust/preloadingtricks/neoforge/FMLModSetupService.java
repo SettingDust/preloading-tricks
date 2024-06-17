@@ -15,7 +15,6 @@ public class FMLModSetupService implements SetupModService<ModFile> {
 
     public FMLModSetupService(List<ModFile> mods) {
         this.mods = mods;
-        INSTANCE = this;
     }
 
     @Override

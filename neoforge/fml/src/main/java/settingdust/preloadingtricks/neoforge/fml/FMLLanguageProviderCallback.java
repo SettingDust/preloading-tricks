@@ -41,7 +41,7 @@ public class FMLLanguageProviderCallback implements LanguageProviderCallback {
     private void setupModsInvoking() throws IllegalAccessException {
         fieldModValidator.set(null, validator);
         candidateMods = (List<ModFile>) fieldCandidateMods.get(validator);
-        new FMLModSetupService(candidateMods);
+        FMLModSetupService.INSTANCE = new FMLModSetupService(candidateMods);
         ServiceLoaderUtil.loadServices(
                 SetupModCallback.class,
                 ServiceLoader.load(SetupModCallback.class, SetupModCallback.class.getClassLoader()),

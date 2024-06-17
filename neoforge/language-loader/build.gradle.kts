@@ -2,7 +2,11 @@ plugins {
     alias(libs.plugins.neoforge.gradle)
 }
 
+val mod_id: String by rootProject
+
 minecraft {
+    modIdentifier("${mod_id}_language_loader")
+
     runs {
         afterEvaluate {
             clear()
@@ -21,13 +25,5 @@ dependencies {
 
     implementation(project(":services")) {
         isTransitive = false
-    }
-}
-
-tasks {
-    jar {
-        manifest.attributes(
-            "FMLModType" to "LANGPROVIDER"
-        )
     }
 }

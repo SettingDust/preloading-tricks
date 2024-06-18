@@ -1,6 +1,6 @@
 plugins {
-    alias(libs.plugins.quilt.loom)
-    alias(libs.plugins.shadow)
+    alias(catalog.plugins.quilt.loom)
+    alias(catalog.plugins.shadow)
 }
 
 val mod_id: String by rootProject
@@ -20,20 +20,12 @@ loom {
     }
 }
 
-repositories {
-    maven {
-        name = "Quilt"
-        url = uri("https://maven.quiltmc.org/repository/release")
-    }
-    maven("https://maven.terraformersmc.com/releases")
-}
-
 dependencies {
-    minecraft(libs.minecraft)
-    mappings(variantOf(libs.yarn.mapping) {
+    minecraft(catalog.minecraft.fabric)
+    mappings(variantOf(catalog.mapping.yarn) {
         classifier("v2")
     })
-    modImplementation(libs.quilt.loader)
+    modImplementation(catalog.quilt.loader)
 
     implementation(project(":services")) {
         isTransitive = false
@@ -45,7 +37,7 @@ dependencies {
         isTransitive = false
     }
 
-    modRuntimeOnly(libs.modmenu) {
+    modRuntimeOnly(catalog.modmenu) {
         exclude(module = "fabric-loader")
     }
 }

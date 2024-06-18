@@ -1,14 +1,11 @@
-pluginManagement {
-    repositories {
-        maven("https://maven.quiltmc.org/repository/release") { name = "Quilt" }
-        maven("https://maven.fabricmc.net/") { name = "Fabric" }
-        maven("https://maven.neoforged.net/releases") { name = "NeoForge" }
-        maven("https://repo.spongepowered.org/repository/maven-public/") {
-            name = "Sponge Snapshots"
-        }
-        gradlePluginPortal()
-    }
-}
+extra["minecraft"] = "1.21"
+
+apply("https://github.com/SettingDust/MinecraftGradleScripts/raw/main/common.gradle.kts")
+apply("https://github.com/SettingDust/MinecraftGradleScripts/raw/main/kotlin.gradle.kts")
+apply("https://github.com/SettingDust/MinecraftGradleScripts/raw/main/fabric.gradle.kts")
+apply("https://github.com/SettingDust/MinecraftGradleScripts/raw/main/quilt.gradle.kts")
+apply("https://github.com/SettingDust/MinecraftGradleScripts/raw/main/neoforge.gradle.kts")
+apply("https://github.com/SettingDust/MinecraftGradleScripts/raw/main/mods.gradle.kts")
 
 plugins {
     id("org.gradle.toolchains.foojay-resolver-convention") version "0.8.0"

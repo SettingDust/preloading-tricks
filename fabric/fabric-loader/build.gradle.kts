@@ -1,5 +1,5 @@
 plugins {
-    alias(libs.plugins.fabric.loom)
+    alias(catalog.plugins.fabric.loom)
 }
 
 val mod_id: String by rootProject
@@ -19,17 +19,13 @@ loom {
     }
 }
 
-repositories {
-    maven("https://maven.terraformersmc.com/releases")
-}
-
 dependencies {
-    minecraft(libs.minecraft)
-    mappings(variantOf(libs.yarn.mapping) {
+    minecraft(catalog.minecraft.fabric)
+    mappings(variantOf(catalog.mapping.yarn) {
         classifier("v2")
     })
-    modImplementation(libs.fabric.loader)
-    modImplementation(libs.fabric.api)
+    modImplementation(catalog.fabric.loader)
+    modImplementation(catalog.fabric.api)
 
     implementation(project(":services")) {
         isTransitive = false
@@ -37,7 +33,7 @@ dependencies {
 
     include(implementation(project(":fabric:language-adapter"))!!)
 
-    modRuntimeOnly(libs.modmenu) {
+    modRuntimeOnly(catalog.modmenu) {
         exclude(module = "fabric-loader")
     }
 }

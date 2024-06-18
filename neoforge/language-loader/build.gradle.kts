@@ -1,5 +1,5 @@
 plugins {
-    alias(libs.plugins.neoforge.gradle)
+    alias(catalog.plugins.neoforge.gradle)
 }
 
 val mod_id: String by rootProject
@@ -16,12 +16,8 @@ minecraft {
 
 jarJar.enable()
 
-repositories {
-    maven("https://maven.neoforged.net/releases") { name = "NeoForge" }
-}
-
 dependencies {
-    implementation(libs.neoforge)
+    implementation(catalog.neoforge)
 
     implementation(project(":services")) {
         isTransitive = false

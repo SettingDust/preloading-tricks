@@ -1,7 +1,7 @@
 plugins {
-    alias(libs.plugins.architectury)
-    alias(libs.plugins.architectury.loom)
-    alias(libs.plugins.shadow)
+    alias(catalog.plugins.architectury)
+    alias(catalog.plugins.architectury.loom)
+    alias(catalog.plugins.shadow)
 }
 
 architectury {
@@ -21,11 +21,11 @@ loom {
 }
 
 dependencies {
-    minecraft(libs.minecraft.get1().get18().get2())
-    mappings(variantOf(libs.yarn.mapping.get1().get18().get2()) {
+    minecraft(catalog.minecraft.get1().get18().get2())
+    mappings(variantOf(catalog.mapping.yarn.get1().get18().get2()) {
         classifier("v2")
     })
-    forge(libs.forge.get40())
+    forge(catalog.forge.get40())
 
     implementation(project(":preloading-callbacks")) {
         isTransitive = false

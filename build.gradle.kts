@@ -5,9 +5,11 @@ plugins {
     java
     `maven-publish`
 
-    alias(libs.plugins.shadow)
-    alias(libs.plugins.git.version)
+    alias(catalog.plugins.shadow)
+    alias(catalog.plugins.git.version)
 }
+
+apply("https://github.com/SettingDust/MinecraftGradleScripts/raw/main/gradle_issue_15754.gradle.kts")
 
 val archives_name: String by project
 val mod_id: String by rootProject
@@ -57,9 +59,9 @@ subprojects {
             "description" to rootProject.property("mod_description").toString(),
             "author" to rootProject.property("mod_author").toString(),
             "source" to rootProject.property("mod_source").toString(),
-//            "fabric_loader_version" to rootProject.libs.versions.fabric.loader.get(),
-//            "quilt_loader_version" to rootProject.libs.versions.quilt.loader.get(),
-//            "forge_version" to rootProject.libs.versions.forge.get(),
+//            "fabric_loader_version" to rootProject.catalog.versions.fabric.loader.get(),
+//            "quilt_loader_version" to rootProject.catalog.versions.quilt.loader.get(),
+//            "forge_version" to rootProject.catalog.versions.forge.get(),
             "schema" to "\$schema",
         )
 

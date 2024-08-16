@@ -55,7 +55,9 @@ dependencies {
 
     jarJar(implementation(project(":forge:language-provider")) {
         isTransitive = false
-    })
+    }) {
+        jarJar.ranged(this, "[$version, )")
+    }
     shadow(implementation(project(":forge:api")) {
         isTransitive = false
     })

@@ -21,7 +21,6 @@ jobs:
       - name: Execute Gradle build
         run: |
           ./gradlew build
-          ./gradlew build
 
       - name: Update CHANGELOG
         id: changelog

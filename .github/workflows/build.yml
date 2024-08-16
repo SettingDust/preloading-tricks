@@ -20,5 +20,4 @@ jobs:
         with:
           gradle-version: current
 
-        # https://github.com/neoforged/NeoGradle/issues/207
-      - run: gradle shadowJar --dry-run # just test build configuration
+      - run: gradle build --dry-run # just test build configuration

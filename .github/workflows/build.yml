@@ -1,5 +1,5 @@
 on:
-  push:ci:
+  push:
 jobs:
   build:
     runs-on: ubuntu-latest

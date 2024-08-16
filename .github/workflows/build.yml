@@ -16,8 +16,11 @@ jobs:
           distribution: microsoft
 
       - name: Setup Gradle
-        uses: gradle/actions/setup-gradle@v3
+        uses: gradle/actions/setup-gradle@v4
         with:
           gradle-version: current
+          cache-read-only: false
 
-      - run: gradle build --dry-run # just test build configuration
+      - run: | # just test build configuration
+          gradle build --dry-run 
+          gradle build --dry-run 

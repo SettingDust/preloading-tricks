@@ -2,7 +2,7 @@ package settingdust.preloadingtricks.fabric;
 
 import net.fabricmc.loader.impl.FabricLoaderImpl;
 import net.fabricmc.loader.impl.ModContainerImpl;
-import net.fabricmc.loader.impl.discovery.ModCandidate;
+import net.fabricmc.loader.impl.discovery.ModCandidateImpl;
 import net.fabricmc.loader.impl.metadata.LoaderModMetadata;
 import settingdust.preloadingtricks.SetupModService;
 
@@ -42,7 +42,7 @@ public class FabricModSetupService implements SetupModService<ModContainerImpl> 
         }
     }
 
-    public void add(ModCandidate modCandidate) throws InvocationTargetException, IllegalAccessException {
+    public void add(ModCandidateImpl modCandidate) throws InvocationTargetException, IllegalAccessException {
         FabricLoaderImplAccessor.METHOD_ADD_MOD.invoke(FabricLoaderImpl.INSTANCE, modCandidate);
     }
 

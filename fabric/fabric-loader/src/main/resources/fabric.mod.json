@@ -18,6 +18,9 @@
   "recommends": {
     "modmenu": "*"
   },
+  "depends": {
+    "fabricloader": ">=0.16.2",
+  },
   "custom": {
     "modmenu": {
       "badges": [

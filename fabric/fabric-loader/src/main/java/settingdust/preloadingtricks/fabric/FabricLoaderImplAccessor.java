@@ -1,7 +1,7 @@
 package settingdust.preloadingtricks.fabric;
 
 import net.fabricmc.loader.impl.FabricLoaderImpl;
-import net.fabricmc.loader.impl.discovery.ModCandidate;
+import net.fabricmc.loader.impl.discovery.ModCandidateImpl;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
@@ -19,7 +19,7 @@ public final class FabricLoaderImplAccessor {
             FIELD_MODS.setAccessible(true);
             FIELD_MOD_MAP = FabricLoaderImpl.class.getDeclaredField("modMap");
             FIELD_MOD_MAP.setAccessible(true);
-            METHOD_ADD_MOD = FabricLoaderImpl.class.getDeclaredMethod("addMod", ModCandidate.class);
+            METHOD_ADD_MOD = FabricLoaderImpl.class.getDeclaredMethod("addMod", ModCandidateImpl.class);
             METHOD_ADD_MOD.setAccessible(true);
         } catch (NoSuchFieldException | NoSuchMethodException e) {
             throw new RuntimeException(e);

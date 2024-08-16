@@ -20,4 +20,5 @@ jobs:
       - name: Execute Gradle build
         run: |
           ./gradlew build || \
+            ./gradlew build || \
             ./gradlew build

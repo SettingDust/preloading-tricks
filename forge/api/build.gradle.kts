@@ -1,20 +1,19 @@
 plugins {
-    alias(catalog.plugins.architectury)
-    alias(catalog.plugins.architectury.loom)
+    alias(catalog.plugins.forge.gradle)
+    alias(catalog.plugins.librarian.forgegradle)
+    alias(catalog.plugins.mixin)
 }
 
-architectury {
-    forge()
+minecraft {
+    mappings(
+        "parchment", "${catalog.versions.parchmentmc.asProvider().get()}-${catalog.versions.minecraft.get()}")
 }
 
 dependencies {
-    minecraft(catalog.minecraft.fabric)
-    mappings(variantOf(catalog.mapping.yarn) {
-        classifier("v2")
-    })
-    forge(catalog.forge)
+    minecraft(catalog.minecraft.forge)
+    annotationProcessor(variantOf(catalog.mixin) { classifier("processor") })
 
-    implementation(project(":preloading-callbacks")) {
+    implementation(project(":services")) {
         isTransitive = false
     }
 }

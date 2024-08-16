@@ -7,10 +7,8 @@ val mod_id: String by rootProject
 minecraft {
     modIdentifier("${mod_id}_language_loader")
 
-    runs {
-        afterEvaluate {
-            clear()
-        }
+    afterEvaluate {
+        runs.clear()
     }
 }
 

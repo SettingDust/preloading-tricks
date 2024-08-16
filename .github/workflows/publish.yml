@@ -49,6 +49,7 @@ jobs:
 
           loaders: |
             fabric
+            forge
             neoforge
 
           java: |

@@ -2,12 +2,8 @@ plugins {
     alias(catalog.plugins.neoforge.gradle)
 }
 
-minecraft {
-    runs {
-        afterEvaluate {
-            clear()
-        }
-    }
+afterEvaluate {
+    runs.clear()
 }
 
 jarJar.enable()

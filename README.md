@@ -2,7 +2,7 @@
 
 A mod that adds a hook before setting up the main mod. Mainly used for [ModSets](https://github.com/SettingDust/ModSets) and [AutoModpack](https://github.com/Skidamek/AutoModpack).    
 It only depends on the loader version. It may work on lower versions than these, but that needs testing and feedback.  
-* Fabric 0.14
+* \>= Fabric 0.16.2
 * Quilt 0.20
 * Forge 40
 

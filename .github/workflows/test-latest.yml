@@ -22,4 +22,4 @@ jobs:
           cache-read-only: false
 
       - run: | # just test build configuration
-          gradle build --dry-run 
+          gradle build --dry-run --stacktrace

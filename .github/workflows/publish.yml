@@ -20,7 +20,7 @@ jobs:
 
       - name: Execute Gradle build
         run: |
-          ./gradlew build
+          ./gradlew build --stacktrace
 
       - name: Update CHANGELOG
         id: changelog

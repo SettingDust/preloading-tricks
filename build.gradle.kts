@@ -78,8 +78,6 @@ dependencies {
     shadow(project(":fabric:fabric-loader")) { isTransitive = false }
     shadow(project(":fabric:quilt-loader")) { isTransitive = false }
 
-    shadow(project(":neoforge:fancy-mod-loader")) { isTransitive = false }
-
     shadow(project(":lexforge:forge-mod-loader")) { isTransitive = false }
     shadow(project(":lexforge:forge-mod-loader-40")) { isTransitive = false }
 }
@@ -98,9 +96,9 @@ tasks {
     }
 
     shadowJar {
-        dependsOn(":lexforge:forge-mod-loader:shadowJar", ":lexforge:forge-mod-loader-40:shadowJar")
+        dependsOn(":lexforge:forge-mod-loader:shadowJar", ":lexforge:forge-mod-loader-40:shadowJar", ":neoforge:fancy-mod-loader:shadowJar")
 
-        from()
+        from(project(":neoforge:fancy-mod-loader").tasks.shadowJar.get().archiveFile)
 
         configurations = listOf(project.configurations.shadow.get())
         archiveClassifier.set("")
@@ -113,10 +111,6 @@ tasks {
             }
         }
         finalizedBy(shadowSourcesJar)
-    }
-
-    compileJava {
-        enabled = false
     }
 
     build {

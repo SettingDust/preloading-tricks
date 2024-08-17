@@ -99,6 +99,9 @@ tasks {
 
     shadowJar {
         dependsOn(":lexforge:forge-mod-loader:shadowJar", ":lexforge:forge-mod-loader-40:shadowJar")
+
+        from()
+
         configurations = listOf(project.configurations.shadow.get())
         archiveClassifier.set("")
         mergeServiceFiles()
@@ -110,6 +113,10 @@ tasks {
             }
         }
         finalizedBy(shadowSourcesJar)
+    }
+
+    compileJava {
+        enabled = false
     }
 
     build {

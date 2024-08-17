@@ -19,4 +19,4 @@ jobs:
 
       - name: Execute Gradle build
         run: |
-          ./gradlew build --stacktrace
+          ./gradlew build --stacktrace --scan

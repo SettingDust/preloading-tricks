@@ -75,10 +75,13 @@ subprojects {
 }
 
 dependencies {
-    shadow(project(":services")) { isTransitive = false }
     shadow(project(":fabric:fabric-loader")) { isTransitive = false }
     shadow(project(":fabric:quilt-loader")) { isTransitive = false }
-    shadow(project(":neoforge:fml")) { isTransitive = false }
+
+    shadow(project(":neoforge:fancy-mod-loader")) { isTransitive = false }
+
+    shadow(project(":lexforge:forge-mod-loader")) { isTransitive = false }
+    shadow(project(":lexforge:forge-mod-loader-40")) { isTransitive = false }
 }
 
 tasks {
@@ -95,13 +98,14 @@ tasks {
     }
 
     shadowJar {
+        dependsOn(":lexforge:forge-mod-loader:shadowJar", ":lexforge:forge-mod-loader-40:shadowJar")
         configurations = listOf(project.configurations.shadow.get())
         archiveClassifier.set("")
         mergeServiceFiles()
 
         doFirst {
             manifest {
-                from(configurations.flatMap { it.files }.map { zipTree(it) }
+                from(configurations.flatMap { it.files }.filter { it.exists() }.map { zipTree(it) }
                     .map { zip -> zip.find { it.name.equals("MANIFEST.MF") } })
             }
         }

@@ -1,3 +1,5 @@
+import net.minecraftforge.gradle.userdev.tasks.RenameJarInPlace
+
 plugins {
     alias(catalog.plugins.forge.gradle)
     alias(catalog.plugins.librarian.forgegradle)
@@ -8,8 +10,7 @@ plugins {
 val mod_id: String by rootProject
 
 minecraft {
-    mappings(
-        "parchment", "${catalog.versions.parchmentmc.asProvider().get()}-${catalog.versions.minecraft.get()}")
+    mappings("official", "1.18.2")
 
     runs.all {
         mods {
@@ -22,7 +23,7 @@ minecraft {
         }
     }
 
-    runs {
+    runs.run {
         create("client") {
             property("log4j.configurationFile", "log4j2.xml")
             jvmArg("-XX:+AllowEnhancedClassRedefinition")
@@ -40,43 +41,53 @@ minecraft {
                 "--output",
                 file("src/generated/resources/"),
                 "--existing",
-                file("src/main/resources"))
+                file("src/main/resources")
+            )
         }
     }
 }
 
 dependencies {
-    minecraft(catalog.minecraft.forge)
+    minecraft(catalog.minecraft.forge.get1().get18().get2())
     annotationProcessor(variantOf(catalog.mixin) { classifier("processor") })
 
     implementation(project(":services")) {
         isTransitive = false
     }
 
-    jarJar(implementation(project(":forge:language-provider"))!!) {
+    jarJar(implementation(project(":lexforge:language-provider")) {
+        isTransitive = false
+    }) {
         jarJar.ranged(this, "[$version, )")
     }
-    shadow(implementation(project(":forge:api")) {
+    shadow(implementation(project(":lexforge:api")) {
         isTransitive = false
     })
 }
 
+reobf {
+    create("shadowJar") {}
+}
+
 tasks {
     shadowJar {
-        dependsOn(sourcesJar)
+        dependsOn(sourcesJar, this@tasks.jarJar)
+        from(this@tasks.jarJar)
         configurations = listOf(project.configurations.shadow.get())
-        archiveClassifier = "dev"
-        destinationDirectory = layout.buildDirectory.dir("devlibs")
-        exclude("fabric.mod.json")
-    }
+        archiveClassifier = ""
 
-    classes {
-        finalizedBy(jar)
-    }
-
-    jar {
         manifest.attributes(
             "FMLModType" to "LIBRARY"
         )
+    }
+
+    afterEvaluate {
+        named<RenameJarInPlace>("reobfJar") {
+            enabled = false
+        }
+    }
+
+    jar {
+        enabled = false
     }
 }

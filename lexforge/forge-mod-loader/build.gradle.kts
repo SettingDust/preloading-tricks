@@ -1,3 +1,5 @@
+import net.minecraftforge.gradle.userdev.tasks.RenameJarInPlace
+
 plugins {
     alias(catalog.plugins.forge.gradle)
     alias(catalog.plugins.librarian.forgegradle)
@@ -8,7 +10,9 @@ plugins {
 val mod_id: String by rootProject
 
 minecraft {
-    mappings("official", "1.18.2")
+    mappings(
+        "parchment", "${catalog.versions.parchmentmc.asProvider().get()}-${catalog.versions.minecraft.get()}"
+    )
 
     runs.all {
         mods {
@@ -21,7 +25,7 @@ minecraft {
         }
     }
 
-    runs.run {
+    runs {
         create("client") {
             property("log4j.configurationFile", "log4j2.xml")
             jvmArg("-XX:+AllowEnhancedClassRedefinition")
@@ -46,38 +50,44 @@ minecraft {
 }
 
 dependencies {
-    minecraft(catalog.minecraft.forge.get1().get18().get2())
+    minecraft(catalog.minecraft.forge)
     annotationProcessor(variantOf(catalog.mixin) { classifier("processor") })
 
     implementation(project(":services")) {
         isTransitive = false
     }
 
-    jarJar(implementation(project(":forge:language-provider")) {
-        isTransitive = false
-    }) {
+    jarJar(implementation(project(":lexforge:language-provider"))!!) {
         jarJar.ranged(this, "[$version, )")
     }
-    shadow(implementation(project(":forge:api")) {
+    shadow(implementation(project(":lexforge:api")) {
         isTransitive = false
     })
 }
 
+reobf {
+    create("shadowJar") {}
+}
+
 tasks {
     shadowJar {
-        dependsOn(sourcesJar)
+        dependsOn(sourcesJar, this@tasks.jarJar)
+        from(this@tasks.jarJar)
         configurations = listOf(project.configurations.shadow.get())
-        archiveClassifier = "dev"
-        destinationDirectory = layout.buildDirectory.dir("devlibs")
-    }
+        archiveClassifier = ""
 
-    classes {
-        finalizedBy(jar)
-    }
-
-    jar {
         manifest.attributes(
             "FMLModType" to "LIBRARY"
         )
+    }
+
+    afterEvaluate {
+        named<RenameJarInPlace>("reobfJar") {
+            enabled = false
+        }
+    }
+
+    jar {
+        enabled = false
     }
 }

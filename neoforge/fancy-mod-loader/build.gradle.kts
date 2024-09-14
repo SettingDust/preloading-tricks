@@ -24,14 +24,14 @@ jarJar.enable()
 dependencies {
     implementation(catalog.neoforge)
 
-    implementation(project(":services")) {
-        isTransitive = false
-    }
-
-    jarJar(implementation(project(":neoforge:language-loader"))!!)
-    shadow(implementation(project(":neoforge:api")) {
-        isTransitive = false
-    })
+//    implementation(project(":services")) {
+//        isTransitive = false
+//    }
+//
+//    jarJar(implementation(project(":neoforge:language-loader"))!!)
+//    shadow(implementation(project(":neoforge:api")) {
+//        isTransitive = false
+//    })
 }
 
 tasks {

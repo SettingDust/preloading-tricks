@@ -78,7 +78,7 @@ dependencies {
     shadow(project(":fabric:fabric-loader")) { isTransitive = false }
     shadow(project(":fabric:quilt-loader")) { isTransitive = false }
 
-//    shadow(project(":neoforge:fancy-mod-loader")) { isTransitive = false }
+    shadow(project(":neoforge:fancy-mod-loader")) { isTransitive = false }
 
     shadow(project(":lexforge:forge-mod-loader")) { isTransitive = false }
     shadow(project(":lexforge:forge-mod-loader-40")) { isTransitive = false }
@@ -126,6 +126,13 @@ publishing {
             version = "${rootProject.version}"
             artifact(tasks.shadowJar)
         }
+    }
+}
+
+develocity {
+    buildScan {
+        termsOfUseUrl = "https://gradle.com/terms-of-service"
+        termsOfUseAgree = "yes"
     }
 }
 

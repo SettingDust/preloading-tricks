@@ -54,11 +54,12 @@ dependencies {
     implementation(project(":services")) {
         isTransitive = false
     }
-
-    jarJar(implementation(project(":lexforge:language-provider")) {
+    implementation(project(":lexforge:language-provider")) {
         isTransitive = false
-    }) {
+    }
+    jarJar(project(":lexforge:language-provider")) {
         jarJar.ranged(this, "[$version, )")
+        isTransitive = false
     }
     shadow(implementation(project(":lexforge:api")) {
         isTransitive = false

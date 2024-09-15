@@ -19,7 +19,7 @@ minecraft {
     }
 }
 
-jarJar.enable()
+//jarJar.enable()
 
 dependencies {
     implementation(catalog.neoforge)
@@ -28,7 +28,7 @@ dependencies {
         isTransitive = false
     }
 
-    jarJar(implementation(project(":neoforge:language-loader"))!!)
+//    jarJar(implementation(project(":neoforge:language-loader"))!!)
 //    shadow(implementation(project(":neoforge:api")) {
 //        isTransitive = false
 //    })

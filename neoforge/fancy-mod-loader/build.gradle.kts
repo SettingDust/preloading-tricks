@@ -22,7 +22,7 @@ val mod_id: String by rootProject
 //jarJar.enable()
 
 dependencies {
-//    implementation(catalog.neoforge)
+    implementation(catalog.neoforge)
 
 //    implementation(project(":services")) {
 //        isTransitive = false

@@ -78,7 +78,12 @@ dependencies {
     shadow(project(":fabric:fabric-loader")) { isTransitive = false }
     shadow(project(":fabric:quilt-loader")) { isTransitive = false }
 
-    shadow(project(":neoforge:fancy-mod-loader")) { isTransitive = false }
+    shadow(project(":neoforge:fancy-mod-loader")) {
+        isTransitive = false
+        attributes {
+            attribute(TargetJvmVersion.TARGET_JVM_VERSION_ATTRIBUTE, JavaVersion.VERSION_21.majorVersion.toInt())
+        }
+    }
 
     shadow(project(":lexforge:forge-mod-loader")) { isTransitive = false }
     shadow(project(":lexforge:forge-mod-loader-40")) { isTransitive = false }

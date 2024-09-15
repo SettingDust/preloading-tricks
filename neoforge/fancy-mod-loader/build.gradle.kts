@@ -40,7 +40,7 @@ tasks {
 //        archiveClassifier = ""
 //    }
 
-    this.jarJar {
-        from(zipTree(shadowJar.get().archiveFile))
-    }
+//    this.jarJar {
+//        from(zipTree(shadowJar.get().archiveFile))
+//    }
 }

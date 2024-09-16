@@ -1,46 +1,50 @@
 plugins {
-    alias(catalog.plugins.neoforge.gradle)
-//    alias(catalog.plugins.shadow)
+    alias(catalog.plugins.neoforge.moddev)
+    alias(catalog.plugins.shadow)
 }
 
 val mod_id: String by rootProject
 
-//minecraft {
-//    modIdentifier(mod_id)
-//
-//    runs {
-//        configureEach {
-//            modSource(project(":neoforge:language-loader").sourceSets.main.get())
-//        }
-//
-//        afterEvaluate {
-//            removeIf { !it.isClient.get() }
-//        }
-//    }
-//}
+neoForge {
+    version = catalog.neoforge.get().version!!
 
-//jarJar.enable()
+    runs {
+        create("client") {
+            client()
+        }
+    }
+
+    mods {
+        create(mod_id) {
+            sourceSet(sourceSets.main.get())
+            sourceSet(project(":neoforge:language-loader").sourceSets.main.get())
+        }
+    }
+}
 
 dependencies {
-    implementation(catalog.neoforge)
+    implementation(project(":services")) {
+        isTransitive = false
+    }
 
-//    implementation(project(":services")) {
-//        isTransitive = false
-//    }
-
-//    jarJar(implementation(project(":neoforge:language-loader"))!!)
-//    shadow(implementation(project(":neoforge:api")) {
-//        isTransitive = false
-//    })
+    jarJar(implementation(project(":neoforge:language-loader"))!!)
+    shadow(implementation(project(":neoforge:api")) {
+        isTransitive = false
+    })
 }
 
 tasks {
-//    shadowJar {
-//        configurations = listOf(project.configurations.shadow.get())
-//        archiveClassifier = ""
-//    }
+    jar {
+        finalizedBy(shadowJar)
+    }
 
-//    this.jarJar {
-//        from(zipTree(shadowJar.get().archiveFile))
-//    }
+    shadowJar {
+        dependsOn(jar)
+        from(jar)
+        configurations = listOf(project.configurations.shadow.get())
+    }
+}
+
+artifacts {
+    shadow(tasks.shadowJar)
 }

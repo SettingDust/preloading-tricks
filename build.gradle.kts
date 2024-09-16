@@ -7,6 +7,8 @@ plugins {
 
     alias(catalog.plugins.shadow)
     alias(catalog.plugins.git.version)
+
+    alias(catalog.plugins.neoforge.moddev) apply false
 }
 
 apply("https://github.com/SettingDust/MinecraftGradleScripts/raw/main/gradle_issue_15754.gradle.kts")
@@ -78,11 +80,8 @@ dependencies {
     shadow(project(":fabric:fabric-loader")) { isTransitive = false }
     shadow(project(":fabric:quilt-loader")) { isTransitive = false }
 
-    shadow(project(":neoforge:fancy-mod-loader")) {
+    shadow(project(":neoforge:fancy-mod-loader", configuration = "shadow")) {
         isTransitive = false
-        attributes {
-            attribute(TargetJvmVersion.TARGET_JVM_VERSION_ATTRIBUTE, JavaVersion.VERSION_21.majorVersion.toInt())
-        }
     }
 
     shadow(project(":lexforge:forge-mod-loader")) { isTransitive = false }
@@ -103,7 +102,7 @@ tasks {
     }
 
     shadowJar {
-        dependsOn(":lexforge:forge-mod-loader:shadowJar", ":lexforge:forge-mod-loader-40:shadowJar")
+        dependsOn(":lexforge:forge-mod-loader:shadowJar", ":lexforge:forge-mod-loader-40:shadowJar", ":neoforge:fancy-mod-loader:shadowJar")
 
         configurations = listOf(project.configurations.shadow.get())
         archiveClassifier.set("")
@@ -131,13 +130,6 @@ publishing {
             version = "${rootProject.version}"
             artifact(tasks.shadowJar)
         }
-    }
-}
-
-develocity {
-    buildScan {
-        termsOfUseUrl = "https://gradle.com/terms-of-service"
-        termsOfUseAgree = "yes"
     }
 }
 

@@ -23,8 +23,10 @@ dependencyResolutionManagement.versionCatalogs.named("catalog") {
     plugin("neoforge-gradle-vanilla", "net.neoforged.gradle.vanilla").version("7.+")
     plugin("neoforge-gradle-mixin", "net.neoforged.gradle.mixin").version("7.+")
 
+    plugin("neoforge-moddev", "net.neoforged.moddev").version("1.+")
+
     // https://linkie.shedaniel.dev/dependencies?loader=neoforge
-    library("neoforge", "net.neoforged", "neoforge").version("21.1.12")
+    library("neoforge", "net.neoforged", "neoforge").version("21.1.54")
 
     library("minecraft-forge-1.18.2", "net.minecraftforge", "forge")
         .version("1.18.2-40.2.21")
@@ -32,7 +34,6 @@ dependencyResolutionManagement.versionCatalogs.named("catalog") {
 
 plugins {
     id("org.gradle.toolchains.foojay-resolver-convention") version "0.8.0"
-    id("com.gradle.develocity") version("3.17.6")
 }
 
 val mod_name: String by settings

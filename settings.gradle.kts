@@ -19,10 +19,6 @@ pluginManagement {
 dependencyResolutionManagement.versionCatalogs.named("catalog") {
     library("minecraft-fabric-1.21", "com.mojang", "minecraft").version("1.21")
 
-    plugin("neoforge-gradle", "net.neoforged.gradle.userdev").version("7.+")
-    plugin("neoforge-gradle-vanilla", "net.neoforged.gradle.vanilla").version("7.+")
-    plugin("neoforge-gradle-mixin", "net.neoforged.gradle.mixin").version("7.+")
-
     plugin("neoforge-moddev", "net.neoforged.moddev").version("1.+")
 
     // https://linkie.shedaniel.dev/dependencies?loader=neoforge

@@ -77,6 +77,8 @@ subprojects {
 }
 
 dependencies {
+    shadow(project(":services")) { isTransitive = false }
+
     shadow(project(":fabric:fabric-loader")) { isTransitive = false }
     shadow(project(":fabric:quilt-loader")) { isTransitive = false }
 

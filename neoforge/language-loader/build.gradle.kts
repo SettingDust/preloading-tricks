@@ -1,22 +1,14 @@
 plugins {
-    alias(catalog.plugins.neoforge.gradle)
+    alias(catalog.plugins.neoforge.moddev)
 }
 
 val mod_id: String by rootProject
 
-minecraft {
-    modIdentifier("${mod_id}_language_loader")
-
-    afterEvaluate {
-        runs.clear()
-    }
+neoForge {
+    version = catalog.neoforge.get().version!!
 }
 
-jarJar.enable()
-
 dependencies {
-    implementation(catalog.neoforge)
-
     implementation(project(":services")) {
         isTransitive = false
     }

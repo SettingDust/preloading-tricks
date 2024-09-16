@@ -1,16 +1,14 @@
 plugins {
-    alias(catalog.plugins.neoforge.gradle)
+    alias(catalog.plugins.neoforge.moddev)
 }
 
-afterEvaluate {
-    runs.clear()
-}
+val mod_id: String by rootProject
 
-jarJar.enable()
+neoForge {
+    version = catalog.neoforge.get().version!!
+}
 
 dependencies {
-    implementation(catalog.neoforge)
-
     implementation(project(":services")) {
         isTransitive = false
     }

@@ -1,5 +1,14 @@
 fix: `setAccessible` for `setMod`
 
+## [1.2.2] - 2024-10-07
+### :bug: Bug Fixes
+- [`c71a4e7`](https://github.com/SettingDust/preloading-tricks/commit/c71a4e7717cc4b9736f4a6320c87b124b5924ec3) - merge the metadata.json & fix the language provider name *(commit by [@SettingDust](https://github.com/SettingDust))*
+- [`589c07b`](https://github.com/SettingDust/preloading-tricks/commit/589c07b1b85734294f2ee6739381076c4c29d492) - the service loader crash when the last service failed to load *(commit by [@SettingDust](https://github.com/SettingDust))*
+
+### :wrench: Chores
+- [`4610e27`](https://github.com/SettingDust/preloading-tricks/commit/4610e279862c1d77eca98cc44b9b25b6a07a62dc) - remove unused catalog *(commit by [@SettingDust](https://github.com/SettingDust))*
+
+
 ## [1.2.1] - 2024-09-16
 ### :bug: Bug Fixes
 - [`58356dc`](https://github.com/SettingDust/preloading-tricks/commit/58356dc40a64b31ab38b251db156a4486fd434bd) - shadow the services *(commit by [@SettingDust](https://github.com/SettingDust))*
@@ -50,3 +59,4 @@ fix: `setAccessible` for `setMod`
 [1.1.0]: https://github.com/SettingDust/preloading-tricks/compare/1.0.6...1.1.0
 [1.2.0]: https://github.com/SettingDust/preloading-tricks/compare/1.1.0...1.2.0
 [1.2.1]: https://github.com/SettingDust/preloading-tricks/compare/1.2.0...1.2.1
+[1.2.2]: https://github.com/SettingDust/preloading-tricks/compare/1.2.1...1.2.2

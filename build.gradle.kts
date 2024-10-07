@@ -1,5 +1,13 @@
 import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
+import com.github.jengelman.gradle.plugins.shadow.transformers.Transformer
+import com.github.jengelman.gradle.plugins.shadow.transformers.TransformerContext
+import com.google.gson.GsonBuilder
+import com.google.gson.JsonArray
+import com.google.gson.JsonObject
+import com.google.gson.JsonParser
 import groovy.lang.Closure
+import org.apache.tools.zip.ZipEntry
+import org.apache.tools.zip.ZipOutputStream
 
 plugins {
     java
@@ -104,11 +112,43 @@ tasks {
     }
 
     shadowJar {
-        dependsOn(":lexforge:forge-mod-loader:shadowJar", ":lexforge:forge-mod-loader-40:shadowJar", ":neoforge:fancy-mod-loader:shadowJar")
+        dependsOn(
+            ":lexforge:forge-mod-loader:shadowJar",
+            ":lexforge:forge-mod-loader-40:shadowJar",
+            ":neoforge:fancy-mod-loader:shadowJar"
+        )
 
         configurations = listOf(project.configurations.shadow.get())
         archiveClassifier.set("")
         mergeServiceFiles()
+
+        transform(object : Transformer {
+            private val GSON = GsonBuilder().setPrettyPrinting().create()
+            private var json = JsonObject()
+            private val PATH = "META-INF/jarjar/metadata.json"
+
+            override fun getName() = "JarJar Metadata"
+
+            override fun canTransformResource(element: FileTreeElement) = element.relativePath.pathString == PATH
+
+            override fun transform(context: TransformerContext) {
+                val jsonElement = JsonParser.parseReader(context.`is`.reader()).asJsonObject
+                val existJars = json.asMap()["jars"]?.asJsonArray?.asList()?.toMutableSet() ?: mutableSetOf()
+                existJars.addAll(jsonElement.getAsJsonArray("jars").asList())
+                json.add("jars", JsonArray(existJars.size).also { it.asList().addAll(existJars) })
+            }
+
+            override fun hasTransformedResource() = !json.isEmpty
+
+            override fun modifyOutputStream(os: ZipOutputStream, preserveFileTimestamps: Boolean) {
+                val entry = ZipEntry(PATH)
+                entry.time = TransformerContext.getEntryTimestamp(preserveFileTimestamps, entry.time)
+                os.putNextEntry(entry)
+                os.write(GSON.toJson(json).encodeToByteArray())
+
+                json = JsonObject()
+            }
+        })
 
         doFirst {
             manifest {

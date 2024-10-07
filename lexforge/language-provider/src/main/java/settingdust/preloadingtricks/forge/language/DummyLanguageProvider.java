@@ -16,8 +16,8 @@ public class DummyLanguageProvider implements IModLanguageProvider {
         final var logger = LogManager.getLogger("PreloadingTricks/LanguageProvider");
         final var prefix = String.format("[%s] ", logger.getName());
         logger.warn(
-                prefix
-                        + "Errors when loading preloading tricks may be intended since implementations may targeting multiple mod loaders");
+            "{}Errors when loading preloading tricks may be intended since implementations may targeting multiple mod loaders",
+            prefix);
         // Why forge construct the instance twice?
         ServiceLoaderUtil.loadServices(
                 LanguageProviderCallback.class,

@@ -1,5 +1,10 @@
 fix: `setAccessible` for `setMod`
 
+## [1.2.3] - 2024-10-11
+### :bug: Bug Fixes
+- [`c3d4bbb`](https://github.com/SettingDust/preloading-tricks/commit/c3d4bbbb46001a2955169267f122bdcb9f34cc1e) - service loader load services as expected now *(commit by [@SettingDust](https://github.com/SettingDust))*
+
+
 ## [1.2.2] - 2024-10-07
 ### :bug: Bug Fixes
 - [`c71a4e7`](https://github.com/SettingDust/preloading-tricks/commit/c71a4e7717cc4b9736f4a6320c87b124b5924ec3) - merge the metadata.json & fix the language provider name *(commit by [@SettingDust](https://github.com/SettingDust))*
@@ -60,3 +65,4 @@ fix: `setAccessible` for `setMod`
 [1.2.0]: https://github.com/SettingDust/preloading-tricks/compare/1.1.0...1.2.0
 [1.2.1]: https://github.com/SettingDust/preloading-tricks/compare/1.2.0...1.2.1
 [1.2.2]: https://github.com/SettingDust/preloading-tricks/compare/1.2.1...1.2.2
+[1.2.3]: https://github.com/SettingDust/preloading-tricks/compare/1.2.2...1.2.3

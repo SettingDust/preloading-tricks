@@ -12,31 +12,31 @@ public class ServiceLoaderUtil {
     public static <T> void loadServices(Class<T> clazz, ServiceLoader<T> serviceLoader, Logger logger) {
         final var prefix = String.format("[%s] ", logger.getName());
         final var iterator = serviceLoader.stream().iterator();
-        boolean hasNext = findNext(iterator, clazz, logger);
-        while (hasNext) {
-            final var provider = iterator.next();
-
-            String providerName = provider.type().getName();
+        var current = findNext(iterator, clazz, logger);
+        while (current != null) {
+            String providerName = current.type().getName();
 
             logger.info("{}Loading {}", prefix, providerName);
 
             try {
-                provider.get();
+                current.get();
             } catch (Throwable t) {
                 logger.error("{}Loading {} failed: {}", prefix, providerName, Throwables.getRootCause(t).toString());
-                logger.debug("{}Loading {} failed", prefix, providerName, t);
+                logger.debug("{}Loading {} failed", prefix, providerName, new IllegalStateException(t));
             }
 
-            hasNext = findNext(iterator, clazz, logger);
+            current = findNext(iterator, clazz, logger);
         }
     }
 
-    private static <T> boolean findNext(Iterator<ServiceLoader.Provider<T>> iterator, Class<T> clazz, Logger logger) {
+    private static <T> ServiceLoader.Provider<T> findNext(Iterator<ServiceLoader.Provider<T>> iterator, Class<T> clazz, Logger logger) {
         final var prefix = String.format("[%s] ", logger.getName());
-        boolean hasNext = false;
+        ServiceLoader.Provider<T> current = null;
         do {
             try {
-                hasNext = iterator.hasNext();
+                current = iterator.next();
+            } catch (NoSuchElementException ignored) {
+                return null;
             } catch (Throwable t) {
                 logger.error(
                     "{}Load service of {} failed: {}",
@@ -44,14 +44,9 @@ public class ServiceLoaderUtil {
                     clazz.getName(),
                     Throwables.getRootCause(t).toString()
                 );
-                logger.debug("{}Load service of {} failed", prefix, clazz.getName(), t);
-                try {
-                    iterator.next();
-                } catch (NoSuchElementException ignored) {
-                    return false;
-                }
+                logger.debug("{}Load service of {} failed", prefix, clazz.getName(), new IllegalStateException(t));
             }
-        } while (!hasNext);
-        return true;
+        } while (current == null);
+        return current;
     }
 }

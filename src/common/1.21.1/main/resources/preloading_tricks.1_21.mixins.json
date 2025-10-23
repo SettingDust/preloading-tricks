@@ -1,0 +1,11 @@
+{
+  "required": true,
+  "minVersion": "0.8",
+  "package": "settingdust.preloading_tricks.v1_21.mixin",
+  "compatibilityLevel": "JAVA_17",
+  "refmap": "preloading_tricks.1_21.refmap.json",
+  "mixins": [
+  ],
+  "client": [
+  ]
+}

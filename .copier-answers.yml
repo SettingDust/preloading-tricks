@@ -1,0 +1,10 @@
+# Changes here will be overwritten by Copier
+_commit: 0.1.8-4-ga753eac
+_src_path: https://github.com/SettingDust/cloche-template
+author: SettingDust
+description: PreloadingTricks
+group: settingdust.preloading_tricks
+id: preloading_tricks
+license: Apache License 2.0
+name: PreloadingTricks
+slug: preloading-tricks

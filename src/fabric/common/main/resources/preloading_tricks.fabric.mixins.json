@@ -1,0 +1,11 @@
+{
+  "required": true,
+  "minVersion": "0.8",
+  "package": "settingdust.preloading_tricks.fabric.mixin",
+  "compatibilityLevel": "JAVA_17",
+  "refmap": "preloading_tricks.fabric.refmap.json",
+  "mixins": [
+  ],
+  "client": [
+  ]
+}

@@ -6,7 +6,10 @@ import earth.terrarium.cloche.api.attributes.CompilationAttributes
 import earth.terrarium.cloche.api.attributes.TargetAttributes
 import earth.terrarium.cloche.api.metadata.CommonMetadata
 import earth.terrarium.cloche.api.metadata.FabricMetadata
-import earth.terrarium.cloche.api.target.*
+import earth.terrarium.cloche.api.target.FabricTarget
+import earth.terrarium.cloche.api.target.ForgeLikeTarget
+import earth.terrarium.cloche.api.target.MinecraftTarget
+import earth.terrarium.cloche.api.target.NeoforgeTarget
 import earth.terrarium.cloche.tasks.GenerateFabricModJson
 import groovy.lang.Closure
 import net.msrandom.minecraftcodev.core.utils.lowerCamelCaseGradleName
@@ -20,14 +23,11 @@ plugins {
     java
     idea
 
-    kotlin("jvm") version "2.0.0"
-    kotlin("plugin.serialization") version "2.0.0"
-
     id("com.palantir.git-version") version "3.1.0"
 
     id("com.gradleup.shadow") version "9.0.2"
 
-    id("earth.terrarium.cloche") version "0.15.1"
+    id("earth.terrarium.cloche") version "0.15.1-dust"
 }
 
 val archive_name: String by rootProject.properties
@@ -48,12 +48,6 @@ repositories {
         }
         filter {
             includeGroup("maven.modrinth")
-        }
-    }
-
-    maven("https://thedarkcolour.github.io/KotlinForForge/") {
-        content {
-            includeGroup("thedarkcolour")
         }
     }
 
@@ -151,6 +145,13 @@ cloche {
 
             dependencies {
                 fabricApi("0.92.6")
+
+                catalog.asmFabricLoader.get17().let {
+                    implementation(it)
+                    include(it)
+                }
+
+                implementation(catalog.reflect)
             }
 
             tasks.named<GenerateFabricModJson>(generateModsManifestTaskName) {
@@ -173,6 +174,13 @@ cloche {
 
             dependencies {
                 fabricApi("0.116.6")
+
+                catalog.asmFabricLoader.get21().let {
+                    implementation(it)
+                    include(it)
+                }
+
+                implementation(catalog.reflect)
             }
 
             tasks.named<GenerateFabricModJson>(generateModsManifestTaskName) {
@@ -199,7 +207,7 @@ cloche {
                 for (target in targets) {
                     include(project(":")) {
                         capabilities {
-                            requireFeature(target.capabilitySuffix)
+                            requireFeature(target.capabilitySuffix!!)
                         }
                     }
                 }
@@ -209,7 +217,7 @@ cloche {
                 val generateModJson =
                     register<GenerateFabricModJson>(lowerCamelCaseGradleName(featureName, "generateModJson")) {
                         modId = id
-                        targetMetadata = objects.newInstance(FabricMetadata::class.java).apply {
+                        targetMetadata = objects.newInstance(FabricMetadata::class.java, fabric1201).apply {
                             license.value(cloche.metadata.license)
                             dependencies.value(cloche.metadata.dependencies)
                         }
@@ -242,36 +250,18 @@ cloche {
         }
 
         targets.withType<FabricTarget> {
-            loaderVersion = "0.16.14"
+            loaderVersion = "0.17.2"
 
             includedClient()
 
             dependsOn(fabricCommon)
 
             metadata {
-                entrypoint("main") {
-                    adapter = "kotlin"
-                    value = "$group.fabric.PreloadingTricksFabric::init"
-                }
-
-                entrypoint("client") {
-                    adapter = "kotlin"
-                    value = "$group.fabric.PreloadingTricksFabric::clientInit"
-                }
-
-                dependency {
-                    modId = "fabric-api"
-                    type = CommonMetadata.Dependency.Type.Required
-                }
-
-                dependency {
-                    modId = "fabric-language-kotlin"
-                    type = CommonMetadata.Dependency.Type.Required
-                }
+                entrypoint("afl:prePrePreLaunch", "$group.fabric.PreloadingTricksLanguageAdapterEntrypoint")
+                custom("afl:classtransform", "$id.fabric.classtransform.json")
             }
 
             dependencies {
-                modImplementation("net.fabricmc:fabric-language-kotlin:1.13.1+kotlin.2.1.10")
             }
         }
     }
@@ -282,11 +272,6 @@ cloche {
             loaderVersion = "47.4.4"
 
             metadata {
-                modLoader = "kotlinforforge"
-                loaderVersion {
-                    start = "4"
-                }
-
                 dependency {
                     modId = "minecraft"
                     type = CommonMetadata.Dependency.Type.Required
@@ -310,7 +295,15 @@ cloche {
                 compileOnly(catalog.mixinextras.common)
                 implementation(catalog.mixinextras.forge)
 
-                modImplementation("thedarkcolour:kotlinforforge:4.11.0")
+                catalog.reflect.let {
+                    implementation(it)
+                    include(it)
+                }
+
+                catalog.classTransform.let {
+                    implementation(it)
+                    include(it)
+                }
             }
         }
     }
@@ -320,11 +313,6 @@ cloche {
             minecraftVersion = "1.21.1"
 
             metadata {
-                modLoader = "kotlinforforge"
-                loaderVersion {
-                    start = "5"
-                }
-
                 dependency {
                     modId = "minecraft"
                     type = CommonMetadata.Dependency.Type.Required
@@ -335,7 +323,8 @@ cloche {
             }
 
             dependencies {
-                modImplementation("thedarkcolour:kotlinforforge-neoforge:5.9.0")
+                implementation(catalog.reflect)
+                implementation(catalog.classTransform)
             }
         }
 
@@ -356,10 +345,13 @@ cloche {
                 for (target in targets) {
                     include(project(":")) {
                         capabilities {
-                            requireFeature(target.capabilitySuffix)
+                            requireFeature(target.capabilitySuffix!!)
                         }
                     }
                 }
+
+                include(catalog.reflect)
+                include(catalog.classTransform)
             }
 
             tasks {
@@ -391,10 +383,6 @@ cloche {
             loaderVersion = "21.1.192"
 
             metadata {
-                modLoader = "kotlinforforge"
-                loaderVersion {
-                    start = "5"
-                }
             }
         }
     }
@@ -404,7 +392,7 @@ cloche {
 
         runs {
             client {
-                jvmArguments("-Dmixin.debug.verbose=true", "-Dmixin.debug.export=true")
+                jvmArguments("-Dmixin.debug.verbose=true", "-Dmixin.debug.export=true", "-Dclasstransform.dumpClasses=true")
             }
         }
 

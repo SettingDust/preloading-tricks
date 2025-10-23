@@ -1,0 +1,7 @@
+{
+  "package": "settingdust.preloading_tricks.fabric.transformer",
+  "java": [
+    "HookModSetupTransformer"
+  ],
+  "mixins": []
+}

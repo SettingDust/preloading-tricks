@@ -154,6 +154,32 @@ dependencyResolutionManagement.versionCatalogs.create("catalog") {
             )
         )
     )
+
+    maven(
+        id = "asmFabricLoader",
+        group = "de.florianmichael",
+        artifact = "AsmFabricLoader",
+        mcVersionToVersion = mapOf(
+            "17" to "1.1.7",
+            "21" to "1.3.1"
+        ),
+        versionFormat = { _, v -> v },
+        mapping = listOf(
+            VariantMapping(
+                "17", mapOf(
+                    "common" to VariantConfig
+                )
+            ),
+            VariantMapping(
+                "21", mapOf(
+                    "common" to VariantConfig
+                )
+            )
+        )
+    )
+
+    library("reflect", "net.lenni0451", "Reflect").version("1.5.0")
+    library("classTransform", "net.lenni0451.classtransform", "core").version("1.14.1")
 }
 
 plugins {

@@ -10,7 +10,7 @@ public class PreloadingTricksLanguageAdapterEntrypoint implements PrePrePreLaunc
 
     @Override
     public void onLanguageAdapterLaunch() {
-        PreloadingTricks.LOGGER.info("PreloadingTricks installed.");
+        PreloadingTricks.LOGGER.info("[{}] installed.", PreloadingTricks.NAME);
         PreloadingTricksCallback.invoker.onSetupLanguageAdapter();
     }
 }

@@ -1,6 +1,5 @@
 package settingdust.preloading_tricks.fabric;
 
-import net.fabricmc.loader.impl.FabricLoaderImpl;
 import net.fabricmc.loader.impl.ModContainerImpl;
 import net.fabricmc.loader.impl.discovery.ModCandidateImpl;
 import settingdust.preloading_tricks.api.PreloadingTricksModManager;
@@ -14,12 +13,10 @@ import java.util.stream.Collectors;
 public class FabricModManager implements PreloadingTricksModManager<ModContainerImpl> {
     private final List<ModContainerImpl> mods;
     private final Map<String, ModContainerImpl> modMap;
-    private final FabricLoaderImplAccessor accessor;
 
     public FabricModManager() {
-        accessor = FabricLoaderImplAccessor.cast(FabricLoaderImpl.INSTANCE);
-        mods = accessor.preloading_tricks$mods();
-        modMap = accessor.preloading_tricks$modMap();
+        mods = FabricLoaderImplAccessor.mods();
+        modMap = FabricLoaderImplAccessor.modMap();
     }
 
     @Override
@@ -38,8 +35,8 @@ public class FabricModManager implements PreloadingTricksModManager<ModContainer
         }
     }
 
-    public void add(ModCandidateImpl modCandidate) {
-        accessor.preloading_tricks$addMod(modCandidate);
+    public void add(ModCandidateImpl modCandidate) throws Throwable {
+        FabricLoaderImplAccessor.addMod(modCandidate);
     }
 
     @Override

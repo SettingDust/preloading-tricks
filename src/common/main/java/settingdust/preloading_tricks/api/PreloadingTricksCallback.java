@@ -13,7 +13,7 @@ public interface PreloadingTricksCallback {
     PreloadingTricksCallback invoker = new PreloadingTricksCallback() {
         @Override
         public void onSetupLanguageAdapter() {
-            PreloadingTricks.LOGGER.info("PreloadingTricks invoking onSetupLanguageAdapter");
+            PreloadingTricks.LOGGER.info("[{}] invoking onSetupLanguageAdapter", PreloadingTricks.NAME);
             for (final var callback : supplier.get()) {
                 callback.onSetupLanguageAdapter();
             }
@@ -21,7 +21,7 @@ public interface PreloadingTricksCallback {
 
         @Override
         public void onSetupMods() {
-            PreloadingTricks.LOGGER.info("PreloadingTricks invoking onSetupMods");
+            PreloadingTricks.LOGGER.info("[{}] invoking onSetupMods", PreloadingTricks.NAME);
             for (final var callback : supplier.get()) {
                 callback.onSetupMods();
             }

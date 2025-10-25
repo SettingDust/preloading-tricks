@@ -1,5 +1,13 @@
 fix: `setAccessible` for `setMod`
 
+## [2.0.1] - 2025-10-25
+### :sparkles: New Features
+- [`9b3e430`](https://github.com/SettingDust/preloading-tricks/commit/9b3e4303b767b744f048d0f76e9c2d55d33c8a32) - correct the jar bundle *(commit by [@SettingDust](https://github.com/SettingDust))*
+
+### :wrench: Chores
+- [`5d73337`](https://github.com/SettingDust/preloading-tricks/commit/5d73337c55a57a564b402b03c923901655bebf01) - remove unused files *(commit by [@SettingDust](https://github.com/SettingDust))*
+
+
 ## [2.0.0] - 2025-10-25
 ### :sparkles: New Features
 - [`1750a79`](https://github.com/SettingDust/preloading-tricks/commit/1750a79d722e312686be25c613495c8af0b133d0) - bootstrap ClassTransform on lexforge *(commit by [@SettingDust](https://github.com/SettingDust))*
@@ -81,3 +89,4 @@ fix: `setAccessible` for `setMod`
 [1.2.2]: https://github.com/SettingDust/preloading-tricks/compare/1.2.1...1.2.2
 [1.2.3]: https://github.com/SettingDust/preloading-tricks/compare/1.2.2...1.2.3
 [2.0.0]: https://github.com/SettingDust/preloading-tricks/compare/1.2.3...2.0.0
+[2.0.1]: https://github.com/SettingDust/preloading-tricks/compare/2.0.0...2.0.1

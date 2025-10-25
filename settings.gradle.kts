@@ -160,18 +160,12 @@ dependencyResolutionManagement.versionCatalogs.create("catalog") {
         group = "de.florianmichael",
         artifact = "AsmFabricLoader",
         mcVersionToVersion = mapOf(
-            "17" to "1.1.7",
-            "21" to "1.3.1"
+            "*" to "1.1.7"
         ),
         versionFormat = { _, v -> v },
         mapping = listOf(
             VariantMapping(
-                "17", mapOf(
-                    "common" to VariantConfig
-                )
-            ),
-            VariantMapping(
-                "21", mapOf(
+                "*", mapOf(
                     "common" to VariantConfig
                 )
             )

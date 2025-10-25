@@ -1,11 +1,8 @@
 @file:Suppress("UnstableApiUsage")
 
 import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
-import earth.terrarium.cloche.INCLUDE_TRANSFORMED_OUTPUT_ATTRIBUTE
-import earth.terrarium.cloche.api.attributes.CompilationAttributes
 import earth.terrarium.cloche.api.attributes.TargetAttributes
 import earth.terrarium.cloche.api.metadata.CommonMetadata
-import earth.terrarium.cloche.api.metadata.FabricMetadata
 import earth.terrarium.cloche.api.target.FabricTarget
 import earth.terrarium.cloche.api.target.ForgeLikeTarget
 import earth.terrarium.cloche.api.target.MinecraftTarget
@@ -14,7 +11,6 @@ import earth.terrarium.cloche.tasks.GenerateFabricModJson
 import groovy.lang.Closure
 import net.msrandom.minecraftcodev.core.utils.lowerCamelCaseGradleName
 import net.msrandom.minecraftcodev.fabric.MinecraftCodevFabricPlugin
-import net.msrandom.minecraftcodev.fabric.task.JarInJar
 import net.msrandom.minecraftcodev.forge.task.JarJar
 import org.gradle.jvm.tasks.Jar
 
@@ -146,7 +142,7 @@ cloche {
             dependencies {
                 fabricApi("0.92.6")
 
-                catalog.asmFabricLoader.get17().let {
+                catalog.asmFabricLoader.let {
                     implementation(it)
                     include(it)
                 }
@@ -155,6 +151,8 @@ cloche {
             tasks.named<GenerateFabricModJson>(generateModsManifestTaskName) {
                 modId = "${id}_1_20"
             }
+
+            containerTasks += tasks.named<Jar>(includeJarTaskName)
         }
 
         val fabric121 = fabric("fabric:1.21") {
@@ -173,7 +171,7 @@ cloche {
             dependencies {
                 fabricApi("0.116.6")
 
-                catalog.asmFabricLoader.get21().let {
+                catalog.asmFabricLoader.let {
                     implementation(it)
                     include(it)
                 }
@@ -181,67 +179,6 @@ cloche {
 
             tasks.named<GenerateFabricModJson>(generateModsManifestTaskName) {
                 modId = "${id}_1_21"
-            }
-        }
-
-        run container@{
-            val featureName = "containerFabric"
-            val metadataDirectory = project.layout.buildDirectory.dir("generated")
-                .map { it.dir("metadata").dir(featureName) }
-            val include = configurations.register(lowerCamelCaseGradleName(featureName, "include")) {
-                isCanBeResolved = true
-                isTransitive = false
-
-                attributes {
-                    attribute(INCLUDE_TRANSFORMED_OUTPUT_ATTRIBUTE, true)
-                    attribute(CompilationAttributes.DATA, false)
-                }
-            }
-            val targets = setOf(fabric1201, fabric121)
-
-            dependencies {
-                for (target in targets) {
-                    include(project(":")) {
-                        capabilities {
-                            requireFeature(target.capabilitySuffix!!)
-                        }
-                    }
-                }
-            }
-
-            tasks {
-                val generateModJson =
-                    register<GenerateFabricModJson>(lowerCamelCaseGradleName(featureName, "generateModJson")) {
-                        modId = id
-                        targetMetadata = objects.newInstance(FabricMetadata::class.java, fabric1201).apply {
-                            license.value(cloche.metadata.license)
-                            dependencies.value(cloche.metadata.dependencies)
-                        }
-                        loaderDependencyVersion = "0.17"
-                        output.set(metadataDirectory.map { it.file("fabric.mod.json") })
-                    }
-
-                val jar = register<Jar>(lowerCamelCaseGradleName(featureName, "jar")) {
-                    group = "build"
-                    archiveClassifier = "fabric"
-                    destinationDirectory = intermediateOutputsDirectory
-                    dependsOn(generateModJson)
-                    from(metadataDirectory)
-                }
-
-                val includesJar = register<JarInJar>(lowerCamelCaseGradleName(featureName, "includeJar")) {
-                    dependsOn(targets.map { it.includeJarTaskName })
-
-                    archiveClassifier = "fabric"
-                    input = jar.flatMap { it.archiveFile }
-                    fromResolutionResults(include)
-                }
-
-                containerTasks += includesJar
-
-                build {
-                    dependsOn(includesJar)
-                }
             }
         }
 
@@ -332,7 +269,9 @@ cloche {
                     }
                 }
 
-                val includeJar = named<JarJar>(lowerCamelCaseGradleName(featureName, "includeJar"))
+                val includeJar = named<JarJar>(includeJarTaskName)
+
+                containerTasks += includeJar
 
                 val deleteJarInModFolder = register<Delete>(
                     lowerCamelCaseGradleName(featureName, "deleteJarInModFolder")
@@ -417,59 +356,8 @@ cloche {
                         attributes("FMLModType" to "LIBRARY")
                     }
                 }
-            }
-        }
 
-        run container@{
-            val featureName = "containerNeoforge"
-            val include = configurations.register(lowerCamelCaseGradleName(featureName, "include")) {
-                isCanBeResolved = true
-                isTransitive = false
-
-                attributes {
-                    attribute(INCLUDE_TRANSFORMED_OUTPUT_ATTRIBUTE, true)
-                    attribute(CompilationAttributes.DATA, false)
-                }
-            }
-            val targets = setOf(neoforge121)
-
-            dependencies {
-                for (target in targets) {
-                    include(project(":")) {
-                        capabilities {
-                            requireFeature(target.capabilitySuffix!!)
-                        }
-                    }
-                }
-
-                include(catalog.reflect)
-                include(catalog.classTransform)
-                include(catalog.classTransform.additionalClassProvider)
-            }
-
-            tasks {
-                val jar = register<Jar>(lowerCamelCaseGradleName(featureName, "jar")) {
-                    group = "build"
-
-                    archiveClassifier = "neoforge"
-                    destinationDirectory = intermediateOutputsDirectory
-                }
-
-                val includesJar = register<JarJar>(lowerCamelCaseGradleName(featureName, "includeJar")) {
-                    group = "build"
-                    dependsOn(targets.map { it.includeJarTaskName })
-
-                    archiveClassifier = "neoforge"
-
-                    input = jar.flatMap { it.archiveFile }
-                    fromResolutionResults(include)
-                }
-
-                containerTasks += includesJar
-
-                build {
-                    dependsOn(includesJar)
-                }
+                containerTasks += named<JarJar>(includeJarTaskName)
             }
         }
 
@@ -554,18 +442,32 @@ tasks {
     val shadowContainersJar by registering(ShadowJar::class) {
         archiveClassifier = ""
 
-        for (task in containerTasks) {
-            from(task.map { zipTree(it.archiveFile) })
-            manifest.inheritFrom(task.get().manifest)
+        val fabricJar = project.tasks.named<Jar>(cloche.targets.getByName("fabric:1.20.1").includeJarTaskName)
+        from(fabricJar.map { zipTree(it.archiveFile) })
+        manifest.inheritFrom(fabricJar.get().manifest)
+
+        val forgeJar = project.tasks.named<Jar>(cloche.targets.getByName("forge:1.20.1").includeJarTaskName)
+        from(forgeJar.map { zipTree(it.archiveFile) })
+        manifest.inheritFrom(forgeJar.get().manifest)
+
+        val neoforgeJar = project.tasks.named<Jar>(cloche.targets.getByName("neoforge:1.21").includeJarTaskName)
+        from(neoforgeJar.map { zipTree(it.archiveFile) }) {
+            include(
+                "settingdust/preloading_tricks/neoforge/**/*",
+                "preloading_tricks.neoforge.classtransform.json",
+                "META-INF/services/*"
+            )
         }
 
         manifest {
             attributes(
-                "FMLModType" to "GAMELIBRARY"
+                "FMLModType" to "LIBRARY"
             )
         }
 
         append("META-INF/accesstransformer.cfg")
+
+        mergeServiceFiles()
     }
 
     val shadowSourcesJar by registering(ShadowJar::class) {

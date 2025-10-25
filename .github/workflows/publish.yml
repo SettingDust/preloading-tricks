@@ -40,59 +40,25 @@ jobs:
 
           files: |
             build/libs/!(*-@(fabric*|neoforge*|forge*|sources)).jar
-            build/libs/*-@(fabric-*|neoforge-*|sources).jar
+            build/libs/*-@(fabric-*|neoforge-*|forge-*|sources).jar
 
           version: ${{ github.ref_name }}
 
           loaders: |
             neoforge
             fabric
+            forge
 
           game-versions: |
             1.20.1
             1.21
             1.21.1
-          game-version-filter: releases
 
-          dependencies: |
-            fabric-language-kotlin
-            kotlin-for-forge
+          game-version-filter: releases
 
           java: |
             17
             21
-
-      - name: Upload forge jar
-        uses: Kir-Antipov/mc-publish@v3.3.0
-        with:
-          changelog: ${{ steps.changelog.outputs.changes }}
-          # Only include this section if you wish to publish
-          # your assets on Modrinth.
-          modrinth-id: preloading-tricks
-          modrinth-token: ${{ secrets.MODRINTH_TOKEN }}
-
-          # Only include this section if you wish to publish
-          # your assets on CurseForge.
-          curseforge-id: 1372086
-          curseforge-token: ${{ secrets.CURSEFORGE_TOKEN }}
-
-          files: |
-            build/libs/*-forge-*.jar
-
-          version: ${{ github.ref_name }}
-
-          loaders: |
-            forge
-
-          game-versions: |
-            1.20.1
-          game-version-filter: releases
-
-          dependencies: |
-            kotlin-for-forge
-
-          java: |
-            17
 
       - name: Update CHANGELOG
         id: changelog

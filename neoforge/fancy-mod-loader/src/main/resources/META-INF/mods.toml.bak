@@ -1,9 +1,0 @@
-modLoader = "javafml"
-loaderVersion = "[4,]"
-license = "MIT"
-[[mods]]
-modId = "$id"
-version = "$version"
-displayName = "$name"
-authors = "$author"
-description = "$description"

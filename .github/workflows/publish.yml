@@ -24,6 +24,13 @@ jobs:
         with:
           arguments: remapFabricMinecraftIntermediary build
 
+      - name: Update CHANGELOG
+        id: changelog
+        uses: requarks/changelog-action@v1
+        with:
+          token: ${{ github.token }}
+          tag: ${{ github.ref_name }}
+
       - name: Upload bundled jar
         uses: Kir-Antipov/mc-publish@v3.3.0
         with:
@@ -59,13 +66,6 @@ jobs:
           java: |
             17
             21
-
-      - name: Update CHANGELOG
-        id: changelog
-        uses: requarks/changelog-action@v1
-        with:
-          token: ${{ github.token }}
-          tag: ${{ github.ref_name }}
 
       - name: Commit CHANGELOG.md
         uses: stefanzweifel/git-auto-commit-action@v6

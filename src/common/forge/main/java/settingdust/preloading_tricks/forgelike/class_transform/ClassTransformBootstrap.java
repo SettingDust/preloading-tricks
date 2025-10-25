@@ -39,12 +39,15 @@ public final class ClassTransformBootstrap {
         addConfig(config);
     }
 
-    public void addConfig(String configName, ClassLoader classLoader) throws ClassNotFoundException {
-        var config = gson.fromJson(
-            new BufferedReader(new InputStreamReader(classLoader.getResourceAsStream(configName))),
-            ClassTransformConfig.class
-        );
-        addConfig(config);
+    public void addConfig(String configName, ClassLoader classLoader) {
+        try {
+            var reader = new BufferedReader(new InputStreamReader(classLoader.getResourceAsStream(configName)));
+            var config = gson.fromJson(reader, ClassTransformConfig.class);
+            addConfig(config);
+            reader.close();
+        } catch (Throwable e) {
+            throw new RuntimeException("Failed to read config " + configName, e);
+        }
     }
 
     public void addConfig(String configName) throws ClassNotFoundException {

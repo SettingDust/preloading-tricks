@@ -1,0 +1,19 @@
+package settingdust.preloading_tricks.neoforge.transformer.mod_setup_hook;
+
+import net.lenni0451.classtransform.annotations.CInline;
+import net.lenni0451.classtransform.annotations.CTarget;
+import net.lenni0451.classtransform.annotations.CTransformer;
+import net.lenni0451.classtransform.annotations.injection.CInject;
+import net.neoforged.fml.loading.FMLLoader;
+import settingdust.preloading_tricks.PreloadingTricks;
+import settingdust.preloading_tricks.api.PreloadingTricksCallback;
+
+@CTransformer(FMLLoader.class)
+public class FMLLoaderTransformer {
+    @CInline
+    @CInject(method = "completeScan", target = @CTarget("HEAD"))
+    private static void preloading_tricks$onCompleteScan() {
+        PreloadingTricks.LOGGER.info("PreloadingTricks calling SetupModCallback in `FMLLoader#completeScan`");
+        PreloadingTricksCallback.invoker.onSetupMods();
+    }
+}

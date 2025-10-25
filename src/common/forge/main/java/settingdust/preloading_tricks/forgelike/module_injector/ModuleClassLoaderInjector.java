@@ -168,5 +168,16 @@ public class ModuleClassLoaderInjector {
         var nameToModule = new HashMap<>(ConfigurationAccessor.getNameToModule(to));
         nameToModule.put(module.name(), module);
         ConfigurationAccessor.setNameToModule(to, nameToModule);
+
+
+        ConfigurationAccessor.getGraph(from).remove(module);
+
+        var fromModules = new HashSet<>(ConfigurationAccessor.getModules(to));
+        fromModules.remove(module);
+        ConfigurationAccessor.setModules(from, fromModules);
+
+        var fromNameToModule = new HashMap<>(ConfigurationAccessor.getNameToModule(to));
+        fromNameToModule.remove(module.name());
+        ConfigurationAccessor.setNameToModule(from, fromNameToModule);
     }
 }

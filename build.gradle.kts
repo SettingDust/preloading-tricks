@@ -373,10 +373,49 @@ cloche {
             }
 
             dependencies {
-                implementation(catalog.reflect)
-                implementation(catalog.classTransform)
-                implementation(catalog.classTransform.additionalClassProvider) {
-                    exclude(group = "com.google.guava")
+                catalog.reflect.let {
+                    implementation(it)
+                    legacyClasspath(it)
+                }
+                catalog.classTransform.let {
+                    implementation(it)
+                    legacyClasspath(it)
+                }
+                catalog.classTransform.additionalClassProvider.let {
+                    implementation(it) {
+                        exclude(group = "com.google.guava")
+                    }
+                    legacyClasspath(it)
+                }
+            }
+
+            val legacyClasspath by configurations.named(lowerCamelCaseGradleName(featureName, "legacyClasspath"))
+
+            project.dependencies {
+                legacyClasspath(catalog.reflect)
+                legacyClasspath(catalog.classTransform)
+                legacyClasspath(catalog.classTransform.additionalClassProvider)
+            }
+
+            val embed by configurations.register(lowerCamelCaseGradleName(featureName, "embed")) {
+                isTransitive = false
+            }
+
+            project.dependencies {
+                embed(catalog.reflect)
+                embed(catalog.classTransform)
+                embed(catalog.classTransform.additionalClassProvider)
+            }
+
+            tasks {
+                val jar = named<Jar>(lowerCamelCaseGradleName(featureName, "jar")) {
+                    from(embed) {
+                        into("libs")
+                    }
+
+                    manifest {
+                        attributes("FMLModType" to "LIBRARY")
+                    }
                 }
             }
         }

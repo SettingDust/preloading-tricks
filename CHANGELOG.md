@@ -1,5 +1,19 @@
 fix: `setAccessible` for `setMod`
 
+## [2.0.0] - 2025-10-25
+### :sparkles: New Features
+- [`1750a79`](https://github.com/SettingDust/preloading-tricks/commit/1750a79d722e312686be25c613495c8af0b133d0) - bootstrap ClassTransform on lexforge *(commit by [@SettingDust](https://github.com/SettingDust))*
+- [`19f0157`](https://github.com/SettingDust/preloading-tricks/commit/19f0157e417700a62b88f44a2a635441e41f320b) - implement on lexforge *(commit by [@SettingDust](https://github.com/SettingDust))*
+- [`45a06f2`](https://github.com/SettingDust/preloading-tricks/commit/45a06f26e5dc47e0acb8cb9d7b5b486826f28cbc) - implement on neoforge *(commit by [@SettingDust](https://github.com/SettingDust))*
+
+### :bug: Bug Fixes
+- [`c21e7fc`](https://github.com/SettingDust/preloading-tricks/commit/c21e7fc3fbaff0a79d3df24c3da2b11a7bbebf11) - can't inject new interface and method for loaded class *(commit by [@SettingDust](https://github.com/SettingDust))*
+
+### :recycle: Refactors
+- [`98bca78`](https://github.com/SettingDust/preloading-tricks/commit/98bca7816a49178c64a6894f0948bb1d0918cea6) - copier from template *(commit by [@SettingDust](https://github.com/SettingDust))*
+- [`58bc5a2`](https://github.com/SettingDust/preloading-tricks/commit/58bc5a22b395f6f83d47eddc48e7741102cf4e33) - rewrite the api & add fabric implementation back *(commit by [@SettingDust](https://github.com/SettingDust))*
+
+
 ## [1.2.3] - 2024-10-11
 ### :bug: Bug Fixes
 - [`c3d4bbb`](https://github.com/SettingDust/preloading-tricks/commit/c3d4bbbb46001a2955169267f122bdcb9f34cc1e) - service loader load services as expected now *(commit by [@SettingDust](https://github.com/SettingDust))*
@@ -66,3 +80,4 @@ fix: `setAccessible` for `setMod`
 [1.2.1]: https://github.com/SettingDust/preloading-tricks/compare/1.2.0...1.2.1
 [1.2.2]: https://github.com/SettingDust/preloading-tricks/compare/1.2.1...1.2.2
 [1.2.3]: https://github.com/SettingDust/preloading-tricks/compare/1.2.2...1.2.3
+[2.0.0]: https://github.com/SettingDust/preloading-tricks/compare/1.2.3...2.0.0

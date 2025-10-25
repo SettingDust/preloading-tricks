@@ -1,5 +1,7 @@
 package settingdust.preloading_tricks.forgelike.module_injector.accessor;
 
+import cpw.mods.cl.ModuleClassLoader;
+import cpw.mods.modlauncher.Launcher;
 import cpw.mods.modlauncher.ModuleLayerHandler;
 import cpw.mods.modlauncher.api.IModuleLayerManager;
 import settingdust.preloading_tricks.forgelike.UnsafeHacks;
@@ -22,5 +24,13 @@ public class ModuleLayerHandlerAccessor {
 
     public static EnumMap<IModuleLayerManager.Layer, Object> getCompletedLayers(ModuleLayerHandler moduleLayerHandler) {
         return UnsafeHacks.getField(completedLayersField, moduleLayerHandler);
+    }
+
+    public static ModuleClassLoader getModuleClassLoader(IModuleLayerManager.Layer layer) {
+        var completedLayers = ModuleLayerHandlerAccessor
+            .getCompletedLayers((ModuleLayerHandler) Launcher.INSTANCE.findLayerManager().orElseThrow());
+        var layerInfo = completedLayers.get(layer);
+        var classLoader = LayerInfoAccessor.getModuleClassLoader(layerInfo);
+        return classLoader;
     }
 }

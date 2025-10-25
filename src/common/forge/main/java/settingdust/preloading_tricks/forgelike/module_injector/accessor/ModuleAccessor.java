@@ -4,6 +4,7 @@ import settingdust.preloading_tricks.forgelike.JavaBypass;
 
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodType;
+import java.lang.invoke.VarHandle;
 import java.lang.module.ModuleDescriptor;
 import java.net.URI;
 
@@ -12,6 +13,8 @@ public class ModuleAccessor {
 
     private static final MethodHandle constructor;
     private static final MethodHandle implAddReadMethod;
+    private static final VarHandle layerField;
+    public static final long layerFieldOffset;
 
     static {
         try {
@@ -30,7 +33,12 @@ public class ModuleAccessor {
                 "implAddReads",
                 MethodType.methodType(void.class, Module.class)
             );
-        } catch (NoSuchMethodException | IllegalAccessException e) {
+            layerField = lookup.findVarHandle(clazz, "layer", ModuleLayer.class);
+            layerFieldOffset = VarHandleFieldInstanceReadOnlyAccessor.getFieldOffset(layerField);
+        } catch (NoSuchMethodException | IllegalAccessException | NoSuchFieldException e) {
+            for (var field : Module.class.getDeclaredFields()) {
+                System.out.println(field);
+            }
             throw new RuntimeException(e);
         }
     }
@@ -54,5 +62,13 @@ public class ModuleAccessor {
         } catch (Throwable e) {
             throw new RuntimeException(e);
         }
+    }
+
+    public static void setLayer(Module module, ModuleLayer moduleLayer) {
+        JavaBypass.UNSAFE.putObject(
+            module,
+            layerFieldOffset,
+            moduleLayer
+        );
     }
 }

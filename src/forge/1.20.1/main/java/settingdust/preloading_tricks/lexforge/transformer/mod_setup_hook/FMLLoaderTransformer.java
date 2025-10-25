@@ -12,7 +12,7 @@ import settingdust.preloading_tricks.api.PreloadingTricksCallback;
 public class FMLLoaderTransformer {
     @CInline
     @CInject(method = "completeScan", target = @CTarget("HEAD"))
-    private void preloading_tricks$onCompleteScan() {
+    private static void preloading_tricks$onCompleteScan() {
         PreloadingTricks.LOGGER.info("PreloadingTricks calling SetupModCallback in `FMLLoader#completeScan`");
         PreloadingTricksCallback.invoker.onSetupMods();
     }

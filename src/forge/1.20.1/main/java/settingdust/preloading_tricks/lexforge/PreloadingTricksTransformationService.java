@@ -32,17 +32,26 @@ public class PreloadingTricksTransformationService implements ITransformationSer
             for (final var path : Files.list(rootPath.resolve("libs"))
                                        .filter(it -> it.getFileName().toString().endsWith(".jar"))
                                        .toList()) {
-                ModuleClassLoaderInjector.inject(path, IModuleLayerManager.Layer.SERVICE);
+                ModuleClassLoaderInjector.inject(path, IModuleLayerManager.Layer.BOOT);
             }
+            ModuleClassLoaderInjector.move(
+                PreloadingTricksTransformationService.class,
+                IModuleLayerManager.Layer.BOOT
+            );
             CLASS_TRANSFORM = new ClassTransformBootstrap();
-            CLASS_TRANSFORM.getTransformerManager().hookInstrumentation(Agents.getInstrumentation());
         } catch (IOException | URISyntaxException e) {
             throw new RuntimeException(e);
         }
     }
 
-    public PreloadingTricksTransformationService() {
+    public PreloadingTricksTransformationService() throws ClassNotFoundException, IOException {
         PreloadingTricks.LOGGER.info("[{}] Installed", PreloadingTricks.NAME);
+
+        CLASS_TRANSFORM.addConfig(
+            PreloadingTricks.MOD_ID + ".lexforge.classtransform.json",
+            PreloadingTricksTransformationService.class.getClassLoader()
+        );
+        CLASS_TRANSFORM.getTransformerManager().hookInstrumentation(Agents.getInstrumentation());
 
         injectClassTransform();
     }

@@ -112,6 +112,10 @@ public final class ServiceLoaderUtil {
         return findServices(clazz, load(clazz), defaultLogger, true);
     }
 
+    public static <T> Iterable<T> findServices(Class<T> clazz, boolean required) {
+        return findServices(clazz, load(clazz), defaultLogger, required);
+    }
+
     public static <T> int loadServices(Class<T> clazz) {
         int count = 0;
         for (T ignored : findServices(clazz, load(clazz), defaultLogger, true)) {

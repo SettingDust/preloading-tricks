@@ -8,7 +8,7 @@ import java.util.function.Supplier;
 
 public interface PreloadingTricksCallback {
     Supplier<Iterable<PreloadingTricksCallback>> supplier =
-        Suppliers.memoize(() -> ServiceLoaderUtil.findServices(PreloadingTricksCallback.class));
+        Suppliers.memoize(() -> ServiceLoaderUtil.findServices(PreloadingTricksCallback.class, false));
 
     PreloadingTricksCallback invoker = new PreloadingTricksCallback() {
         @Override

@@ -1,6 +1,6 @@
 [versions]
 minecraft = "1.21"
-yarn_mapping = "1.21+build.2"
+yarn_mapping = "25.w+"
 # https://fabricmc.net/develop/
 fabric_loader = "0.15.11"
 fabric_api = "0.100.1+1.21"

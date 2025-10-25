@@ -179,7 +179,13 @@ dependencyResolutionManagement.versionCatalogs.create("catalog") {
     )
 
     library("reflect", "net.lenni0451", "Reflect").version("1.5.0")
-    library("classTransform", "net.lenni0451.classtransform", "core").version("1.14.1")
+    val classTransform = "1.14.1"
+    library("classTransform", "net.lenni0451.classtransform", "core").version(classTransform)
+    library(
+        "classTransform-AdditionalClassProvider",
+        "net.lenni0451.classtransform",
+        "additionalclassprovider"
+    ).version(classTransform)
 }
 
 plugins {

@@ -1,4 +1,4 @@
-package settingdust.preloading_tricks.fabric.transformer;
+package settingdust.preloading_tricks.fabric.transformer.mod_setup_hook;
 
 import net.fabricmc.loader.impl.FabricLoaderImpl;
 import net.fabricmc.loader.impl.ModContainerImpl;
@@ -14,7 +14,7 @@ import settingdust.preloading_tricks.fabric.PreloadingTricksLanguageAdapterEntry
 import java.util.List;
 
 @CTransformer(FabricLoaderImpl.class)
-public class HookModSetupTransformer {
+public class FabricLoaderImplTransformer {
     @CShadow
     private List<ModContainerImpl> mods;
 

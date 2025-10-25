@@ -150,8 +150,6 @@ cloche {
                     implementation(it)
                     include(it)
                 }
-
-                implementation(catalog.reflect)
             }
 
             tasks.named<GenerateFabricModJson>(generateModsManifestTaskName) {
@@ -179,8 +177,6 @@ cloche {
                     implementation(it)
                     include(it)
                 }
-
-                implementation(catalog.reflect)
             }
 
             tasks.named<GenerateFabricModJson>(generateModsManifestTaskName) {
@@ -266,10 +262,20 @@ cloche {
         }
     }
 
+    val commonForgeLike = common("common:forge") {
+
+    }
+
     run forge@{
         val forge1201 = forge("forge:1.20.1") {
             minecraftVersion = "1.20.1"
             loaderVersion = "47.4.4"
+
+            runs {
+                client {
+                    env("MOD_CLASSES", "")
+                }
+            }
 
             metadata {
                 dependency {
@@ -295,14 +301,58 @@ cloche {
                 compileOnly(catalog.mixinextras.common)
                 implementation(catalog.mixinextras.forge)
 
-                catalog.reflect.let {
-                    implementation(it)
-                    include(it)
+                implementation(catalog.reflect)
+
+                implementation(catalog.classTransform)
+                implementation(catalog.classTransform.additionalClassProvider)
+            }
+
+            val embed by configurations.register(lowerCamelCaseGradleName(featureName, "embed")) {
+                isTransitive = false
+            }
+
+            project.dependencies {
+                embed(catalog.reflect)
+                embed(catalog.classTransform)
+                embed(catalog.classTransform.additionalClassProvider)
+            }
+
+            tasks {
+                named(generateModsTomlTaskName) {
+                    enabled = false
                 }
 
-                catalog.classTransform.let {
-                    implementation(it)
-                    include(it)
+                val jar = named<Jar>(lowerCamelCaseGradleName(featureName, "jar")) {
+                    from(embed) {
+                        into("libs")
+                    }
+
+                    manifest {
+                        attributes("FMLModType" to "LIBRARY")
+                    }
+                }
+
+                val includeJar = named<JarJar>(lowerCamelCaseGradleName(featureName, "includeJar"))
+
+                val deleteJarInModFolder = register<Delete>(
+                    lowerCamelCaseGradleName(featureName, "deleteJarInModFolder")
+                ) {
+                    delete(fileTree(layout.projectDirectory.dir("run/mods")) {
+                        include("$archive_name*.jar")
+                    })
+                }
+
+                val copyToModFolder = register<Copy>(
+                    lowerCamelCaseGradleName(featureName, "copyToModFolder")
+                ) {
+                    from(deleteJarInModFolder, includeJar.flatMap { it.archiveFile })
+                    into(layout.projectDirectory.dir("run/mods"))
+                }
+
+                afterEvaluate {
+                    named(lowerCamelCaseGradleName("prepare", featureName, "clientRun")) {
+                        dependsOn(copyToModFolder)
+                    }
                 }
             }
         }
@@ -325,6 +375,9 @@ cloche {
             dependencies {
                 implementation(catalog.reflect)
                 implementation(catalog.classTransform)
+                implementation(catalog.classTransform.additionalClassProvider) {
+                    exclude(group = "com.google.guava")
+                }
             }
         }
 
@@ -352,6 +405,7 @@ cloche {
 
                 include(catalog.reflect)
                 include(catalog.classTransform)
+                include(catalog.classTransform.additionalClassProvider)
             }
 
             tasks {
@@ -366,7 +420,8 @@ cloche {
                     group = "build"
                     dependsOn(targets.map { it.includeJarTaskName })
 
-                    archiveBaseName = "$id-${featureName.camelToKebabCase()}"
+                    archiveClassifier = "neoforge"
+
                     input = jar.flatMap { it.archiveFile }
                     fromResolutionResults(include)
                 }
@@ -387,12 +442,20 @@ cloche {
         }
     }
 
+    targets.withType<ForgeLikeTarget> {
+        dependsOn(commonForgeLike)
+    }
+
     targets.all {
         dependsOn(commons.getValue(minecraftVersion.get()))
 
         runs {
             client {
-                jvmArguments("-Dmixin.debug.verbose=true", "-Dmixin.debug.export=true", "-Dclasstransform.dumpClasses=true")
+                jvmArguments(
+                    "-Dmixin.debug.verbose=true",
+                    "-Dmixin.debug.export=true",
+                    "-Dclasstransform.dumpClasses=true"
+                )
             }
         }
 

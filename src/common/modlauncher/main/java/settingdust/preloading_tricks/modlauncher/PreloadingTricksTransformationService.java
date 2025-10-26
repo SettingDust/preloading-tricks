@@ -68,7 +68,7 @@ public abstract class PreloadingTricksTransformationService implements ITransfor
             RStream.of(Launcher.class).fields().by("launchPlugins").get(Launcher.INSTANCE);
         Map<String, ILaunchPluginService> plugins =
             RStream.of(LaunchPluginHandler.class).fields().by("plugins").get(launchPlugins);
-        plugins.put("class_transform", new ClassTransformLaunchPlugin(ClassTransformBootstrap.INSTANCE));
+        plugins.put("class_transform", new ClassTransformLaunchPlugin());
     }
 
     @Override

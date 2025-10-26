@@ -21,7 +21,7 @@ plugins {
 
     id("com.palantir.git-version") version "3.1.0"
 
-    id("com.gradleup.shadow") version "9.0.2"
+    id("com.gradleup.shadow") version "9.2.2"
 
     id("earth.terrarium.cloche") version "0.16.0-dust"
 }

@@ -7,6 +7,7 @@ import settingdust.preloading_tricks.api.PreloadingTricksModManager;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
@@ -77,5 +78,15 @@ public class FabricModManager implements PreloadingTricksModManager<ModContainer
 
         // 一次性删除 map 中的键，避免多次调用 remove
         keysToRemove.forEach(modMap::remove);
+    }
+
+    @Override
+    public void removeById(final String id) {
+        mods.remove(modMap.remove(id));
+    }
+
+    @Override
+    public void removeByIds(final Set<String> ids) {
+        mods.removeAll(ids.stream().map(modMap::remove).toList());
     }
 }

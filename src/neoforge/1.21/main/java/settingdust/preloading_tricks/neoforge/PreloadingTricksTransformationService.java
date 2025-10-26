@@ -12,7 +12,7 @@ import java.util.List;
 public class PreloadingTricksTransformationService
     extends settingdust.preloading_tricks.modlauncher.PreloadingTricksTransformationService {
 
-    static {
+    public PreloadingTricksTransformationService() throws IOException {
         try {
             FMLLoader.class.getSimpleName();
         } catch (Throwable e) {
@@ -20,9 +20,7 @@ public class PreloadingTricksTransformationService
                 "Avoid running of LexForge with NeoForge service. Just ignore this error");
         }
         init();
-    }
 
-    public PreloadingTricksTransformationService() throws IOException {
         ClassTransformBootstrap.INSTANCE.addConfig(
             PreloadingTricks.MOD_ID + ".neoforge.modlauncher.classtransform.json",
             PreloadingTricksTransformationService.class.getClassLoader()

@@ -11,8 +11,6 @@ import settingdust.preloading_tricks.PreloadingTricks;
 import settingdust.preloading_tricks.forgelike.class_transform.ClassTransformBootstrap;
 import settingdust.preloading_tricks.modlauncher.class_transform.ClassTransformLaunchPlugin;
 import settingdust.preloading_tricks.modlauncher.module_injector.ModuleClassLoaderInjector;
-import settingdust.preloading_tricks.modlauncher.module_injector.accessor.LauncherAccessor;
-import settingdust.preloading_tricks.modlauncher.module_injector.accessor.TransformationServicesHandlerAccessor;
 
 import java.io.IOException;
 import java.net.URISyntaxException;
@@ -71,11 +69,6 @@ public abstract class PreloadingTricksTransformationService implements ITransfor
         Map<String, ILaunchPluginService> plugins =
             RStream.of(LaunchPluginHandler.class).fields().by("plugins").get(launchPlugins);
         plugins.put("class_transform", new ClassTransformLaunchPlugin(ClassTransformBootstrap.INSTANCE));
-    }
-
-    protected void removeSelfService() {
-        var transformationServicesHandler = LauncherAccessor.getTransformationServicesHandler();
-        TransformationServicesHandlerAccessor.getServiceLookup(transformationServicesHandler).remove(name());
     }
 
     @Override

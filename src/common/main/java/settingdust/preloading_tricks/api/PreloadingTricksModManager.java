@@ -4,6 +4,7 @@ import com.google.common.base.Suppliers;
 import settingdust.preloading_tricks.util.ServiceLoaderUtil;
 
 import java.util.Collection;
+import java.util.Set;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
 
@@ -30,4 +31,8 @@ public interface PreloadingTricksModManager<M> {
     void removeIf(Predicate<M> predicate);
 
     void removeAll(Collection<M> mods);
+
+    void removeById(String id);
+
+    void removeByIds(Set<String> ids);
 }

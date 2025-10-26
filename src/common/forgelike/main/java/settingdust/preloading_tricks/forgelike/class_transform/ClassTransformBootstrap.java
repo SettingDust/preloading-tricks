@@ -46,7 +46,7 @@ public final class ClassTransformBootstrap {
         }
     }
 
-    public void addConfig(String configName) throws ClassNotFoundException {
+    public void addConfig(String configName) {
         addConfig(configName, Thread.currentThread().getContextClassLoader());
     }
 }

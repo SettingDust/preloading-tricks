@@ -1,5 +1,10 @@
 fix: `setAccessible` for `setMod`
 
+## [2.2.1] - 2025-10-26
+### :bug: Bug Fixes
+- [`552c8f4`](https://github.com/SettingDust/preloading-tricks/commit/552c8f429091b45d5eae1b13ca92a3b786a238de) - remove access widener *(commit by [@SettingDust](https://github.com/SettingDust))*
+
+
 ## [2.2.0] - 2025-10-26
 ### :sparkles: New Features
 - [`7fbe4cd`](https://github.com/SettingDust/preloading-tricks/commit/7fbe4cde06a4eb9d8eef1520bc2c609bc2f0dd7c) - add manifest attribute to identify mods shouldn't load on current forge variant *(commit by [@SettingDust](https://github.com/SettingDust))*
@@ -107,3 +112,4 @@ fix: `setAccessible` for `setMod`
 [2.0.1]: https://github.com/SettingDust/preloading-tricks/compare/2.0.0...2.0.1
 [2.1.0]: https://github.com/SettingDust/preloading-tricks/compare/2.0.1...2.1.0
 [2.2.0]: https://github.com/SettingDust/preloading-tricks/compare/2.1.0...2.2.0
+[2.2.1]: https://github.com/SettingDust/preloading-tricks/compare/2.2.0...2.2.1

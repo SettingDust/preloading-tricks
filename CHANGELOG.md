@@ -1,5 +1,15 @@
 fix: `setAccessible` for `setMod`
 
+## [2.1.0] - 2025-10-26
+### :sparkles: New Features
+- [`31678c2`](https://github.com/SettingDust/preloading-tricks/commit/31678c2797292b31e7ad86f988a0a8da45c4eac6) - prepare for add support to latest NeoForge *(commit by [@SettingDust](https://github.com/SettingDust))*
+- [`16189c8`](https://github.com/SettingDust/preloading-tricks/commit/16189c8d2020d832077a43f912e4ea5d8b4a975c) - implement mod manager for forge like modlauncher *(commit by [@SettingDust](https://github.com/SettingDust))*
+- [`d878268`](https://github.com/SettingDust/preloading-tricks/commit/d878268cee1f966b74f9af4086d31d2680b149fd) - add mod manager and hook for Fancy mod loader *(commit by [@SettingDust](https://github.com/SettingDust))*
+
+### :bug: Bug Fixes
+- [`256fad0`](https://github.com/SettingDust/preloading-tricks/commit/256fad06548460ac731652b1b36f4846380449d3) - remove params for ClassTransformLaunchPlugin *(commit by [@SettingDust](https://github.com/SettingDust))*
+
+
 ## [2.0.1] - 2025-10-25
 ### :sparkles: New Features
 - [`9b3e430`](https://github.com/SettingDust/preloading-tricks/commit/9b3e4303b767b744f048d0f76e9c2d55d33c8a32) - correct the jar bundle *(commit by [@SettingDust](https://github.com/SettingDust))*
@@ -90,3 +100,4 @@ fix: `setAccessible` for `setMod`
 [1.2.3]: https://github.com/SettingDust/preloading-tricks/compare/1.2.2...1.2.3
 [2.0.0]: https://github.com/SettingDust/preloading-tricks/compare/1.2.3...2.0.0
 [2.0.1]: https://github.com/SettingDust/preloading-tricks/compare/2.0.0...2.0.1
+[2.1.0]: https://github.com/SettingDust/preloading-tricks/compare/2.0.1...2.1.0

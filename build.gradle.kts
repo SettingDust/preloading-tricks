@@ -23,7 +23,7 @@ plugins {
 
     id("com.gradleup.shadow") version "9.0.2"
 
-    id("earth.terrarium.cloche") version "0.15.1-dust"
+    id("earth.terrarium.cloche") version "0.16.0-dust"
 }
 
 val archive_name: String by rootProject.properties
@@ -199,12 +199,15 @@ cloche {
         }
     }
 
-    val commonForgeLike = common("common:forge") {
-
+    val commonForgeLike = common("common:forgelike")
+    val commonModLauncher = common("common:modlauncher") {
+        dependsOn(commonForgeLike)
     }
 
     run forge@{
         val forge1201 = forge("forge:1.20.1") {
+            dependsOn(commonModLauncher)
+
             minecraftVersion = "1.20.1"
             loaderVersion = "47.4.4"
 
@@ -299,7 +302,10 @@ cloche {
 
     run neoforge@{
         val neoforge121 = neoforge("neoforge:1.21") {
+            dependsOn(commonModLauncher)
+
             minecraftVersion = "1.21.1"
+            loaderVersion = "21.1.213"
 
             metadata {
                 dependency {
@@ -361,9 +367,47 @@ cloche {
             }
         }
 
-        targets.withType<NeoforgeTarget> {
-            loaderVersion = "21.1.192"
+        val neoforge121x = neoforge("neoforge:1.21.x") {
+            minecraftVersion = "1.21.10"
+            loaderVersion = "21.10.38-beta"
 
+            metadata {
+                dependency {
+                    modId = "minecraft"
+                    type = CommonMetadata.Dependency.Type.Required
+                    version {
+                        start = "1.21"
+                    }
+                }
+            }
+
+            dependencies {
+                catalog.reflect.let {
+                    implementation(it)
+                    legacyClasspath(it)
+                }
+                catalog.classTransform.let {
+                    implementation(it)
+                    legacyClasspath(it)
+                }
+                catalog.classTransform.additionalClassProvider.let {
+                    implementation(it) {
+                        exclude(group = "com.google.guava")
+                    }
+                    legacyClasspath(it)
+                }
+            }
+
+            val legacyClasspath by configurations.named(lowerCamelCaseGradleName(featureName, "legacyClasspath"))
+
+            project.dependencies {
+                legacyClasspath(catalog.reflect)
+                legacyClasspath(catalog.classTransform)
+                legacyClasspath(catalog.classTransform.additionalClassProvider)
+            }
+        }
+
+        targets.withType<NeoforgeTarget> {
             metadata {
             }
         }
@@ -374,7 +418,9 @@ cloche {
     }
 
     targets.all {
-        dependsOn(commons.getValue(minecraftVersion.get()))
+        commons[minecraftVersion.get()]?.let {
+            dependsOn(it)
+        }
 
         runs {
             client {
@@ -391,6 +437,7 @@ cloche {
                 when (it) {
                     "1.20.1" -> "2023.09.03"
                     "1.21.1" -> "2024.11.17"
+                    "1.21.10" -> "2025.10.12"
                     else -> throw IllegalArgumentException("Unsupported minecraft version $it")
                 }
             })

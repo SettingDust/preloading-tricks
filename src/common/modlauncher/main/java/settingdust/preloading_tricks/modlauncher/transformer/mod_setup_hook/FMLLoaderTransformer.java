@@ -1,4 +1,4 @@
-package settingdust.preloading_tricks.forgelike.transformer.mod_setup_hook;
+package settingdust.preloading_tricks.modlauncher.transformer.mod_setup_hook;
 
 import net.lenni0451.classtransform.annotations.CInline;
 import net.lenni0451.classtransform.annotations.CTarget;

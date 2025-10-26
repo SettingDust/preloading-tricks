@@ -20,19 +20,9 @@
 package settingdust.preloading_tricks.forgelike;
 
 import java.lang.reflect.Field;
-import java.util.Optional;
 
 @SuppressWarnings("restriction")
 public class UnsafeHacks {
-    @SuppressWarnings("unchecked")
-    public static <T> T newInstance(Class<T> clazz) {
-        try {
-            return (T) JavaBypass.UNSAFE.allocateInstance(clazz);
-        } catch (InstantiationException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
     @SuppressWarnings("unchecked")
     public static <T> T getField(Field field, Object object) {
         final long l = JavaBypass.UNSAFE.objectFieldOffset(field);
@@ -42,30 +32,5 @@ public class UnsafeHacks {
     public static void setField(Field data, Object object, Object value) {
         long offset = JavaBypass.UNSAFE.objectFieldOffset(data);
         JavaBypass.UNSAFE.putObject(object, offset, value);
-    }
-
-    public static int getIntField(Field f, Object obj) {
-        long offset = JavaBypass.UNSAFE.objectFieldOffset(f);
-        return JavaBypass.UNSAFE.getInt(obj, offset);
-    }
-
-    public static void setIntField(Field data, Object object, int value) {
-        long offset = JavaBypass.UNSAFE.objectFieldOffset(data);
-        JavaBypass.UNSAFE.putInt(object, offset, value);
-    }
-
-    // Make sure we don't crash if any future versions change field names
-    private static Optional<Field> findField(Class<?> clazz, String name) {
-        for (Field f : clazz.getDeclaredFields()) {
-            if (f.getName().equals(name)) {
-                return Optional.of(f);
-            }
-        }
-        return Optional.empty();
-    }
-
-    public static void cleanEnumCache(Class<? extends Enum<?>> enumClass) throws Exception {
-        findField(Class.class, "enumConstantDirectory").ifPresent(f -> setField(f, enumClass, null));
-        findField(Class.class, "enumConstants").ifPresent(f -> setField(f, enumClass, null));
     }
 }

@@ -1,4 +1,4 @@
-package settingdust.preloading_tricks.forgelike.module_injector.accessor;
+package settingdust.preloading_tricks.modlauncher.module_injector.accessor;
 
 import cpw.mods.cl.ModuleClassLoader;
 import cpw.mods.modlauncher.Launcher;

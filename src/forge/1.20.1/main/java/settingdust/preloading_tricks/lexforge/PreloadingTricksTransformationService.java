@@ -4,12 +4,13 @@ import cpw.mods.modlauncher.api.ITransformer;
 import net.lenni0451.reflect.Agents;
 import net.minecraftforge.fml.loading.FMLLoader;
 import settingdust.preloading_tricks.PreloadingTricks;
+import settingdust.preloading_tricks.forgelike.class_transform.ClassTransformBootstrap;
 
 import java.io.IOException;
 import java.util.List;
 
 public class PreloadingTricksTransformationService
-    extends settingdust.preloading_tricks.forgelike.PreloadingTricksTransformationService {
+    extends settingdust.preloading_tricks.modlauncher.PreloadingTricksTransformationService {
 
     static {
         try {
@@ -21,12 +22,12 @@ public class PreloadingTricksTransformationService
     }
 
     public PreloadingTricksTransformationService() throws IOException {
-        CLASS_TRANSFORM.addConfig(
+        ClassTransformBootstrap.INSTANCE.addConfig(
             PreloadingTricks.MOD_ID + ".lexforge.classtransform.json",
             PreloadingTricksTransformationService.class.getClassLoader()
         );
 
-        CLASS_TRANSFORM.getTransformerManager().hookInstrumentation(Agents.getInstrumentation());
+        ClassTransformBootstrap.INSTANCE.getTransformerManager().hookInstrumentation(Agents.getInstrumentation());
     }
 
     @Override

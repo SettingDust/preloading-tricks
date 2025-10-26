@@ -1,4 +1,4 @@
-package settingdust.preloading_tricks.forgelike;
+package settingdust.preloading_tricks.modlauncher;
 
 import cpw.mods.modlauncher.LaunchPluginHandler;
 import cpw.mods.modlauncher.Launcher;
@@ -9,10 +9,10 @@ import cpw.mods.modlauncher.serviceapi.ILaunchPluginService;
 import net.lenni0451.reflect.stream.RStream;
 import settingdust.preloading_tricks.PreloadingTricks;
 import settingdust.preloading_tricks.forgelike.class_transform.ClassTransformBootstrap;
-import settingdust.preloading_tricks.forgelike.class_transform.ClassTransformLaunchPlugin;
-import settingdust.preloading_tricks.forgelike.module_injector.ModuleClassLoaderInjector;
-import settingdust.preloading_tricks.forgelike.module_injector.accessor.LauncherAccessor;
-import settingdust.preloading_tricks.forgelike.module_injector.accessor.TransformationServicesHandlerAccessor;
+import settingdust.preloading_tricks.modlauncher.class_transform.ClassTransformLaunchPlugin;
+import settingdust.preloading_tricks.modlauncher.module_injector.ModuleClassLoaderInjector;
+import settingdust.preloading_tricks.modlauncher.module_injector.accessor.LauncherAccessor;
+import settingdust.preloading_tricks.modlauncher.module_injector.accessor.TransformationServicesHandlerAccessor;
 
 import java.io.IOException;
 import java.net.URISyntaxException;
@@ -22,8 +22,6 @@ import java.util.Map;
 import java.util.Set;
 
 public abstract class PreloadingTricksTransformationService implements ITransformationService {
-    public static ClassTransformBootstrap CLASS_TRANSFORM = null;
-
     public static void init() {
         try {
             var codeSource = PreloadingTricksTransformationService.class.getProtectionDomain().getCodeSource();
@@ -46,15 +44,15 @@ public abstract class PreloadingTricksTransformationService implements ITransfor
                     PreloadingTricksTransformationService.class,
                     IModuleLayerManager.Layer.BOOT
                 );
-                CLASS_TRANSFORM = new ClassTransformBootstrap();
+                new ClassTransformBootstrap();
             }
         } catch (IOException | URISyntaxException e) {
             throw new RuntimeException(e);
         }
     }
 
-    public PreloadingTricksTransformationService() throws IOException {
-        if (CLASS_TRANSFORM == null) {
+    public PreloadingTricksTransformationService() {
+        if (ClassTransformBootstrap.INSTANCE == null) {
             PreloadingTricks.LOGGER.debug(
                 "[{}] The `CLASS_TRANSFORM` is null. Looks like it's loaded from unnamed module at the second time. Need to address by the developer. Ignore this message",
                 PreloadingTricks.NAME
@@ -72,7 +70,7 @@ public abstract class PreloadingTricksTransformationService implements ITransfor
             RStream.of(Launcher.class).fields().by("launchPlugins").get(Launcher.INSTANCE);
         Map<String, ILaunchPluginService> plugins =
             RStream.of(LaunchPluginHandler.class).fields().by("plugins").get(launchPlugins);
-        plugins.put("class_transform", new ClassTransformLaunchPlugin(CLASS_TRANSFORM));
+        plugins.put("class_transform", new ClassTransformLaunchPlugin(ClassTransformBootstrap.INSTANCE));
     }
 
     protected void removeSelfService() {

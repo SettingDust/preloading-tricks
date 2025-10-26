@@ -1,10 +1,16 @@
-package settingdust.preloading_tricks.forgelike.module_injector;
+package settingdust.preloading_tricks.modlauncher.module_injector;
 
 import cpw.mods.cl.JarModuleFinder;
 import cpw.mods.cl.ModuleClassLoader;
 import cpw.mods.jarhandling.SecureJar;
 import cpw.mods.modlauncher.api.IModuleLayerManager;
-import settingdust.preloading_tricks.forgelike.module_injector.accessor.*;
+import settingdust.preloading_tricks.forgelike.module_injector.accessor.ConfigurationAccessor;
+import settingdust.preloading_tricks.forgelike.module_injector.accessor.ModuleAccessor;
+import settingdust.preloading_tricks.forgelike.module_injector.accessor.ModuleLayerAccessor;
+import settingdust.preloading_tricks.forgelike.module_injector.accessor.ResolvedModuleAccessor;
+import settingdust.preloading_tricks.modlauncher.module_injector.accessor.LauncherAccessor;
+import settingdust.preloading_tricks.modlauncher.module_injector.accessor.ModuleClassLoaderAccessor;
+import settingdust.preloading_tricks.modlauncher.module_injector.accessor.ModuleLayerHandlerAccessor;
 
 import java.lang.module.Configuration;
 import java.lang.module.ResolvedModule;

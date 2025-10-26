@@ -16,7 +16,7 @@ public interface PreloadingTricksModManager<M> {
      * @return Singleton instance
      * @param <I> should be implementation class or {@link PreloadingTricksModManager} with right {@link M}
      */
-    static <I extends PreloadingTricksCallback> I get() {
+    static <I extends PreloadingTricksModManager<?>> I get() {
         return (I) supplier.get();
     }
 

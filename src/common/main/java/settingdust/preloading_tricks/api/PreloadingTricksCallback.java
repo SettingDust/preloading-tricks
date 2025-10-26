@@ -28,7 +28,7 @@ public interface PreloadingTricksCallback {
         }
     };
 
-    void onSetupLanguageAdapter();
+    default void onSetupLanguageAdapter() {}
 
-    void onSetupMods();
+    default void onSetupMods() {}
 }

@@ -19,4 +19,20 @@ public class ClassTransformModLauncher {
         var config = gson.fromJson(Files.newBufferedReader(jar.getPath(configName)), ClassTransformConfig.class);
         classTransform.addConfig(config);
     }
+
+    public static void addConfig(
+        ClassTransformBootstrap classTransform,
+        SecureJar jar
+    ) throws IOException, ClassNotFoundException {
+        var classTransformConfigString =
+            jar.moduleDataProvider()
+               .getManifest()
+               .getMainAttributes()
+               .get(ClassTransformBootstrap.CLASS_TRANSFORM_CONFIG);
+        if (classTransformConfigString == null) return;
+        var classTransformConfigs = classTransformConfigString.toString().split(",");
+        for (final var configName : classTransformConfigs) {
+            addConfig(classTransform, configName, jar);
+        }
+    }
 }

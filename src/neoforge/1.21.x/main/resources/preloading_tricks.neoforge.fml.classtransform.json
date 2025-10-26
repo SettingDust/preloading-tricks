@@ -1,0 +1,7 @@
+{
+  "package": "settingdust.preloading_tricks.neoforge.v121x.transformer",
+  "transformers": [
+    "mod_setup_hook.FMLLoaderTransformer",
+    "mod_setup_hook.ModDiscovererTransformer"
+  ]
+}

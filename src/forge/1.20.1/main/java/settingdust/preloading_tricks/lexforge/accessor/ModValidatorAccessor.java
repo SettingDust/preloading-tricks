@@ -14,7 +14,13 @@ public class ModValidatorAccessor {
 
     private static final FieldWrapper candidateMods = stream.fields().by("candidateMods");
 
+    private static final FieldWrapper gameLibraries = stream.fields().by("gameLibraries");
+
     public static List<ModFile> getCandidateMods(ModValidator validator) {
         return candidateMods.get(validator);
+    }
+
+    public static List<ModFile> getGameLibraries(ModValidator validator) {
+        return gameLibraries.get(validator);
     }
 }

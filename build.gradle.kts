@@ -14,7 +14,6 @@ import net.msrandom.minecraftcodev.fabric.MinecraftCodevFabricPlugin
 import net.msrandom.minecraftcodev.forge.task.JarJar
 import org.gradle.jvm.tasks.Jar
 
-
 plugins {
     java
     idea
@@ -23,7 +22,7 @@ plugins {
 
     id("com.gradleup.shadow") version "9.2.2"
 
-    id("earth.terrarium.cloche") version "0.16.1"
+    id("earth.terrarium.cloche") version "0.16.6"
 }
 
 val archive_name: String by rootProject.properties
@@ -323,12 +322,15 @@ cloche {
                     legacyClasspath(it)
                 }
                 catalog.classTransform.let {
-                    implementation(it)
+                    implementation(it) {
+                        exclude(group = "org.ow2.asm")
+                    }
                     legacyClasspath(it)
                 }
                 catalog.classTransform.additionalClassProvider.let {
                     implementation(it) {
                         exclude(group = "com.google.guava")
+                        exclude(group = "org.ow2.asm")
                     }
                     legacyClasspath(it)
                 }
@@ -387,12 +389,15 @@ cloche {
                     legacyClasspath(it)
                 }
                 catalog.classTransform.let {
-                    implementation(it)
+                    implementation(it) {
+                        exclude(group = "org.ow2.asm")
+                    }
                     legacyClasspath(it)
                 }
                 catalog.classTransform.additionalClassProvider.let {
                     implementation(it) {
                         exclude(group = "com.google.guava")
+                        exclude(group = "org.ow2.asm")
                     }
                     legacyClasspath(it)
                 }

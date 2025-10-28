@@ -6,6 +6,7 @@ import cpw.mods.modlauncher.api.IEnvironment;
 import cpw.mods.modlauncher.api.IModuleLayerManager;
 import cpw.mods.modlauncher.api.ITransformationService;
 import cpw.mods.modlauncher.serviceapi.ILaunchPluginService;
+import cpw.mods.niofs.union.UnionPath;
 import net.lenni0451.reflect.stream.RStream;
 import settingdust.preloading_tricks.PreloadingTricks;
 import settingdust.preloading_tricks.forgelike.class_transform.ClassTransformBootstrap;
@@ -15,15 +16,16 @@ import settingdust.preloading_tricks.modlauncher.module_injector.ModuleClassLoad
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.nio.file.Files;
-import java.nio.file.Paths;
+import java.nio.file.Path;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-public abstract class PreloadingTricksTransformationService implements ITransformationService {
+public class PreloadingTricksTransformationService implements ITransformationService {
     public static void init() {
         try {
             var codeSource = PreloadingTricksTransformationService.class.getProtectionDomain().getCodeSource();
-            var rootPath = Paths.get(codeSource.getLocation().toURI());
+            var rootPath = (UnionPath) Path.of(codeSource.getLocation().toURI());
 
             for (final var path : Files.list(rootPath.resolve("libs"))
                                        .filter(it -> it.getFileName().toString().endsWith(".jar"))
@@ -50,6 +52,7 @@ public abstract class PreloadingTricksTransformationService implements ITransfor
     }
 
     public PreloadingTricksTransformationService() {
+        TransformationServiceCallback.invoker.init();
         if (ClassTransformBootstrap.INSTANCE == null) {
             PreloadingTricks.LOGGER.debug(
                 "[{}] The `CLASS_TRANSFORM` is null. Looks like it's loaded from unnamed module at the second time. Need to address by the developer. Ignore this message",
@@ -72,6 +75,11 @@ public abstract class PreloadingTricksTransformationService implements ITransfor
     }
 
     @Override
+    public String name() {
+        return "Preloading Tricks";
+    }
+
+    @Override
     public void initialize(final IEnvironment environment) {
 
     }
@@ -79,5 +87,10 @@ public abstract class PreloadingTricksTransformationService implements ITransfor
     @Override
     public void onLoad(final IEnvironment env, final Set<String> otherServices) {
 
+    }
+
+    @Override
+    public List transformers() {
+        return List.of();
     }
 }

@@ -11,6 +11,10 @@ public final class ServiceLoaderUtil {
     private ServiceLoaderUtil() {
     }
 
+    public static <T> ServiceLoader<T> load(Class<T> clazz, ModuleLayer layer) {
+        return ServiceLoader.load(layer, clazz);
+    }
+
     public static <T> ServiceLoader<T> load(Class<T> clazz) {
         return ServiceLoader.load(clazz);
     }
@@ -25,6 +29,10 @@ public final class ServiceLoaderUtil {
             return it.next();
         }
         throw new NoSuchElementException("No service found for " + clazz);
+    }
+
+    public static <T> Iterable<T> findServices(Class<T> clazz, ModuleLayer layer) {
+        return findServices(clazz, load(clazz, layer), defaultLogger, true);
     }
 
     public static <T> Iterable<T> findServices(

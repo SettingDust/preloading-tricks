@@ -1,7 +1,9 @@
 package settingdust.preloading_tricks.neoforge;
 
+import com.google.common.collect.Iterators;
 import net.neoforged.fml.loading.moddiscovery.ModFile;
 import net.neoforged.fml.loading.moddiscovery.ModFileInfo;
+import net.neoforged.neoforgespi.locating.IModFile;
 import settingdust.preloading_tricks.api.PreloadingTricksModManager;
 import settingdust.preloading_tricks.neoforge.accessor.FMLLoaderAccessor;
 import settingdust.preloading_tricks.neoforge.accessor.ModFileInfoAccessor;
@@ -14,6 +16,8 @@ import java.util.function.Predicate;
 
 public class NeoForgeModManager implements PreloadingTricksModManager<ModFile> {
     private final List<ModFile> mods = ModValidatorAccessor.getCandidateMods(FMLLoaderAccessor.getModValidator());
+    private final List<ModFile> gameLibraries =
+        ModValidatorAccessor.getModFiles(FMLLoaderAccessor.getModValidator()).get(IModFile.Type.GAMELIBRARY);
 
     @Override
     public Collection<ModFile> all() {
@@ -33,16 +37,19 @@ public class NeoForgeModManager implements PreloadingTricksModManager<ModFile> {
     @Override
     public void remove(final ModFile mod) {
         mods.remove(mod);
+        gameLibraries.remove(mod);
     }
 
     @Override
     public void removeIf(final Predicate<ModFile> predicate) {
         mods.removeIf(predicate);
+        gameLibraries.removeIf(predicate);
     }
 
     @Override
-    public void removeAll(final Collection<ModFile> modFiles) {
-        mods.removeAll(modFiles);
+    public void removeAll(final Collection<ModFile> all) {
+        mods.removeAll(all);
+        gameLibraries.removeAll(all);
     }
 
     @Override
@@ -52,7 +59,7 @@ public class NeoForgeModManager implements PreloadingTricksModManager<ModFile> {
 
     @Override
     public void removeByIds(final Set<String> ids) {
-        var iterator = mods.iterator();
+        var iterator = Iterators.concat(mods.iterator(), gameLibraries.iterator());
         while (iterator.hasNext()) {
             var mod = iterator.next();
             if (mod.getModInfos().isEmpty()) continue;

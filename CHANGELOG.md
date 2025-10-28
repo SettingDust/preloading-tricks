@@ -1,5 +1,10 @@
 fix: `setAccessible` for `setMod`
 
+## [2.2.2] - 2025-10-28
+### :bug: Bug Fixes
+- [`0e6b900`](https://github.com/SettingDust/preloading-tricks/commit/0e6b9004dd0a1405fd3b33ed070257e61333c700) - actually work on 1.20 forge and 1.21 neoforge *(commit by [@SettingDust](https://github.com/SettingDust))*
+
+
 ## [2.2.1] - 2025-10-26
 ### :bug: Bug Fixes
 - [`552c8f4`](https://github.com/SettingDust/preloading-tricks/commit/552c8f429091b45d5eae1b13ca92a3b786a238de) - remove access widener *(commit by [@SettingDust](https://github.com/SettingDust))*
@@ -113,3 +118,4 @@ fix: `setAccessible` for `setMod`
 [2.1.0]: https://github.com/SettingDust/preloading-tricks/compare/2.0.1...2.1.0
 [2.2.0]: https://github.com/SettingDust/preloading-tricks/compare/2.1.0...2.2.0
 [2.2.1]: https://github.com/SettingDust/preloading-tricks/compare/2.2.0...2.2.1
+[2.2.2]: https://github.com/SettingDust/preloading-tricks/compare/2.2.1...2.2.2

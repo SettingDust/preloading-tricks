@@ -6,8 +6,8 @@ import java.util.Map;
 public enum ForgeVariants {
     LexForge, NeoForge;
 
-    public static Map<String, ForgeVariants> BY_NAME = new HashMap<>();
-    public static String MANIFEST_KEY = "ForgeVariant";
+    public static final Map<String, ForgeVariants> BY_NAME = new HashMap<>();
+    public static final String MANIFEST_KEY = "ForgeVariant";
 
     static {
         for (var variant : values()) {

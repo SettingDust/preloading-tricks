@@ -1,6 +1,7 @@
 package settingdust.preloading_tricks.neoforge;
 
 import com.google.common.collect.Iterators;
+import cpw.mods.jarhandling.VirtualJar;
 import net.neoforged.fml.loading.moddiscovery.ModFile;
 import net.neoforged.fml.loading.moddiscovery.ModFileInfo;
 import net.neoforged.neoforgespi.locating.IModFile;
@@ -8,7 +9,9 @@ import settingdust.preloading_tricks.api.PreloadingTricksModManager;
 import settingdust.preloading_tricks.neoforge.accessor.FMLLoaderAccessor;
 import settingdust.preloading_tricks.neoforge.accessor.ModFileInfoAccessor;
 import settingdust.preloading_tricks.neoforge.accessor.ModValidatorAccessor;
+import settingdust.preloading_tricks.neoforge.virtual_mod.VirtualModFile;
 
+import java.nio.file.Path;
 import java.util.Collection;
 import java.util.List;
 import java.util.Set;
@@ -71,5 +74,10 @@ public class NeoForgeModManager implements PreloadingTricksModManager<ModFile> {
                 ModFileInfoAccessor.setMods(modFileInfo, filtered);
             }
         }
+    }
+
+    @Override
+    public ModFile createVirtualMod(final String id, final Path referencePath) {
+        return new VirtualModFile(new VirtualJar(id, referencePath));
     }
 }

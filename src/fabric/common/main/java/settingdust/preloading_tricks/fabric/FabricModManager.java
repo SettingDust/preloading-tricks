@@ -3,7 +3,9 @@ package settingdust.preloading_tricks.fabric;
 import net.fabricmc.loader.impl.ModContainerImpl;
 import net.fabricmc.loader.impl.discovery.ModCandidateImpl;
 import settingdust.preloading_tricks.api.PreloadingTricksModManager;
+import settingdust.preloading_tricks.fabric.virtual_mod.virtual_mod.VirtualModContainer;
 
+import java.nio.file.Path;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
@@ -88,5 +90,10 @@ public class FabricModManager implements PreloadingTricksModManager<ModContainer
     @Override
     public void removeByIds(final Set<String> ids) {
         mods.removeAll(ids.stream().map(modMap::remove).toList());
+    }
+
+    @Override
+    public ModContainerImpl createVirtualMod(final String id, final Path referencePath) {
+        return new VirtualModContainer(referencePath, id);
     }
 }

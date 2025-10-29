@@ -7,7 +7,10 @@ import settingdust.preloading_tricks.api.PreloadingTricksModManager;
 import settingdust.preloading_tricks.lexforge.accessor.FMLLoaderAccessor;
 import settingdust.preloading_tricks.lexforge.accessor.ModFileInfoAccessor;
 import settingdust.preloading_tricks.lexforge.accessor.ModValidatorAccessor;
+import settingdust.preloading_tricks.lexforge.virtual_mod.VirtualJar;
+import settingdust.preloading_tricks.lexforge.virtual_mod.VirtualModFile;
 
+import java.nio.file.Path;
 import java.util.Collection;
 import java.util.List;
 import java.util.Set;
@@ -69,5 +72,10 @@ public class LexForgeModManager implements PreloadingTricksModManager<ModFile> {
                 ModFileInfoAccessor.setMods(modFileInfo, filtered);
             }
         }
+    }
+
+    @Override
+    public ModFile createVirtualMod(final String id, Path referencePath) {
+        return new VirtualModFile(new VirtualJar(id, referencePath));
     }
 }

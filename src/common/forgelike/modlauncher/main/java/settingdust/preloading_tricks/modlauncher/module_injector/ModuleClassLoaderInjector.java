@@ -20,6 +20,11 @@ import java.util.HashSet;
 import java.util.Set;
 
 public class ModuleClassLoaderInjector {
+    // ==================== Inject Methods ====================
+
+    /**
+     * Inject a module from SecureJar into the specified ClassLoader and ModuleLayer
+     */
     public static void inject(SecureJar jar, ModuleClassLoader classLoader, ModuleLayer moduleLayer) {
         var moduleName = jar.moduleDataProvider().name();
         var moduleConfiguration = ModuleClassLoaderAccessor.getConfiguration(classLoader);
@@ -60,6 +65,9 @@ public class ModuleClassLoaderInjector {
         ModuleClassLoaderAccessor.setResolvedRoots(classLoader, resolvedRoots);
     }
 
+    /**
+     * Inject a module from JAR file path into the specified ClassLoader and ModuleLayer
+     */
     public static void inject(Path path, ModuleClassLoader classLoader, ModuleLayer moduleLayer) {
         if (!path.getFileName().toString().endsWith(".jar"))
             throw new IllegalArgumentException("Path must be a jar: " + path);
@@ -68,6 +76,9 @@ public class ModuleClassLoaderInjector {
         inject(jar, classLoader, moduleLayer);
     }
 
+    /**
+     * Inject a module from JAR file path into the specified Layer
+     */
     public static void inject(Path path, IModuleLayerManager.Layer layer) {
         inject(
             path,
@@ -76,6 +87,9 @@ public class ModuleClassLoaderInjector {
         );
     }
 
+    /**
+     * Inject a module from JAR file path into the same layer as the target class
+     */
     public static void inject(Path path, Class<?> clazzInTarget) {
         inject(
             path,
@@ -84,19 +98,12 @@ public class ModuleClassLoaderInjector {
         );
     }
 
-    private static void mergeConfigurations(final Configuration to, final Configuration from) {
-        ConfigurationAccessor.getGraph(to).putAll(ConfigurationAccessor.getGraph(from));
+    // ==================== Copy Methods ====================
 
-        var modules = new HashSet<>(ConfigurationAccessor.getModules(to));
-        modules.addAll(ConfigurationAccessor.getModules(from));
-        ConfigurationAccessor.setModules(to, modules);
-
-        var nameToModule = new HashMap<>(ConfigurationAccessor.getNameToModule(to));
-        nameToModule.putAll(ConfigurationAccessor.getNameToModule(from));
-        ConfigurationAccessor.setNameToModule(to, nameToModule);
-    }
-
-    public static void move(
+    /**
+     * Copy a module from source ClassLoader/ModuleLayer to target ClassLoader/ModuleLayer
+     */
+    public static void copy(
         String moduleName,
         ModuleLayer fromModuleLayer,
         ModuleClassLoader fromModuleClassLoader,
@@ -112,30 +119,131 @@ public class ModuleClassLoaderInjector {
 
         ModuleAccessor.setLayer(module, toModuleLayer);
 
-        var fromPackageLookup = new HashMap<>(ModuleClassLoaderAccessor.getPackageLookup(fromModuleClassLoader));
-        var fromResolvedRoots = new HashMap<>(ModuleClassLoaderAccessor.getResolvedRoots(fromModuleClassLoader));
         var fromConfiguration = ModuleClassLoaderAccessor.getConfiguration(fromModuleClassLoader);
-
         var toPackageLookup = new HashMap<>(ModuleClassLoaderAccessor.getPackageLookup(toModuleClassLoader));
         var toResolvedRoots = new HashMap<>(ModuleClassLoaderAccessor.getResolvedRoots(toModuleClassLoader));
         var toConfiguration = ModuleClassLoaderAccessor.getConfiguration(toModuleClassLoader);
 
         for (final var packageName : resolvedModule.reference().descriptor().packages()) {
-            fromPackageLookup.remove(packageName);
             toPackageLookup.put(packageName, resolvedModule);
         }
 
-        fromResolvedRoots.remove(resolvedModule.name());
         toResolvedRoots.put(resolvedModule.name(), resolvedModule.reference());
 
-        moveConfiguration(toConfiguration, fromConfiguration, resolvedModule);
+        addModuleToConfiguration(toConfiguration, fromConfiguration, resolvedModule);
 
-        ModuleClassLoaderAccessor.setPackageLookup(fromModuleClassLoader, fromPackageLookup);
-        ModuleClassLoaderAccessor.setResolvedRoots(fromModuleClassLoader, fromResolvedRoots);
         ModuleClassLoaderAccessor.setPackageLookup(toModuleClassLoader, toPackageLookup);
         ModuleClassLoaderAccessor.setResolvedRoots(toModuleClassLoader, toResolvedRoots);
     }
 
+    /**
+     * Copy a module between Layers
+     */
+    public static void copy(String moduleName, IModuleLayerManager.Layer from, IModuleLayerManager.Layer to) {
+        copy(
+            moduleName,
+            LauncherAccessor.getModuleLayer(from),
+            ModuleLayerHandlerAccessor.getModuleClassLoader(from),
+            LauncherAccessor.getModuleLayer(to),
+            ModuleLayerHandlerAccessor.getModuleClassLoader(to)
+        );
+    }
+
+    /**
+     * Copy the module containing the specified class to target ClassLoader/ModuleLayer
+     */
+    public static void copy(
+        Class<?> classInModule,
+        ModuleLayer toModuleLayer,
+        ModuleClassLoader toModuleClassLoader
+    ) {
+        copy(
+            classInModule.getModule().getName(),
+            classInModule.getModule().getLayer(),
+            (ModuleClassLoader) classInModule.getClassLoader(),
+            toModuleLayer,
+            toModuleClassLoader
+        );
+    }
+
+    /**
+     * Copy the module containing the specified class to target Layer
+     */
+    public static void copy(Class<?> classInModule, IModuleLayerManager.Layer to) {
+        copy(classInModule, LauncherAccessor.getModuleLayer(to), ModuleLayerHandlerAccessor.getModuleClassLoader(to));
+    }
+
+    // ==================== Remove Methods ====================
+
+    /**
+     * Remove a module from the specified ClassLoader and ModuleLayer
+     */
+    public static void remove(
+        String moduleName,
+        ModuleLayer moduleLayer,
+        ModuleClassLoader moduleClassLoader
+    ) {
+        var resolvedModule =
+            moduleLayer.configuration().findModule(moduleName)
+                       .orElseThrow(() -> new RuntimeException("Module %s not found".formatted(moduleName)));
+
+        var packageLookup = new HashMap<>(ModuleClassLoaderAccessor.getPackageLookup(moduleClassLoader));
+        var resolvedRoots = new HashMap<>(ModuleClassLoaderAccessor.getResolvedRoots(moduleClassLoader));
+        var configuration = ModuleClassLoaderAccessor.getConfiguration(moduleClassLoader);
+
+        for (final var packageName : resolvedModule.reference().descriptor().packages()) {
+            packageLookup.remove(packageName);
+        }
+
+        resolvedRoots.remove(resolvedModule.name());
+
+        removeModuleFromConfiguration(configuration, resolvedModule);
+
+        ModuleClassLoaderAccessor.setPackageLookup(moduleClassLoader, packageLookup);
+        ModuleClassLoaderAccessor.setResolvedRoots(moduleClassLoader, resolvedRoots);
+    }
+
+    /**
+     * Remove a module from the specified Layer
+     */
+    public static void remove(String moduleName, IModuleLayerManager.Layer layer) {
+        remove(
+            moduleName,
+            LauncherAccessor.getModuleLayer(layer),
+            ModuleLayerHandlerAccessor.getModuleClassLoader(layer)
+        );
+    }
+
+    /**
+     * Remove the module containing the specified class
+     */
+    public static void remove(Class<?> classInModule) {
+        remove(
+            classInModule.getModule().getName(),
+            classInModule.getModule().getLayer(),
+            (ModuleClassLoader) classInModule.getClassLoader()
+        );
+    }
+
+    // ==================== Move Methods ====================
+
+    /**
+     * Move a module from source ClassLoader/ModuleLayer to target ClassLoader/ModuleLayer
+     */
+    public static void move(
+        String moduleName,
+        ModuleLayer fromModuleLayer,
+        ModuleClassLoader fromModuleClassLoader,
+        ModuleLayer toModuleLayer,
+        ModuleClassLoader toModuleClassLoader
+    ) {
+        copy(moduleName, fromModuleLayer, fromModuleClassLoader, toModuleLayer, toModuleClassLoader);
+        remove(moduleName, fromModuleLayer, fromModuleClassLoader);
+    }
+
+    /**
+     * Move a module between Layers
+     */
     public static void move(String moduleName, IModuleLayerManager.Layer from, IModuleLayerManager.Layer to) {
         move(
             moduleName,
@@ -146,6 +254,9 @@ public class ModuleClassLoaderInjector {
         );
     }
 
+    /**
+     * Move the module containing the specified class to target ClassLoader/ModuleLayer
+     */
     public static void move(
         Class<?> classInModule,
         ModuleLayer toModuleLayer,
@@ -160,11 +271,28 @@ public class ModuleClassLoaderInjector {
         );
     }
 
+    /**
+     * Move the module containing the specified class to target Layer
+     */
     public static void move(Class<?> classInModule, IModuleLayerManager.Layer to) {
         move(classInModule, LauncherAccessor.getModuleLayer(to), ModuleLayerHandlerAccessor.getModuleClassLoader(to));
     }
 
-    private static void moveConfiguration(final Configuration to, final Configuration from, ResolvedModule module) {
+    // ==================== Private Helper Methods ====================
+
+    private static void mergeConfigurations(final Configuration to, final Configuration from) {
+        ConfigurationAccessor.getGraph(to).putAll(ConfigurationAccessor.getGraph(from));
+
+        var modules = new HashSet<>(ConfigurationAccessor.getModules(to));
+        modules.addAll(ConfigurationAccessor.getModules(from));
+        ConfigurationAccessor.setModules(to, modules);
+
+        var nameToModule = new HashMap<>(ConfigurationAccessor.getNameToModule(to));
+        nameToModule.putAll(ConfigurationAccessor.getNameToModule(from));
+        ConfigurationAccessor.setNameToModule(to, nameToModule);
+    }
+
+    private static void addModuleToConfiguration(final Configuration to, final Configuration from, ResolvedModule module) {
         ConfigurationAccessor.getGraph(to).put(module, ConfigurationAccessor.getGraph(from).get(module));
 
         var modules = new HashSet<>(ConfigurationAccessor.getModules(to));
@@ -174,16 +302,17 @@ public class ModuleClassLoaderInjector {
         var nameToModule = new HashMap<>(ConfigurationAccessor.getNameToModule(to));
         nameToModule.put(module.name(), module);
         ConfigurationAccessor.setNameToModule(to, nameToModule);
+    }
 
+    private static void removeModuleFromConfiguration(final Configuration configuration, ResolvedModule module) {
+        ConfigurationAccessor.getGraph(configuration).remove(module);
 
-        ConfigurationAccessor.getGraph(from).remove(module);
+        var modules = new HashSet<>(ConfigurationAccessor.getModules(configuration));
+        modules.remove(module);
+        ConfigurationAccessor.setModules(configuration, modules);
 
-        var fromModules = new HashSet<>(ConfigurationAccessor.getModules(to));
-        fromModules.remove(module);
-        ConfigurationAccessor.setModules(from, fromModules);
-
-        var fromNameToModule = new HashMap<>(ConfigurationAccessor.getNameToModule(to));
-        fromNameToModule.remove(module.name());
-        ConfigurationAccessor.setNameToModule(from, fromNameToModule);
+        var nameToModule = new HashMap<>(ConfigurationAccessor.getNameToModule(configuration));
+        nameToModule.remove(module.name());
+        ConfigurationAccessor.setNameToModule(configuration, nameToModule);
     }
 }

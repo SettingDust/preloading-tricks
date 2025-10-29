@@ -1,7 +1,7 @@
-package settingdust.preloading_tricks.fabric.virtual_mod.virtual_mod;
+package settingdust.preloading_tricks.fabric.virtual_mod;
 
 import net.fabricmc.loader.impl.ModContainerImpl;
-import settingdust.preloading_tricks.fabric.virtual_mod.virtual_mod.accessor.ModCandidateImplAccessor;
+import settingdust.preloading_tricks.fabric.virtual_mod.accessor.ModCandidateImplAccessor;
 
 import java.nio.file.Path;
 

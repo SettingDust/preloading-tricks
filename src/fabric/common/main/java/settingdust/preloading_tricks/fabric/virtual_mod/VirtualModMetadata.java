@@ -1,4 +1,4 @@
-package settingdust.preloading_tricks.fabric.virtual_mod.virtual_mod;
+package settingdust.preloading_tricks.fabric.virtual_mod;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.loader.api.Version;

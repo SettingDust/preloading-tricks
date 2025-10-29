@@ -3,7 +3,7 @@ package settingdust.preloading_tricks.fabric;
 import net.fabricmc.loader.impl.ModContainerImpl;
 import net.fabricmc.loader.impl.discovery.ModCandidateImpl;
 import settingdust.preloading_tricks.api.PreloadingTricksModManager;
-import settingdust.preloading_tricks.fabric.virtual_mod.virtual_mod.VirtualModContainer;
+import settingdust.preloading_tricks.fabric.virtual_mod.VirtualModContainer;
 
 import java.nio.file.Path;
 import java.util.Collection;

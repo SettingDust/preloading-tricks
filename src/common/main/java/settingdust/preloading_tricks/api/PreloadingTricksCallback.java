@@ -45,8 +45,6 @@ public interface PreloadingTricksCallback {
 
         @Override
         public void onSetupMods() {
-            PreloadingTricks.LOGGER.info("[{}] invoking onSetupMods", PreloadingTricks.NAME);
-
             for (final var callback : supplier.get()) {
                 callback.onSetupMods();
             }

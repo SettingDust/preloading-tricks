@@ -1,10 +1,10 @@
-package settingdust.preloading_tricks.fabric.virtual_mod.virtual_mod.accessor;
+package settingdust.preloading_tricks.fabric.virtual_mod.accessor;
 
 import net.fabricmc.loader.impl.discovery.ModCandidateImpl;
 import net.fabricmc.loader.impl.metadata.LoaderModMetadata;
 import net.lenni0451.reflect.stream.RStream;
 import net.lenni0451.reflect.stream.constructor.ConstructorWrapper;
-import settingdust.preloading_tricks.fabric.virtual_mod.virtual_mod.VirtualModMetadata;
+import settingdust.preloading_tricks.fabric.virtual_mod.VirtualModMetadata;
 
 import java.nio.file.Path;
 import java.util.Collection;

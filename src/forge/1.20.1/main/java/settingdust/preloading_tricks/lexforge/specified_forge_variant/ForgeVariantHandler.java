@@ -6,10 +6,24 @@ import settingdust.preloading_tricks.api.PreloadingTricksCallback;
 import settingdust.preloading_tricks.api.PreloadingTricksModManager;
 import settingdust.preloading_tricks.forgelike.specified_forge_variant.ForgeVariants;
 
+import java.net.URISyntaxException;
+import java.nio.file.Path;
+
 public class ForgeVariantHandler implements PreloadingTricksCallback {
     @Override
     public void onSetupMods() {
         var manager = PreloadingTricksModManager.<PreloadingTricksModManager<ModFile>>get();
+
+        try {
+            var mod = manager.createVirtualMod(
+                PreloadingTricks.MOD_ID,
+                Path.of(this.getClass().getProtectionDomain().getCodeSource().getLocation().toURI())
+            );
+            manager.add(mod);
+        } catch (URISyntaxException e) {
+            throw new RuntimeException(e);
+        }
+
         manager.removeIf(it -> {
             var manifest = it.getSecureJar().moduleDataProvider().getManifest();
             var variantString = manifest.getMainAttributes().getValue(ForgeVariants.MANIFEST_KEY);

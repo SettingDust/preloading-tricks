@@ -4,8 +4,7 @@ import com.google.common.base.Suppliers;
 import settingdust.preloading_tricks.PreloadingTricks;
 import settingdust.preloading_tricks.util.ServiceLoaderUtil;
 
-import java.net.URISyntaxException;
-import java.nio.file.Path;
+import java.util.ServiceLoader;
 import java.util.function.Supplier;
 
 /**
@@ -47,17 +46,6 @@ public interface PreloadingTricksCallback {
         @Override
         public void onSetupMods() {
             PreloadingTricks.LOGGER.info("[{}] invoking onSetupMods", PreloadingTricks.NAME);
-
-            var modManager = PreloadingTricksModManager.<PreloadingTricksModManager<Object>>get();
-            try {
-                Object mod = modManager.createVirtualMod(
-                    "preloading_tricks",
-                    Path.of(this.getClass().getProtectionDomain().getCodeSource().getLocation().toURI())
-                );
-                modManager.add(mod);
-            } catch (URISyntaxException e) {
-                throw new RuntimeException(e);
-            }
 
             for (final var callback : supplier.get()) {
                 callback.onSetupMods();

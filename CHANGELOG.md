@@ -1,5 +1,13 @@
 fix: `setAccessible` for `setMod`
 
+## [2.3.0] - 2025-10-29
+### :sparkles: New Features
+- [`a217a55`](https://github.com/SettingDust/preloading-tricks/commit/a217a550c15bf69488fa09c2b87e04874b3470bc) - add virtual mod api & add preloading tricks itself *(commit by [@SettingDust](https://github.com/SettingDust))*
+
+### :bug: Bug Fixes
+- [`d707d15`](https://github.com/SettingDust/preloading-tricks/commit/d707d1549d37c71ce31722f5e2595bfdf9730c7b) - actually work on 1.21 neoforge *(commit by [@SettingDust](https://github.com/SettingDust))*
+
+
 ## [2.2.2] - 2025-10-28
 ### :bug: Bug Fixes
 - [`0e6b900`](https://github.com/SettingDust/preloading-tricks/commit/0e6b9004dd0a1405fd3b33ed070257e61333c700) - actually work on 1.20 forge and 1.21 neoforge *(commit by [@SettingDust](https://github.com/SettingDust))*
@@ -119,3 +127,4 @@ fix: `setAccessible` for `setMod`
 [2.2.0]: https://github.com/SettingDust/preloading-tricks/compare/2.1.0...2.2.0
 [2.2.1]: https://github.com/SettingDust/preloading-tricks/compare/2.2.0...2.2.1
 [2.2.2]: https://github.com/SettingDust/preloading-tricks/compare/2.2.1...2.2.2
+[2.3.0]: https://github.com/SettingDust/preloading-tricks/compare/2.2.2...2.3.0

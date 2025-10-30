@@ -13,7 +13,12 @@ import org.apache.logging.log4j.Logger;
 import settingdust.preloading_tricks.PreloadingTricks;
 import settingdust.preloading_tricks.forgelike.class_transform.ClassTransformBootstrap;
 import settingdust.preloading_tricks.modlauncher.class_transform.ClassTransformLaunchPlugin;
-import settingdust.preloading_tricks.modlauncher.module_injector.ModuleClassLoaderInjector;
+import settingdust.preloading_tricks.modlauncher.module_injector.ModuleConfigurationCreator;
+import settingdust.preloading_tricks.modlauncher.module_injector.ModuleCopier;
+import settingdust.preloading_tricks.modlauncher.module_injector.ModuleInjector;
+import settingdust.preloading_tricks.modlauncher.module_injector.accessor.LauncherAccessor;
+import settingdust.preloading_tricks.modlauncher.module_injector.accessor.ModuleClassLoaderAccessor;
+import settingdust.preloading_tricks.modlauncher.module_injector.accessor.ModuleLayerHandlerAccessor;
 
 import java.io.IOException;
 import java.net.URISyntaxException;
@@ -32,14 +37,21 @@ public class PreloadingTricksTransformationService implements ITransformationSer
             var rootPath = (UnionPath) Path.of(codeSource.getLocation().toURI());
 
             LOGGER.info("Inject jars into BOOT layer");
-            for (final var path : Files.list(rootPath.resolve("libs/boot"))
-                                       .filter(it -> it.getFileName().toString().endsWith(".jar"))
-                                       .toList()) {
-                ModuleClassLoaderInjector.inject(path, IModuleLayerManager.Layer.BOOT);
-            }
+            var bootClassLoader = ModuleLayerHandlerAccessor.getModuleClassLoader(IModuleLayerManager.Layer.BOOT);
+            var configuration = ModuleConfigurationCreator.createConfigurationFromPaths(
+                Files.list(rootPath.resolve("libs/boot"))
+                     .filter(it -> it.getFileName().toString().endsWith(".jar"))
+                     .toList(),
+                ModuleClassLoaderAccessor.getConfiguration(bootClassLoader)
+            );
+            ModuleInjector.inject(
+                configuration,
+                bootClassLoader,
+                LauncherAccessor.getModuleLayer(IModuleLayerManager.Layer.BOOT)
+            );
 
             LOGGER.info("Move self to BOOT layer");
-            ModuleClassLoaderInjector.move(
+            ModuleCopier.copy(
                 PreloadingTricksTransformationService.class,
                 IModuleLayerManager.Layer.BOOT
             );
@@ -60,24 +72,6 @@ public class PreloadingTricksTransformationService implements ITransformationSer
         PreloadingTricks.LOGGER.info("{} Installed", PreloadingTricks.NAME);
 
         injectClassTransform();
-    }
-
-    @Override
-    public List<Resource> completeScan(final IModuleLayerManager moduleLayerManager) {
-        try {
-            LOGGER.info("Inject jars into PLUGIN layer");
-            var codeSource = PreloadingTricksTransformationService.class.getProtectionDomain().getCodeSource();
-            var rootPath = (UnionPath) Path.of(codeSource.getLocation().toURI());
-
-            for (final var path : Files.list(rootPath.resolve("libs/plugin"))
-                                       .filter(it -> it.getFileName().toString().endsWith(".jar"))
-                                       .toList()) {
-                ModuleClassLoaderInjector.inject(path, IModuleLayerManager.Layer.PLUGIN);
-            }
-        } catch (URISyntaxException | IOException e) {
-            throw new RuntimeException(e);
-        }
-        return List.of();
     }
 
     private static void injectClassTransform() {

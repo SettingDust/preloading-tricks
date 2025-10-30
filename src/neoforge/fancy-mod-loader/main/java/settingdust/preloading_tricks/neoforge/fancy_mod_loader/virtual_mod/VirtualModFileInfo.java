@@ -1,8 +1,8 @@
-package settingdust.preloading_tricks.lexforge.virtual_mod;
+package settingdust.preloading_tricks.neoforge.fancy_mod_loader.virtual_mod;
 
-import net.minecraftforge.fml.loading.moddiscovery.ModFile;
-import net.minecraftforge.fml.loading.moddiscovery.ModFileInfo;
-import net.minecraftforge.forgespi.language.IConfigurable;
+import net.neoforged.fml.loading.moddiscovery.ModFile;
+import net.neoforged.fml.loading.moddiscovery.ModFileInfo;
+import net.neoforged.neoforgespi.language.IConfigurable;
 import settingdust.preloading_tricks.PreloadingTricks;
 
 import java.util.List;
@@ -32,7 +32,7 @@ public class VirtualModFileInfo extends ModFileInfo implements IConfigurable {
             public <T> Optional<T> getConfigElement(String... key) {
                 if (key.length == 1) {
                     return switch (key[0]) {
-                        case "modLoader" -> Optional.of((T) "lowcodefml");
+                        case "modLoader" -> Optional.of((T) "javafml");
                         case "loaderVersion" -> Optional.of((T) "[0,)");
                         case "license" -> Optional.of((T) "Virtual");
                         default -> Optional.empty();
@@ -59,11 +59,6 @@ public class VirtualModFileInfo extends ModFileInfo implements IConfigurable {
     @Override
     public String getLicense() {
         return "Virtual mod by " + PreloadingTricks.NAME;
-    }
-
-    @Override
-    public String moduleName() {
-        return modId;
     }
 
     @Override

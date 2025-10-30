@@ -229,7 +229,7 @@ cloche {
             loaderVersion = "47.4.4"
         }
 
-        val forgeService = forge("forge:service") {
+        forge("forge:service") {
             dependsOn(common, commonForgeLike, commonModLauncher)
 
             runs {
@@ -244,50 +244,8 @@ cloche {
                 implementation(catalog.classTransform)
                 implementation(catalog.classTransform.additionalClassProvider)
             }
-        }
 
-        val forgePlugin = forge("forge:plugin") {
-            dependencies {
-                implementation(project(":")) {
-                    capabilities {
-                        requireFeature(common.capabilitySuffix)
-                    }
-                }
-            }
-
-            dependencies {
-                implementation(catalog.reflect)
-
-                implementation(catalog.classTransform)
-                implementation(catalog.classTransform.additionalClassProvider)
-            }
-
-            tasks {
-                named(generateModsTomlTaskName) {
-                    enabled = false
-                }
-
-                named<Jar>(jarTaskName) {
-                    manifest {
-                        attributes("FMLModType" to "LIBRARY")
-                    }
-                }
-            }
-        }
-
-        forgeService.apply {
             val embedBoot by configurations.register(lowerCamelCaseGradleName(featureName, "embedBoot")) {
-                isTransitive = false
-
-                attributes
-                    .attribute(ArtifactTypeDefinition.ARTIFACT_TYPE_ATTRIBUTE, ArtifactTypeDefinition.JAR_TYPE)
-                    .attribute(REMAPPED_ATTRIBUTE, false)
-                    .attribute(INCLUDE_TRANSFORMED_OUTPUT_ATTRIBUTE, true)
-                    .attribute(RemapNamespaceAttribute.ATTRIBUTE, RemapNamespaceAttribute.INITIAL)
-                    .attribute(IncludeTransformationStateAttribute.ATTRIBUTE, IncludeTransformationStateAttribute.None)
-            }
-
-            val embedPlugin by configurations.register(lowerCamelCaseGradleName(featureName, "embedPlugin")) {
                 isTransitive = false
 
                 attributes
@@ -302,12 +260,6 @@ cloche {
                 embedBoot(catalog.reflect)
                 embedBoot(catalog.classTransform)
                 embedBoot(catalog.classTransform.additionalClassProvider)
-
-                embedPlugin(project(":")) {
-                    capabilities {
-                        requireFeature(forgePlugin.capabilitySuffix!!)
-                    }
-                }
             }
 
             tasks {
@@ -318,10 +270,6 @@ cloche {
                 named<Jar>(jarTaskName) {
                     from(embedBoot) {
                         into("libs/boot")
-                    }
-
-                    from(embedPlugin) {
-                        into("libs/plugin")
                     }
 
                     manifest {
@@ -357,7 +305,7 @@ cloche {
 
     run neoforge@{
         run modlauncher@{
-            val neoforgeService = neoforge("neoforge:modlauncher:service") {
+            neoforge("neoforge:modlauncher:service") {
                 dependsOn(common, commonForgeLike, commonModLauncher)
 
                 minecraftVersion = "1.21.1"
@@ -391,7 +339,10 @@ cloche {
                         .attribute(REMAPPED_ATTRIBUTE, false)
                         .attribute(INCLUDE_TRANSFORMED_OUTPUT_ATTRIBUTE, true)
                         .attribute(RemapNamespaceAttribute.ATTRIBUTE, RemapNamespaceAttribute.INITIAL)
-                        .attribute(IncludeTransformationStateAttribute.ATTRIBUTE, IncludeTransformationStateAttribute.None)
+                        .attribute(
+                            IncludeTransformationStateAttribute.ATTRIBUTE,
+                            IncludeTransformationStateAttribute.None
+                        )
                 }
 
                 project.dependencies {
@@ -418,7 +369,7 @@ cloche {
             }
         }
 
-        val neoforge121x = neoforge("neoforge:1.21.x") {
+        neoforge("neoforge:fancy-mod-loader") {
             dependsOn(common, commonForgeLike)
 
             minecraftVersion = "1.21.10"
@@ -528,7 +479,8 @@ tasks {
         from(forgeServiceJar.map { zipTree(it.archiveFile) })
         manifest.from(forgeServiceJar.get().manifest)
 
-        val neoforgeServiceJar = project.tasks.named<Jar>(cloche.targets.getByName("neoforge:modlauncher:service").includeJarTaskName)
+        val neoforgeServiceJar =
+            project.tasks.named<Jar>(cloche.targets.getByName("neoforge:modlauncher:service").includeJarTaskName)
         from(neoforgeServiceJar.map { zipTree(it.archiveFile) }) {
             duplicatesStrategy = DuplicatesStrategy.EXCLUDE
         }

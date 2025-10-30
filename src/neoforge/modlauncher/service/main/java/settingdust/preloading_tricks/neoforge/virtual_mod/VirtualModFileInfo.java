@@ -32,7 +32,7 @@ public class VirtualModFileInfo extends ModFileInfo implements IConfigurable {
             public <T> Optional<T> getConfigElement(String... key) {
                 if (key.length == 1) {
                     return switch (key[0]) {
-                        case "modLoader" -> Optional.of((T) "virtual");
+                        case "modLoader" -> Optional.of((T) "javafml");
                         case "loaderVersion" -> Optional.of((T) "[0,)");
                         case "license" -> Optional.of((T) "Virtual");
                         default -> Optional.empty();

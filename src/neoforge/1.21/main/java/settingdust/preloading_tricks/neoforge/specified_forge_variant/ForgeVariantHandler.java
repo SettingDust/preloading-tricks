@@ -26,10 +26,9 @@ public class ForgeVariantHandler implements PreloadingTricksCallback {
 
         manager.removeIf(it -> {
             var manifest = it.getSecureJar().moduleDataProvider().getManifest();
-            var variant =
-                ForgeVariants.BY_NAME.get(manifest.getMainAttributes()
-                                                  .getValue(ForgeVariants.MANIFEST_KEY)
-                                                  .toLowerCase());
+            var variantString = manifest.getMainAttributes().getValue(ForgeVariants.MANIFEST_KEY);
+            if (variantString == null) return false;
+            var variant = ForgeVariants.BY_NAME.get(variantString.toLowerCase());
             var shouldRemove = variant != null && variant != ForgeVariants.NeoForge;
             if (shouldRemove)
                 PreloadingTricks.LOGGER.debug("Removing {} for variant {}", it.getFilePath(), variant);

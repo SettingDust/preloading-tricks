@@ -49,7 +49,10 @@ public class ModuleClassLoaderInjector {
         ModuleClassLoaderInjector.class.getModule().addReads(module);
 
         for (final var readModule : ConfigurationAccessor.getGraph(moduleConfiguration).get(resolvedModule)) {
-            ModuleAccessor.implAddReads(module, moduleLayer.findModule(readModule.name()).orElseThrow());
+            var readModuleInTarget = moduleLayer.findModule(readModule.name());
+            if (readModuleInTarget.isEmpty())
+                continue;
+            ModuleAccessor.implAddReads(module, readModuleInTarget.get());
         }
 
         ResolvedModuleAccessor.setCf(resolvedModule, moduleConfiguration);

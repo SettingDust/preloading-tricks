@@ -4,7 +4,6 @@ import cpw.mods.cl.ModuleClassLoader;
 import settingdust.preloading_tricks.forgelike.JavaBypass;
 
 import java.lang.invoke.MethodHandle;
-import java.lang.invoke.MethodHandles;
 
 public class LayerInfoAccessor {
     public static final Class<?> clazz;
@@ -14,7 +13,7 @@ public class LayerInfoAccessor {
     static {
         try {
             clazz = Class.forName("cpw.mods.modlauncher.ModuleLayerHandler$LayerInfo");
-            var lookup = MethodHandles.privateLookupIn(clazz, JavaBypass.TRUSTED_LOOKUP);
+            var lookup = JavaBypass.TRUSTED_LOOKUP.in(clazz);
             cl = lookup.findGetter(clazz, "cl", ModuleClassLoader.class);
         } catch (ClassNotFoundException | IllegalAccessException | NoSuchFieldException e) {
             throw new RuntimeException(e);

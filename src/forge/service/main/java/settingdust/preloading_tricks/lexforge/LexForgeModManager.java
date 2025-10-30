@@ -1,12 +1,9 @@
 package settingdust.preloading_tricks.lexforge;
 
-import com.google.common.collect.Iterators;
 import net.minecraftforge.fml.loading.moddiscovery.ModFile;
 import net.minecraftforge.fml.loading.moddiscovery.ModFileInfo;
 import settingdust.preloading_tricks.api.PreloadingTricksModManager;
-import settingdust.preloading_tricks.lexforge.accessor.FMLLoaderAccessor;
 import settingdust.preloading_tricks.lexforge.accessor.ModFileInfoAccessor;
-import settingdust.preloading_tricks.lexforge.accessor.ModValidatorAccessor;
 import settingdust.preloading_tricks.lexforge.virtual_mod.VirtualJar;
 import settingdust.preloading_tricks.lexforge.virtual_mod.VirtualModFile;
 
@@ -17,9 +14,7 @@ import java.util.Set;
 import java.util.function.Predicate;
 
 public class LexForgeModManager implements PreloadingTricksModManager<ModFile> {
-    private final List<ModFile> mods = ModValidatorAccessor.getCandidateMods(FMLLoaderAccessor.getModValidator());
-    private final List<ModFile> gameLibraries =
-        ModValidatorAccessor.getGameLibraries(FMLLoaderAccessor.getModValidator());
+    public static List<ModFile> mods = List.of();
 
     @Override
     public Collection<ModFile> all() {
@@ -44,13 +39,11 @@ public class LexForgeModManager implements PreloadingTricksModManager<ModFile> {
     @Override
     public void removeIf(final Predicate<ModFile> predicate) {
         mods.removeIf(predicate);
-        gameLibraries.removeIf(predicate);
     }
 
     @Override
     public void removeAll(final Collection<ModFile> modFiles) {
         mods.removeAll(modFiles);
-        gameLibraries.removeAll(modFiles);
     }
 
     @Override
@@ -60,7 +53,7 @@ public class LexForgeModManager implements PreloadingTricksModManager<ModFile> {
 
     @Override
     public void removeByIds(final Set<String> ids) {
-        var iterator = Iterators.concat(mods.iterator(), gameLibraries.iterator());
+        var iterator = mods.iterator();
         while (iterator.hasNext()) {
             var mod = iterator.next();
             if (mod.getModInfos().isEmpty()) continue;
@@ -76,6 +69,6 @@ public class LexForgeModManager implements PreloadingTricksModManager<ModFile> {
 
     @Override
     public ModFile createVirtualMod(final String id, Path referencePath) {
-        return new VirtualModFile(new VirtualJar(id, referencePath));
+        return new VirtualModFile(id, new VirtualJar(id, referencePath));
     }
 }

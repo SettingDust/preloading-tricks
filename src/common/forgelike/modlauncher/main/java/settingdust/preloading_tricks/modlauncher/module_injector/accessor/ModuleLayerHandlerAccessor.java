@@ -30,7 +30,6 @@ public class ModuleLayerHandlerAccessor {
         var completedLayers = ModuleLayerHandlerAccessor
             .getCompletedLayers((ModuleLayerHandler) Launcher.INSTANCE.findLayerManager().orElseThrow());
         var layerInfo = completedLayers.get(layer);
-        var classLoader = LayerInfoAccessor.getModuleClassLoader(layerInfo);
-        return classLoader;
+        return LayerInfoAccessor.getModuleClassLoader(layerInfo);
     }
 }

@@ -1,5 +1,6 @@
 package settingdust.preloading_tricks.lexforge.specified_forge_variant;
 
+import cpw.mods.niofs.union.UnionPath;
 import net.minecraftforge.fml.loading.moddiscovery.ModFile;
 import settingdust.preloading_tricks.PreloadingTricks;
 import settingdust.preloading_tricks.api.PreloadingTricksCallback;
@@ -17,7 +18,11 @@ public class ForgeVariantHandler implements PreloadingTricksCallback {
         try {
             var mod = manager.createVirtualMod(
                 PreloadingTricks.MOD_ID,
-                Path.of(this.getClass().getProtectionDomain().getCodeSource().getLocation().toURI())
+                ((UnionPath) Path.of(this.getClass()
+                                         .getProtectionDomain()
+                                         .getCodeSource()
+                                         .getLocation()
+                                         .toURI())).getFileSystem().getPrimaryPath()
             );
             manager.add(mod);
         } catch (URISyntaxException e) {

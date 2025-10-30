@@ -20,7 +20,7 @@ public class TransformationServiceCallback implements
         PreloadingTricksTransformationService.init();
 
         ClassTransformBootstrap.INSTANCE.addConfig(
-            PreloadingTricks.MOD_ID + ".lexforge.classtransform.json",
+            PreloadingTricks.MOD_ID + ".neoforge.modlauncher.classtransform.json",
             PreloadingTricksTransformationService.class.getClassLoader()
         );
 

@@ -3,6 +3,7 @@ package settingdust.preloading_tricks.lexforge.virtual_mod;
 import cpw.mods.jarhandling.SecureJar;
 import cpw.mods.niofs.union.UnionFileSystem;
 import cpw.mods.niofs.union.UnionFileSystemProvider;
+import net.minecraft.server.packs.PackResources;
 
 import javax.annotation.Nullable;
 import java.io.Closeable;
@@ -42,18 +43,23 @@ public final class VirtualJar implements SecureJar, Closeable {
         }
 
         this.moduleDescriptor = ModuleDescriptor.newAutomaticModule(name)
-                .packages(Set.of(packages))
-                .build();
+                                                .packages(Set.of(packages))
+                                                .build();
         // Create a dummy file system from the reference path, with a filter that always returns false
-        this.dummyFileSystem = UFSP.newFileSystem((path, basePath) -> false, referencePath);
+        this.dummyFileSystem = UFSP.newFileSystem(
+            (path, basePath) -> path.equals(PackResources.PACK_META),
+            referencePath
+        );
     }
 
     // Implementation details below
-    private static final UnionFileSystemProvider UFSP = (UnionFileSystemProvider) FileSystemProvider.installedProviders()
-            .stream()
-            .filter(fsp->fsp.getScheme().equals("union"))
-            .findFirst()
-            .orElseThrow(()->new IllegalStateException("Couldn't find UnionFileSystemProvider"));
+    private static final UnionFileSystemProvider UFSP =
+        (UnionFileSystemProvider) FileSystemProvider.installedProviders()
+                                                    .stream()
+                                                    .filter(fsp -> fsp.getScheme().equals("union"))
+                                                    .findFirst()
+                                                    .orElseThrow(() -> new IllegalStateException(
+                                                        "Couldn't find UnionFileSystemProvider"));
 
     private final ModuleDescriptor moduleDescriptor;
     private final ModuleDataProvider moduleData = new VirtualJarModuleDataProvider();

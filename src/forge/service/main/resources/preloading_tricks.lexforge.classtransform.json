@@ -1,6 +1,6 @@
 {
   "package": "settingdust.preloading_tricks.lexforge.transformer",
   "transformers": [
-    "mod_setup_hook.FMLLoaderTransformer"
+    "mod_setup_hook.ModDiscovererTransformer"
   ]
 }

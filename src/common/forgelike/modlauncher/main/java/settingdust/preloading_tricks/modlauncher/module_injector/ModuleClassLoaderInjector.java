@@ -241,7 +241,6 @@ public class ModuleClassLoaderInjector {
         ModuleClassLoader toModuleClassLoader
     ) {
         copy(moduleName, fromModuleLayer, fromModuleClassLoader, toModuleLayer, toModuleClassLoader);
-        remove(moduleName, fromModuleLayer, fromModuleClassLoader);
     }
 
     /**

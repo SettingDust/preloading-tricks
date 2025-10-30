@@ -1,14 +1,10 @@
 package settingdust.preloading_tricks.neoforge;
 
-import com.google.common.collect.Iterators;
-import cpw.mods.jarhandling.VirtualJar;
 import net.neoforged.fml.loading.moddiscovery.ModFile;
 import net.neoforged.fml.loading.moddiscovery.ModFileInfo;
-import net.neoforged.neoforgespi.locating.IModFile;
 import settingdust.preloading_tricks.api.PreloadingTricksModManager;
-import settingdust.preloading_tricks.neoforge.accessor.FMLLoaderAccessor;
 import settingdust.preloading_tricks.neoforge.accessor.ModFileInfoAccessor;
-import settingdust.preloading_tricks.neoforge.accessor.ModValidatorAccessor;
+import settingdust.preloading_tricks.neoforge.virtual_mod.VirtualJar;
 import settingdust.preloading_tricks.neoforge.virtual_mod.VirtualModFile;
 
 import java.nio.file.Path;
@@ -18,9 +14,7 @@ import java.util.Set;
 import java.util.function.Predicate;
 
 public class NeoForgeModManager implements PreloadingTricksModManager<ModFile> {
-    private final List<ModFile> mods = ModValidatorAccessor.getCandidateMods(FMLLoaderAccessor.getModValidator());
-    private final List<ModFile> gameLibraries =
-        ModValidatorAccessor.getModFiles(FMLLoaderAccessor.getModValidator()).get(IModFile.Type.GAMELIBRARY);
+    public static List<ModFile> mods = null;
 
     @Override
     public Collection<ModFile> all() {
@@ -40,19 +34,16 @@ public class NeoForgeModManager implements PreloadingTricksModManager<ModFile> {
     @Override
     public void remove(final ModFile mod) {
         mods.remove(mod);
-        gameLibraries.remove(mod);
     }
 
     @Override
     public void removeIf(final Predicate<ModFile> predicate) {
         mods.removeIf(predicate);
-        gameLibraries.removeIf(predicate);
     }
 
     @Override
     public void removeAll(final Collection<ModFile> all) {
         mods.removeAll(all);
-        gameLibraries.removeAll(all);
     }
 
     @Override
@@ -62,7 +53,7 @@ public class NeoForgeModManager implements PreloadingTricksModManager<ModFile> {
 
     @Override
     public void removeByIds(final Set<String> ids) {
-        var iterator = Iterators.concat(mods.iterator(), gameLibraries.iterator());
+        var iterator = mods.iterator();
         while (iterator.hasNext()) {
             var mod = iterator.next();
             if (mod.getModInfos().isEmpty()) continue;
@@ -78,6 +69,6 @@ public class NeoForgeModManager implements PreloadingTricksModManager<ModFile> {
 
     @Override
     public ModFile createVirtualMod(final String id, final Path referencePath) {
-        return new VirtualModFile(new VirtualJar(id, referencePath));
+        return new VirtualModFile(id, new VirtualJar(id, referencePath));
     }
 }

@@ -11,7 +11,6 @@ import earth.terrarium.cloche.api.target.FabricTarget
 import earth.terrarium.cloche.api.target.ForgeLikeTarget
 import earth.terrarium.cloche.api.target.ForgeTarget
 import earth.terrarium.cloche.api.target.MinecraftTarget
-import earth.terrarium.cloche.api.target.NeoforgeTarget
 import earth.terrarium.cloche.tasks.GenerateFabricModJson
 import groovy.lang.Closure
 import net.msrandom.minecraftcodev.core.utils.lowerCamelCaseGradleName
@@ -95,8 +94,6 @@ dependencies {
     }
 }
 
-val containerTasks = mutableSetOf<TaskProvider<out Jar>>()
-
 cloche {
     metadata {
         modId = id
@@ -173,8 +170,6 @@ cloche {
             tasks.named<GenerateFabricModJson>(generateModsManifestTaskName) {
                 modId = "${id}_1_20"
             }
-
-            containerTasks += tasks.named<Jar>(includeJarTaskName)
         }
 
         val fabric121 = fabric("fabric:1.21") {
@@ -320,7 +315,7 @@ cloche {
                     enabled = false
                 }
 
-                val jar = named<Jar>(lowerCamelCaseGradleName(featureName, "jar")) {
+                named<Jar>(jarTaskName) {
                     from(embedBoot) {
                         into("libs/boot")
                     }
@@ -335,8 +330,6 @@ cloche {
                 }
 
                 val includeJar = named<JarJar>(includeJarTaskName)
-
-                containerTasks += includeJar
 
                 val deleteJarInModFolder = register<Delete>(
                     lowerCamelCaseGradleName(featureName, "deleteJarInModFolder")
@@ -363,64 +356,65 @@ cloche {
     }
 
     run neoforge@{
-        val neoforge121 = neoforge("neoforge:1.21") {
-            dependsOn(commonForgeLike, commonModLauncher)
+        run modlauncher@{
+            val neoforgeService = neoforge("neoforge:modlauncher:service") {
+                dependsOn(common, commonForgeLike, commonModLauncher)
 
-            minecraftVersion = "1.21.1"
-            loaderVersion = "21.1.213"
+                minecraftVersion = "1.21.1"
+                loaderVersion = "21.1.213"
 
-            metadata {
-                dependency {
-                    modId = "minecraft"
-                    type = CommonMetadata.Dependency.Type.Required
-                    version {
-                        start = "1.21"
+                dependencies {
+                    catalog.reflect.let {
+                        implementation(it)
+                        legacyClasspath(it)
                     }
-                }
-            }
-
-            dependencies {
-                catalog.reflect.let {
-                    implementation(it)
-                    legacyClasspath(it)
-                }
-                catalog.classTransform.let {
-                    implementation(it) {
-                        exclude(group = "org.ow2.asm")
+                    catalog.classTransform.let {
+                        implementation(it) {
+                            exclude(group = "org.ow2.asm")
+                        }
+                        legacyClasspath(it)
                     }
-                    legacyClasspath(it)
-                }
-                catalog.classTransform.additionalClassProvider.let {
-                    implementation(it) {
-                        exclude(group = "com.google.guava")
-                        exclude(group = "org.ow2.asm")
-                    }
-                    legacyClasspath(it)
-                }
-            }
-
-            val embed by configurations.register(lowerCamelCaseGradleName(featureName, "embed")) {
-                isTransitive = false
-            }
-
-            project.dependencies {
-                embed(catalog.reflect)
-                embed(catalog.classTransform)
-                embed(catalog.classTransform.additionalClassProvider)
-            }
-
-            tasks {
-                val jar = named<Jar>(lowerCamelCaseGradleName(featureName, "jar")) {
-                    from(embed) {
-                        into("libs")
-                    }
-
-                    manifest {
-                        attributes("FMLModType" to "LIBRARY")
+                    catalog.classTransform.additionalClassProvider.let {
+                        implementation(it) {
+                            exclude(group = "com.google.guava")
+                            exclude(group = "org.ow2.asm")
+                        }
+                        legacyClasspath(it)
                     }
                 }
 
-                containerTasks += named<JarJar>(includeJarTaskName)
+                val embedBoot by configurations.register(lowerCamelCaseGradleName(featureName, "embedBoot")) {
+                    isTransitive = false
+
+                    attributes
+                        .attribute(ArtifactTypeDefinition.ARTIFACT_TYPE_ATTRIBUTE, ArtifactTypeDefinition.JAR_TYPE)
+                        .attribute(REMAPPED_ATTRIBUTE, false)
+                        .attribute(INCLUDE_TRANSFORMED_OUTPUT_ATTRIBUTE, true)
+                        .attribute(RemapNamespaceAttribute.ATTRIBUTE, RemapNamespaceAttribute.INITIAL)
+                        .attribute(IncludeTransformationStateAttribute.ATTRIBUTE, IncludeTransformationStateAttribute.None)
+                }
+
+                project.dependencies {
+                    embedBoot(catalog.reflect)
+                    embedBoot(catalog.classTransform)
+                    embedBoot(catalog.classTransform.additionalClassProvider)
+                }
+
+                tasks {
+                    named(generateModsTomlTaskName) {
+                        enabled = false
+                    }
+
+                    named<Jar>(jarTaskName) {
+                        from(embedBoot) {
+                            into("libs/boot")
+                        }
+
+                        manifest {
+                            attributes("FMLModType" to "LIBRARY")
+                        }
+                    }
+                }
             }
         }
 
@@ -430,16 +424,6 @@ cloche {
             minecraftVersion = "1.21.10"
             loaderVersion = "21.10.38-beta"
 
-            metadata {
-                dependency {
-                    modId = "minecraft"
-                    type = CommonMetadata.Dependency.Type.Required
-                    version {
-                        start = "1.21"
-                    }
-                }
-            }
-
             dependencies {
                 catalog.reflect.let {
                     implementation(it)
@@ -458,15 +442,6 @@ cloche {
                     }
                     legacyClasspath(it)
                 }
-            }
-
-            tasks {
-                containerTasks += named<JarJar>(includeJarTaskName)
-            }
-        }
-
-        targets.withType<NeoforgeTarget> {
-            metadata {
             }
         }
     }
@@ -549,17 +524,13 @@ tasks {
         from(fabricJar.map { zipTree(it.archiveFile) })
         manifest.from(fabricJar.get().manifest)
 
-        val forgeJar = project.tasks.named<Jar>(cloche.targets.getByName("forge:service").includeJarTaskName)
-        from(forgeJar.map { zipTree(it.archiveFile) })
-        manifest.from(forgeJar.get().manifest)
+        val forgeServiceJar = project.tasks.named<Jar>(cloche.targets.getByName("forge:service").includeJarTaskName)
+        from(forgeServiceJar.map { zipTree(it.archiveFile) })
+        manifest.from(forgeServiceJar.get().manifest)
 
-        val neoforgeJar = project.tasks.named<Jar>(cloche.targets.getByName("neoforge:1.21").includeJarTaskName)
-        from(neoforgeJar.map { zipTree(it.archiveFile) }) {
-            include(
-                "settingdust/preloading_tricks/neoforge/**/*",
-                "preloading_tricks.neoforge.classtransform.json",
-                "META-INF/services/*"
-            )
+        val neoforgeServiceJar = project.tasks.named<Jar>(cloche.targets.getByName("neoforge:modlauncher:service").includeJarTaskName)
+        from(neoforgeServiceJar.map { zipTree(it.archiveFile) }) {
+            duplicatesStrategy = DuplicatesStrategy.EXCLUDE
         }
 
         manifest {

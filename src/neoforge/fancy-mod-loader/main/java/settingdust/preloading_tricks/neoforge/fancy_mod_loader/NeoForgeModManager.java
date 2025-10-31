@@ -3,6 +3,7 @@ package settingdust.preloading_tricks.neoforge.fancy_mod_loader;
 import net.neoforged.fml.jarcontents.JarContents;
 import net.neoforged.fml.loading.moddiscovery.ModFile;
 import net.neoforged.fml.loading.moddiscovery.ModFileInfo;
+import net.neoforged.fml.loading.moddiscovery.ModJarMetadata;
 import settingdust.preloading_tricks.api.PreloadingTricksModManager;
 import settingdust.preloading_tricks.neoforge.fancy_mod_loader.accessor.ModFileInfoAccessor;
 import settingdust.preloading_tricks.neoforge.fancy_mod_loader.virtual_mod.VirtualModFile;
@@ -69,6 +70,9 @@ public class NeoForgeModManager implements PreloadingTricksModManager<ModFile> {
     @Override
     public ModFile createVirtualMod(final String id, final Path referencePath) {
         var contents = JarContents.empty(referencePath);
-        return new VirtualModFile(contents, id);
+        var metadata = new ModJarMetadata();
+        var file = new VirtualModFile(contents, metadata, id);
+        metadata.setModFile(file);
+        return file;
     }
 }

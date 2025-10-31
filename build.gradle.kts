@@ -388,20 +388,10 @@ cloche {
             }
 
             dependencies {
-                legacyClasspath(project(":")) {
+                implementation(project(":")) {
                     capabilities {
                         requireFeature(neoforgeFancyModLoader.capabilitySuffix!!)
                     }
-
-                    attributes {
-                        attribute(ArtifactTypeDefinition.ARTIFACT_TYPE_ATTRIBUTE, ArtifactTypeDefinition.JAR_TYPE)
-                        attribute(REMAPPED_ATTRIBUTE, false)
-                        attribute(INCLUDE_TRANSFORMED_OUTPUT_ATTRIBUTE, true)
-                        attribute(RemapNamespaceAttribute.ATTRIBUTE, RemapNamespaceAttribute.INITIAL)
-                        attribute(IncludeTransformationStateAttribute.ATTRIBUTE, IncludeTransformationStateAttribute.None)
-                    }
-
-                    isTransitive = false
                 }
             }
 

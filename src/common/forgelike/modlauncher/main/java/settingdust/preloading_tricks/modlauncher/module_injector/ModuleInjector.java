@@ -4,6 +4,8 @@ import cpw.mods.cl.ModuleClassLoader;
 import cpw.mods.jarhandling.SecureJar;
 import cpw.mods.modlauncher.api.IModuleLayerManager;
 import settingdust.preloading_tricks.forgelike.module_injector.accessor.ConfigurationAccessor;
+import settingdust.preloading_tricks.forgelike.module_injector.accessor.ModuleAccessor;
+import settingdust.preloading_tricks.forgelike.module_injector.accessor.ModuleLayerAccessor;
 import settingdust.preloading_tricks.modlauncher.module_injector.accessor.LauncherAccessor;
 import settingdust.preloading_tricks.modlauncher.module_injector.accessor.ModuleClassLoaderAccessor;
 import settingdust.preloading_tricks.modlauncher.module_injector.accessor.ModuleLayerHandlerAccessor;
@@ -11,7 +13,6 @@ import settingdust.preloading_tricks.modlauncher.module_injector.accessor.Module
 import java.lang.module.Configuration;
 import java.nio.file.Path;
 import java.util.Arrays;
-import java.util.HashMap;
 
 /**
  * Main facade for module injection operations.
@@ -27,6 +28,7 @@ public class ModuleInjector {
     /**
      * Injects modules from a configuration into target class loader and module layer.
      * All injected modules will have mutual read relationships and can read existing modules.
+     * All existing modules in the target layer will also be able to read the newly injected modules.
      *
      * @param moduleConfig configuration containing modules to inject
      * @param targetClassLoader target class loader
@@ -41,37 +43,33 @@ public class ModuleInjector {
         ModuleOperationHelper.mergeConfigurations(targetConfiguration, moduleConfig);
 
         var allResolvedModules = ConfigurationAccessor.getModules(moduleConfig);
-        var baseModule = ModuleInjector.class.getModule();
-        var targetModules = ConfigurationAccessor.getModules(targetConfiguration);
-        var existingModules = targetModules.stream()
-                                           .filter(m -> !allResolvedModules.contains(m))
-                                           .toList();
 
-        // Create Module instances for new modules
-        var createdModules = new HashMap<String, Module>();
         for (var resolvedModule : allResolvedModules) {
+            // Save reads before modifying cf field (which affects hashCode)
+            var reads = resolvedModule.reads();
+
+            // Create and register module
             var module = ModuleOperationHelper.createAndRegisterModule(
                 resolvedModule,
                 targetLayer,
                 targetClassLoader,
                 targetConfiguration
             );
-            createdModules.put(resolvedModule.name(), module);
-        }
 
-        // Setup mutual reads between created modules
-        ModuleOperationHelper.setupMutualReads(createdModules.values(), baseModule);
+            // Add reads to all modules in current layer
+            for (var existingModuleInLayer : targetLayer.modules()) {
+                ModuleAccessor.implAddReads(existingModuleInLayer, module);
+            }
 
-        // Setup reads between created and existing modules
-        for (var module : createdModules.values()) {
-            for (var existingModule : existingModules) {
-                var moduleInTarget = targetLayer.findModule(existingModule.name());
-                if (moduleInTarget.isPresent()) {
-                    moduleInTarget.get().addReads(module);
-                    module.addReads(moduleInTarget.get());
-                }
+            // Add reads to modules required by this module (from saved reads)
+            for (var required : reads) {
+                // findModule will search in parent layers automatically
+                targetLayer.findModule(required.name())
+                           .ifPresent(it -> ModuleAccessor.implAddReads(module, it));
             }
         }
+
+        ModuleLayerAccessor.clearModules(targetLayer);
 
         // Update class loader metadata
         ModuleOperationHelper.updatePackageLookup(targetClassLoader, allResolvedModules);

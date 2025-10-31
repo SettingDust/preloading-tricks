@@ -3,6 +3,7 @@ package settingdust.preloading_tricks.modlauncher.module_injector;
 import cpw.mods.cl.ModuleClassLoader;
 import cpw.mods.modlauncher.api.IModuleLayerManager;
 import settingdust.preloading_tricks.forgelike.module_injector.accessor.ModuleAccessor;
+import settingdust.preloading_tricks.forgelike.module_injector.accessor.ModuleLayerAccessor;
 import settingdust.preloading_tricks.modlauncher.module_injector.accessor.LauncherAccessor;
 import settingdust.preloading_tricks.modlauncher.module_injector.accessor.ModuleClassLoaderAccessor;
 import settingdust.preloading_tricks.modlauncher.module_injector.accessor.ModuleLayerHandlerAccessor;
@@ -11,7 +12,7 @@ import java.util.HashMap;
 
 /**
  * Utility class for copying modules between class loaders and module layers.
- * 
+ *
  * <p>Provides methods to duplicate modules from one context to another while maintaining:
  * <ul>
  *   <li>Module configuration and metadata</li>
@@ -20,10 +21,10 @@ import java.util.HashMap;
  * </ul>
  */
 public class ModuleCopier {
-    
+
     /**
      * Copies a module from source to target class loader and layer.
-     * 
+     *
      * @param moduleName name of module to copy
      * @param sourceLayer source module layer
      * @param targetLayer target module layer
@@ -37,16 +38,16 @@ public class ModuleCopier {
     ) {
         var resolvedModule =
             sourceLayer.configuration().findModule(moduleName)
-                           .orElseThrow(() -> new RuntimeException("Module %s not found".formatted(moduleName)));
+                       .orElseThrow(() -> new RuntimeException("Module %s not found".formatted(moduleName)));
         var module =
             sourceLayer.findModule(moduleName)
-                           .orElseThrow(() -> new RuntimeException("Module %s not found".formatted(moduleName)));
+                       .orElseThrow(() -> new RuntimeException("Module %s not found".formatted(moduleName)));
 
         ModuleAccessor.setLayer(module, targetLayer);
 
         var toPackageLookup = new HashMap<>(ModuleClassLoaderAccessor.getPackageLookup(targetClassLoader));
         var toResolvedRoots = new HashMap<>(ModuleClassLoaderAccessor.getResolvedRoots(targetClassLoader));
-        var toConfiguration = ModuleClassLoaderAccessor.getConfiguration(targetClassLoader);
+        var toConfiguration = targetLayer.configuration();
 
         for (final var packageName : resolvedModule.reference().descriptor().packages()) {
             toPackageLookup.put(packageName, resolvedModule);
@@ -54,6 +55,7 @@ public class ModuleCopier {
 
         toResolvedRoots.put(resolvedModule.name(), resolvedModule.reference());
 
+        ModuleLayerAccessor.getNameToModule(targetLayer).put(resolvedModule.name(), module);
         ModuleOperationHelper.addModuleToConfiguration(toConfiguration, resolvedModule);
 
         ModuleClassLoaderAccessor.setPackageLookup(targetClassLoader, toPackageLookup);
@@ -62,12 +64,16 @@ public class ModuleCopier {
 
     /**
      * Copies a module between layers.
-     * 
+     *
      * @param moduleName name of module to copy
      * @param sourceLayer source layer
      * @param targetLayer target layer
      */
-    public static void copy(String moduleName, IModuleLayerManager.Layer sourceLayer, IModuleLayerManager.Layer targetLayer) {
+    public static void copy(
+        String moduleName,
+        IModuleLayerManager.Layer sourceLayer,
+        IModuleLayerManager.Layer targetLayer
+    ) {
         copy(
             moduleName,
             LauncherAccessor.getModuleLayer(sourceLayer),
@@ -78,7 +84,7 @@ public class ModuleCopier {
 
     /**
      * Copies the module containing a class to target class loader and layer.
-     * 
+     *
      * @param classInModule class whose module should be copied
      * @param targetLayer target module layer
      * @param targetClassLoader target class loader
@@ -98,11 +104,15 @@ public class ModuleCopier {
 
     /**
      * Copies the module containing a class to target layer.
-     * 
+     *
      * @param classInModule class whose module should be copied
      * @param targetLayer target layer
      */
     public static void copy(Class<?> classInModule, IModuleLayerManager.Layer targetLayer) {
-        copy(classInModule, LauncherAccessor.getModuleLayer(targetLayer), ModuleLayerHandlerAccessor.getModuleClassLoader(targetLayer));
+        copy(
+            classInModule,
+            LauncherAccessor.getModuleLayer(targetLayer),
+            ModuleLayerHandlerAccessor.getModuleClassLoader(targetLayer)
+        );
     }
 }

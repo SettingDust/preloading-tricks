@@ -14,8 +14,8 @@ import settingdust.preloading_tricks.PreloadingTricks;
 import settingdust.preloading_tricks.forgelike.class_transform.ClassTransformBootstrap;
 import settingdust.preloading_tricks.modlauncher.class_transform.ClassTransformLaunchPlugin;
 import settingdust.preloading_tricks.modlauncher.module_injector.ModuleConfigurationCreator;
-import settingdust.preloading_tricks.modlauncher.module_injector.ModuleCopier;
 import settingdust.preloading_tricks.modlauncher.module_injector.ModuleInjector;
+import settingdust.preloading_tricks.modlauncher.module_injector.ModuleMover;
 import settingdust.preloading_tricks.modlauncher.module_injector.accessor.LauncherAccessor;
 import settingdust.preloading_tricks.modlauncher.module_injector.accessor.ModuleClassLoaderAccessor;
 import settingdust.preloading_tricks.modlauncher.module_injector.accessor.ModuleLayerHandlerAccessor;
@@ -36,6 +36,12 @@ public class PreloadingTricksTransformationService implements ITransformationSer
             var codeSource = PreloadingTricksTransformationService.class.getProtectionDomain().getCodeSource();
             var rootPath = (UnionPath) Path.of(codeSource.getLocation().toURI());
 
+            LOGGER.info("Move self to BOOT layer");
+            ModuleMover.move(
+                PreloadingTricksTransformationService.class,
+                IModuleLayerManager.Layer.BOOT
+            );
+
             LOGGER.info("Inject jars into BOOT layer");
             var bootClassLoader = ModuleLayerHandlerAccessor.getModuleClassLoader(IModuleLayerManager.Layer.BOOT);
             var configuration = ModuleConfigurationCreator.createConfigurationFromPaths(
@@ -48,12 +54,6 @@ public class PreloadingTricksTransformationService implements ITransformationSer
                 configuration,
                 bootClassLoader,
                 LauncherAccessor.getModuleLayer(IModuleLayerManager.Layer.BOOT)
-            );
-
-            LOGGER.info("Move self to BOOT layer");
-            ModuleCopier.copy(
-                PreloadingTricksTransformationService.class,
-                IModuleLayerManager.Layer.BOOT
             );
 
             new ClassTransformBootstrap();

@@ -15,7 +15,7 @@ import java.util.HashSet;
 
 /**
  * Helper class providing low-level operations for module manipulation.
- * 
+ *
  * <p>This class contains utility methods for:
  * <ul>
  *   <li>Creating and registering module instances</li>
@@ -23,14 +23,14 @@ import java.util.HashSet;
  *   <li>Updating class loader package lookups and resolved roots</li>
  *   <li>Merging and modifying module configurations</li>
  * </ul>
- * 
+ *
  * <p><b>Note:</b> This class is intended for internal use by other module manipulation classes.
  */
 public class ModuleOperationHelper {
-    
+
     /**
      * Creates and registers a module instance in the target layer.
-     * 
+     *
      * @param resolvedModule module to create
      * @param targetLayer layer to register in
      * @param targetClassLoader class loader for the module
@@ -57,19 +57,19 @@ public class ModuleOperationHelper {
     /**
      * Sets up mutual read relationships between modules.
      * All modules will be able to read each other and the base module.
-     * 
+     *
      * @param modulesToLink modules to establish relationships between
      * @param baseModule base module that should read all others
      */
     public static void setupMutualReads(Iterable<Module> modulesToLink, Module baseModule) {
         var moduleList = new ArrayList<Module>();
         modulesToLink.forEach(moduleList::add);
-        
+
         for (var module : moduleList) {
-            baseModule.addReads(module);
+            ModuleAccessor.implAddReads(baseModule, module);
             for (var other : moduleList) {
                 if (module != other) {
-                    module.addReads(other);
+                    ModuleAccessor.implAddReads(module, other);
                 }
             }
         }
@@ -77,7 +77,7 @@ public class ModuleOperationHelper {
 
     /**
      * Updates the class loader's package lookup map with new modules.
-     * 
+     *
      * @param classLoader class loader to update
      * @param newModules modules whose packages should be registered
      */
@@ -96,7 +96,7 @@ public class ModuleOperationHelper {
 
     /**
      * Updates the class loader's resolved roots map with new modules.
-     * 
+     *
      * @param classLoader class loader to update
      * @param newModules modules to add to resolved roots
      */
@@ -114,7 +114,7 @@ public class ModuleOperationHelper {
     /**
      * Updates the package lookup for specific packages in a module.
      * Used when replacing modules to register new packages.
-     * 
+     *
      * @param classLoader class loader to update
      * @param resolvedModule resolved module containing the packages
      * @param packages packages to register
@@ -133,7 +133,7 @@ public class ModuleOperationHelper {
 
     /**
      * Merges configuration data from source to target.
-     * 
+     *
      * @param targetConfig configuration to merge into
      * @param sourceConfig configuration to merge from
      */
@@ -151,7 +151,7 @@ public class ModuleOperationHelper {
 
     /**
      * Adds a module to a configuration.
-     * 
+     *
      * @param targetConfig configuration to add to
      * @param moduleToAdd module to add
      */
@@ -159,7 +159,7 @@ public class ModuleOperationHelper {
         final Configuration targetConfig,
         ResolvedModule moduleToAdd
     ) {
-        ConfigurationAccessor.getGraph(targetConfig).put(moduleToAdd, new HashSet<>());
+        ConfigurationAccessor.getGraph(targetConfig).put(moduleToAdd, moduleToAdd.reads());
 
         var modules = new HashSet<>(ConfigurationAccessor.getModules(targetConfig));
         modules.add(moduleToAdd);
@@ -168,11 +168,13 @@ public class ModuleOperationHelper {
         var nameToModule = new HashMap<>(ConfigurationAccessor.getNameToModule(targetConfig));
         nameToModule.put(moduleToAdd.name(), moduleToAdd);
         ConfigurationAccessor.setNameToModule(targetConfig, nameToModule);
+
+        ResolvedModuleAccessor.setCf(moduleToAdd, targetConfig);
     }
 
     /**
      * Removes a module from a configuration.
-     * 
+     *
      * @param config configuration to remove from
      * @param moduleToRemove module to remove
      */

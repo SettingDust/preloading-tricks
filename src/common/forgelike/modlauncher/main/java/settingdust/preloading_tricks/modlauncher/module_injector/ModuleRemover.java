@@ -10,7 +10,7 @@ import java.util.HashMap;
 
 /**
  * Utility class for removing modules from class loaders and module layers.
- * 
+ *
  * <p>Provides methods to cleanly remove modules while updating:
  * <ul>
  *   <li>Module configuration</li>
@@ -19,10 +19,10 @@ import java.util.HashMap;
  * </ul>
  */
 public class ModuleRemover {
-    
+
     /**
      * Removes a module from class loader and layer.
-     * 
+     *
      * @param moduleName name of module to remove
      * @param layer module layer
      * @param classLoader class loader
@@ -34,7 +34,7 @@ public class ModuleRemover {
     ) {
         var resolvedModule =
             layer.configuration().findModule(moduleName)
-                       .orElseThrow(() -> new RuntimeException("Module %s not found".formatted(moduleName)));
+                 .orElseThrow(() -> new RuntimeException("Module %s not found".formatted(moduleName)));
 
         var packageLookup = new HashMap<>(ModuleClassLoaderAccessor.getPackageLookup(classLoader));
         var resolvedRoots = new HashMap<>(ModuleClassLoaderAccessor.getResolvedRoots(classLoader));
@@ -54,7 +54,7 @@ public class ModuleRemover {
 
     /**
      * Removes a module from a layer.
-     * 
+     *
      * @param moduleName name of module to remove
      * @param layer layer to remove from
      */
@@ -68,7 +68,7 @@ public class ModuleRemover {
 
     /**
      * Removes the module containing the specified class.
-     * 
+     *
      * @param classInModule class whose module should be removed
      */
     public static void remove(Class<?> classInModule) {

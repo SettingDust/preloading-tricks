@@ -12,21 +12,21 @@ import java.util.stream.Collectors;
 
 /**
  * Factory class for creating module configurations from JAR files.
- * 
+ *
  * <p>Provides various methods to generate {@link Configuration} objects from:
  * <ul>
  *   <li>Single or multiple {@link SecureJar} instances</li>
  *   <li>Single or multiple JAR file paths</li>
  *   <li>Lists of JARs or paths</li>
  * </ul>
- * 
+ *
  * <p>All generated configurations use {@link JarModuleFinder} for module resolution.
  */
 public class ModuleConfigurationCreator {
-    
+
     /**
      * Creates a module configuration from a single JAR.
-     * 
+     *
      * @param jar SecureJar containing the module
      * @param parentConfig parent configuration for resolution
      * @return new Configuration with the module
@@ -42,7 +42,7 @@ public class ModuleConfigurationCreator {
 
     /**
      * Creates a module configuration from a JAR file path.
-     * 
+     *
      * @param jarPath path to JAR file (must end with .jar)
      * @param parentConfig parent configuration for resolution
      * @return new Configuration with the module
@@ -56,7 +56,7 @@ public class ModuleConfigurationCreator {
     /**
      * Creates a single configuration from multiple JARs.
      * All modules are resolved together.
-     * 
+     *
      * @param jars list of SecureJars
      * @param parentConfig parent configuration for resolution
      * @return new Configuration with all modules, or parentConfig if empty
@@ -66,8 +66,8 @@ public class ModuleConfigurationCreator {
             return parentConfig;
         }
         var moduleNames = jars.stream()
-            .map(jar -> jar.moduleDataProvider().name())
-            .collect(Collectors.toSet());
+                              .map(jar -> jar.moduleDataProvider().name())
+                              .collect(Collectors.toSet());
         return parentConfig.resolve(
             JarModuleFinder.of(jars.toArray(new SecureJar[0])),
             JarModuleFinder.of(),
@@ -78,7 +78,7 @@ public class ModuleConfigurationCreator {
     /**
      * Creates a single configuration from multiple JAR paths.
      * All modules are resolved together.
-     * 
+     *
      * @param jarPaths list of JAR file paths
      * @param parentConfig parent configuration for resolution
      * @return new Configuration with all modules
@@ -86,16 +86,16 @@ public class ModuleConfigurationCreator {
      */
     public static Configuration createConfigurationFromPaths(List<Path> jarPaths, Configuration parentConfig) {
         var jars = jarPaths.stream()
-            .peek(ModuleConfigurationCreator::validateJarPath)
-            .map(SecureJar::from)
-            .toList();
+                           .peek(ModuleConfigurationCreator::validateJarPath)
+                           .map(SecureJar::from)
+                           .toList();
         return createConfiguration(jars, parentConfig);
     }
 
     /**
      * Creates a single configuration from multiple JARs (varargs).
      * All modules are resolved together.
-     * 
+     *
      * @param parentConfig parent configuration for resolution
      * @param jars SecureJars (varargs)
      * @return new Configuration with all modules
@@ -103,10 +103,10 @@ public class ModuleConfigurationCreator {
     public static Configuration createConfiguration(Configuration parentConfig, SecureJar... jars) {
         return createConfiguration(Arrays.asList(jars), parentConfig);
     }
-    
+
     /**
      * Validates that a path points to a JAR file.
-     * 
+     *
      * @param jarPath path to validate
      * @throws IllegalArgumentException if path doesn't end with .jar
      */

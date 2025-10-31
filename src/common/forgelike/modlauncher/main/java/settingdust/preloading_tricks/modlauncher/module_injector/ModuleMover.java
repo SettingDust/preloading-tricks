@@ -4,7 +4,10 @@ import cpw.mods.cl.ModuleClassLoader;
 import cpw.mods.modlauncher.api.IModuleLayerManager;
 import settingdust.preloading_tricks.forgelike.module_injector.accessor.ModuleLayerAccessor;
 import settingdust.preloading_tricks.modlauncher.module_injector.accessor.LauncherAccessor;
+import settingdust.preloading_tricks.modlauncher.module_injector.accessor.ModuleClassLoaderAccessor;
 import settingdust.preloading_tricks.modlauncher.module_injector.accessor.ModuleLayerHandlerAccessor;
+
+import java.util.HashMap;
 
 /**
  * Utility class for moving modules between class loaders and module layers.
@@ -46,6 +49,18 @@ public class ModuleMover {
 
         // Remove from source configuration
         ModuleOperationHelper.removeModuleFromConfiguration(sourceLayer.configuration(), resolvedModule);
+
+        // Clean up source class loader's package lookup
+        var sourcePackageLookup = new HashMap<>(ModuleClassLoaderAccessor.getPackageLookup(sourceClassLoader));
+        for (final var packageName : resolvedModule.reference().descriptor().packages()) {
+            sourcePackageLookup.remove(packageName);
+        }
+        ModuleClassLoaderAccessor.setPackageLookup(sourceClassLoader, sourcePackageLookup);
+
+        // Clean up source class loader's resolved roots
+        var sourceResolvedRoots = new HashMap<>(ModuleClassLoaderAccessor.getResolvedRoots(sourceClassLoader));
+        sourceResolvedRoots.remove(resolvedModule.name());
+        ModuleClassLoaderAccessor.setResolvedRoots(sourceClassLoader, sourceResolvedRoots);
     }
 
     /**

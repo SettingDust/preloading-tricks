@@ -231,10 +231,6 @@ cloche {
                     from(embedBoot) {
                         into("libs/boot")
                     }
-
-                    manifest {
-                        attributes("FMLModType" to "LIBRARY")
-                    }
                 }
             }
         }

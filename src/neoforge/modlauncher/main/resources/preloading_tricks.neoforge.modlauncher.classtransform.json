@@ -1,0 +1,6 @@
+{
+  "package": "settingdust.preloading_tricks.neoforge.modlauncher.transformer",
+  "transformers": [
+    "mod_setup_hook.ModDiscovererTransformer"
+  ]
+}

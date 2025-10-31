@@ -1,4 +1,4 @@
-package settingdust.preloading_tricks.neoforge.virtual_mod;
+package settingdust.preloading_tricks.neoforge.modlauncher.virtual_mod;
 
 import cpw.mods.jarhandling.SecureJar;
 import cpw.mods.niofs.union.UnionFileSystem;

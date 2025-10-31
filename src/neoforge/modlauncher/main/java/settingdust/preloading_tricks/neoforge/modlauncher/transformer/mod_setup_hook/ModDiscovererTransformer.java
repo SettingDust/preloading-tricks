@@ -1,4 +1,4 @@
-package settingdust.preloading_tricks.neoforge.transformer.mod_setup_hook;
+package settingdust.preloading_tricks.neoforge.modlauncher.transformer.mod_setup_hook;
 
 import net.lenni0451.classtransform.annotations.CLocalVariable;
 import net.lenni0451.classtransform.annotations.CShadow;
@@ -9,7 +9,7 @@ import net.neoforged.fml.loading.moddiscovery.ModDiscoverer;
 import net.neoforged.fml.loading.moddiscovery.ModFile;
 import org.slf4j.Logger;
 import settingdust.preloading_tricks.api.PreloadingTricksCallback;
-import settingdust.preloading_tricks.neoforge.NeoForgeModManager;
+import settingdust.preloading_tricks.neoforge.modlauncher.NeoForgeModManager;
 
 import java.util.List;
 

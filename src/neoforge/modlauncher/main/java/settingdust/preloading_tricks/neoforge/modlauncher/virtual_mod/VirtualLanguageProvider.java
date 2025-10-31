@@ -1,4 +1,4 @@
-package settingdust.preloading_tricks.neoforge.virtual_mod;
+package settingdust.preloading_tricks.neoforge.modlauncher.virtual_mod;
 
 import net.neoforged.fml.ModContainer;
 import net.neoforged.fml.ModLoadingException;

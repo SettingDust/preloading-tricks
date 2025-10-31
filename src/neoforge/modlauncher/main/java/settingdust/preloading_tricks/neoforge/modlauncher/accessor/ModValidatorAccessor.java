@@ -1,4 +1,4 @@
-package settingdust.preloading_tricks.neoforge.accessor;
+package settingdust.preloading_tricks.neoforge.modlauncher.accessor;
 
 import net.lenni0451.reflect.stream.RStream;
 import net.lenni0451.reflect.stream.field.FieldWrapper;

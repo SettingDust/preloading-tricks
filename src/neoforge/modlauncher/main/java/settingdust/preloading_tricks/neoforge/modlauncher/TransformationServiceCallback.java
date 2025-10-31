@@ -1,4 +1,4 @@
-package settingdust.preloading_tricks.neoforge;
+package settingdust.preloading_tricks.neoforge.modlauncher;
 
 import net.lenni0451.reflect.Agents;
 import net.neoforged.fml.loading.FMLLoader;

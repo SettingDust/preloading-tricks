@@ -1,4 +1,4 @@
-package settingdust.preloading_tricks.neoforge.specified_forge_variant;
+package settingdust.preloading_tricks.neoforge.modlauncher.specified_forge_variant;
 
 import net.neoforged.fml.loading.moddiscovery.ModFile;
 import settingdust.preloading_tricks.PreloadingTricks;

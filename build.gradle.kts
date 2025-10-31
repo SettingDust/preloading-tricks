@@ -311,10 +311,6 @@ cloche {
                     from(embedBoot) {
                         into("libs/boot")
                     }
-
-                    manifest {
-                        attributes("FMLModType" to "LIBRARY")
-                    }
                 }
             }
         }
@@ -350,13 +346,33 @@ cloche {
             minecraftVersion = "1.21.1"
             loaderVersion = "21.1.213"
 
-            runs { client {} }
+            runs {
+                client {
+                    env("MOD_CLASSES", "")
+                }
+            }
 
             dependencies {
-                implementation(project(":")) {
+                legacyClasspath(project(":")) {
                     capabilities {
                         requireFeature(neoforgeModlauncher.capabilitySuffix!!)
                     }
+
+                    attributes {
+                        attribute(ArtifactTypeDefinition.ARTIFACT_TYPE_ATTRIBUTE, ArtifactTypeDefinition.JAR_TYPE)
+                        attribute(REMAPPED_ATTRIBUTE, false)
+                        attribute(INCLUDE_TRANSFORMED_OUTPUT_ATTRIBUTE, true)
+                        attribute(RemapNamespaceAttribute.ATTRIBUTE, RemapNamespaceAttribute.INITIAL)
+                        attribute(IncludeTransformationStateAttribute.ATTRIBUTE, IncludeTransformationStateAttribute.None)
+                    }
+
+                    isTransitive = false
+                }
+            }
+
+            tasks {
+                named(generateModsTomlTaskName) {
+                    enabled = false
                 }
             }
         }
@@ -365,13 +381,33 @@ cloche {
             minecraftVersion = "1.21.10"
             loaderVersion = "21.10.38-beta"
 
-            runs { client {} }
+            runs {
+                client {
+                    env("MOD_CLASSES", "")
+                }
+            }
 
             dependencies {
-                implementation(project(":")) {
+                legacyClasspath(project(":")) {
                     capabilities {
                         requireFeature(neoforgeFancyModLoader.capabilitySuffix!!)
                     }
+
+                    attributes {
+                        attribute(ArtifactTypeDefinition.ARTIFACT_TYPE_ATTRIBUTE, ArtifactTypeDefinition.JAR_TYPE)
+                        attribute(REMAPPED_ATTRIBUTE, false)
+                        attribute(INCLUDE_TRANSFORMED_OUTPUT_ATTRIBUTE, true)
+                        attribute(RemapNamespaceAttribute.ATTRIBUTE, RemapNamespaceAttribute.INITIAL)
+                        attribute(IncludeTransformationStateAttribute.ATTRIBUTE, IncludeTransformationStateAttribute.None)
+                    }
+
+                    isTransitive = false
+                }
+            }
+
+            tasks {
+                named(generateModsTomlTaskName) {
+                    enabled = false
                 }
             }
         }
@@ -459,12 +495,6 @@ tasks {
             project.tasks.named<Jar>(cloche.targets.getByName("neoforge:modlauncher").includeJarTaskName)
         from(neoforgeServiceJar.map { zipTree(it.archiveFile) }) {
             duplicatesStrategy = DuplicatesStrategy.EXCLUDE
-        }
-
-        manifest {
-            attributes(
-                "FMLModType" to "LIBRARY"
-            )
         }
 
         append("META-INF/accesstransformer.cfg")

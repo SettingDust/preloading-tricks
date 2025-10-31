@@ -37,6 +37,7 @@ public class ModuleMover {
         ModuleLayer targetLayer,
         ModuleClassLoader targetClassLoader
     ) {
+        if (sourceLayer == targetLayer || sourceClassLoader == targetClassLoader) return;
         var resolvedModule =
             sourceLayer.configuration().findModule(moduleName)
                        .orElseThrow(() -> new RuntimeException("Module %s not found".formatted(moduleName)));
@@ -66,12 +67,16 @@ public class ModuleMover {
     /**
      * Moves a module between layers.
      * Currently implemented as a copy operation.
-     * 
+     *
      * @param moduleName name of module to move
      * @param sourceLayer source layer
      * @param targetLayer target layer
      */
-    public static void move(String moduleName, IModuleLayerManager.Layer sourceLayer, IModuleLayerManager.Layer targetLayer) {
+    public static void move(
+        String moduleName,
+        IModuleLayerManager.Layer sourceLayer,
+        IModuleLayerManager.Layer targetLayer
+    ) {
         move(
             moduleName,
             LauncherAccessor.getModuleLayer(sourceLayer),
@@ -84,7 +89,7 @@ public class ModuleMover {
     /**
      * Moves the module containing a class to target class loader and layer.
      * Currently implemented as a copy operation.
-     * 
+     *
      * @param classInModule class whose module should be moved
      * @param targetLayer target module layer
      * @param targetClassLoader target class loader
@@ -106,11 +111,15 @@ public class ModuleMover {
     /**
      * Moves the module containing a class to target layer.
      * Currently implemented as a copy operation.
-     * 
+     *
      * @param classInModule class whose module should be moved
      * @param targetLayer target layer
      */
     public static void move(Class<?> classInModule, IModuleLayerManager.Layer targetLayer) {
-        move(classInModule, LauncherAccessor.getModuleLayer(targetLayer), ModuleLayerHandlerAccessor.getModuleClassLoader(targetLayer));
+        move(
+            classInModule,
+            LauncherAccessor.getModuleLayer(targetLayer),
+            ModuleLayerHandlerAccessor.getModuleClassLoader(targetLayer)
+        );
     }
 }

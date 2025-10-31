@@ -36,12 +36,6 @@ public class PreloadingTricksTransformationService implements ITransformationSer
             var codeSource = PreloadingTricksTransformationService.class.getProtectionDomain().getCodeSource();
             var rootPath = (UnionPath) Path.of(codeSource.getLocation().toURI());
 
-            LOGGER.info("Move self to BOOT layer");
-            ModuleMover.move(
-                PreloadingTricksTransformationService.class,
-                IModuleLayerManager.Layer.BOOT
-            );
-
             LOGGER.info("Inject jars into BOOT layer");
             var bootClassLoader = ModuleLayerHandlerAccessor.getModuleClassLoader(IModuleLayerManager.Layer.BOOT);
             var configuration = ModuleConfigurationCreator.createConfigurationFromPaths(
@@ -54,6 +48,12 @@ public class PreloadingTricksTransformationService implements ITransformationSer
                 configuration,
                 bootClassLoader,
                 LauncherAccessor.getModuleLayer(IModuleLayerManager.Layer.BOOT)
+            );
+
+            LOGGER.info("Move self to BOOT layer");
+            ModuleMover.move(
+                PreloadingTricksTransformationService.class,
+                IModuleLayerManager.Layer.BOOT
             );
 
             new ClassTransformBootstrap();

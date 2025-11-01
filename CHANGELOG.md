@@ -1,5 +1,24 @@
 fix: `setAccessible` for `setMod`
 
+## [2.4.0] - 2025-11-01
+### :sparkles: New Features
+- [`d7d8b16`](https://github.com/SettingDust/preloading-tricks/commit/d7d8b163bcef8b4d0183eb734d3b8d8b4f9b35a5) - add more helper for module class loader modify *(commit by [@SettingDust](https://github.com/SettingDust))*
+- [`46349f1`](https://github.com/SettingDust/preloading-tricks/commit/46349f1e376c95715d3b3ad43ab7e081bd3e4812) - implement the module mover *(commit by [@SettingDust](https://github.com/SettingDust))*
+
+### :bug: Bug Fixes
+- [`0e3aa97`](https://github.com/SettingDust/preloading-tricks/commit/0e3aa9702229a2403c599189c99dff16ffb9ac39) - needn't dummy mod on fabric *(commit by [@SettingDust](https://github.com/SettingDust))*
+- [`757f187`](https://github.com/SettingDust/preloading-tricks/commit/757f187c84bd95b0c09ae3052a2ec71bf344646e) - **fabric**: call the setup mods in knot class loader *(commit by [@SettingDust](https://github.com/SettingDust))*
+- [`0de454c`](https://github.com/SettingDust/preloading-tricks/commit/0de454c022dce2155595800dc3bfc2a76b9ef2cf) - remove the package lookup and resolved roots from source when move *(commit by [@SettingDust](https://github.com/SettingDust))*
+- [`0e3d033`](https://github.com/SettingDust/preloading-tricks/commit/0e3d03393d83ecfb98575fb9da356dbe19bffd8f) - don't move module if needn't *(commit by [@SettingDust](https://github.com/SettingDust))*
+- [`6db279b`](https://github.com/SettingDust/preloading-tricks/commit/6db279b3ef5e99db74a5c29570487a4258654dc2) - virtual mod module name isn't modid *(commit by [@SettingDust](https://github.com/SettingDust))*
+
+### :recycle: Refactors
+- [`f6ba3d5`](https://github.com/SettingDust/preloading-tricks/commit/f6ba3d54cb333afe456badd55f5e3c7d87ad9ba4) - **forge**: split the plugin layer to add the virtual mod container *(commit by [@SettingDust](https://github.com/SettingDust))*
+- [`f3edc4d`](https://github.com/SettingDust/preloading-tricks/commit/f3edc4d465f73e374443e9c655a217678b6c0281) - **neoforge/modlauncher**: add virtual mod container *(commit by [@SettingDust](https://github.com/SettingDust))*
+- [`aa2cedc`](https://github.com/SettingDust/preloading-tricks/commit/aa2cedc01166854ba1fa100541178bcac305e1d3) - remove unused plugin module & make the neoforge fancy mod loader virtual mod work *(commit by [@SettingDust](https://github.com/SettingDust))*
+- [`db6b5b5`](https://github.com/SettingDust/preloading-tricks/commit/db6b5b50369a37b14a3eb6dbaaf584f7ae72cf7f) - move the neoforge service into modlauncher *(commit by [@SettingDust](https://github.com/SettingDust))*
+
+
 ## [2.3.0] - 2025-10-29
 ### :sparkles: New Features
 - [`a217a55`](https://github.com/SettingDust/preloading-tricks/commit/a217a550c15bf69488fa09c2b87e04874b3470bc) - add virtual mod api & add preloading tricks itself *(commit by [@SettingDust](https://github.com/SettingDust))*
@@ -128,3 +147,4 @@ fix: `setAccessible` for `setMod`
 [2.2.1]: https://github.com/SettingDust/preloading-tricks/compare/2.2.0...2.2.1
 [2.2.2]: https://github.com/SettingDust/preloading-tricks/compare/2.2.1...2.2.2
 [2.3.0]: https://github.com/SettingDust/preloading-tricks/compare/2.2.2...2.3.0
+[2.4.0]: https://github.com/SettingDust/preloading-tricks/compare/2.3.0...2.4.0

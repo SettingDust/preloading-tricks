@@ -153,6 +153,20 @@ cloche {
 
                 implementation(catalog.asmFabricLoader)
             }
+
+            tasks {
+                named(jarTaskName) {
+                    enabled = false
+                }
+
+                named(remapJarTaskName) {
+                    enabled = false
+                }
+
+                named(includeJarTaskName) {
+                    enabled = false
+                }
+            }
         }
 
         targets.withType<FabricTarget> {
@@ -234,6 +248,20 @@ cloche {
                     capabilities {
                         requireFeature(forge.capabilitySuffix!!)
                     }
+                }
+            }
+
+            tasks {
+                named(jarTaskName) {
+                    enabled = false
+                }
+
+                named(remapJarTaskName) {
+                    enabled = false
+                }
+
+                named(includeJarTaskName) {
+                    enabled = false
                 }
             }
         }
@@ -345,7 +373,10 @@ cloche {
                         attribute(ArtifactTypeDefinition.ARTIFACT_TYPE_ATTRIBUTE, ArtifactTypeDefinition.JAR_TYPE)
                         attribute(REMAPPED_ATTRIBUTE, false)
                         attribute(INCLUDE_TRANSFORMED_OUTPUT_ATTRIBUTE, true)
-                        attribute(IncludeTransformationStateAttribute.ATTRIBUTE, IncludeTransformationStateAttribute.None)
+                        attribute(
+                            IncludeTransformationStateAttribute.ATTRIBUTE,
+                            IncludeTransformationStateAttribute.None
+                        )
                     }
 
                     isTransitive = false
@@ -354,6 +385,18 @@ cloche {
 
             tasks {
                 named(generateModsTomlTaskName) {
+                    enabled = false
+                }
+
+                named(jarTaskName) {
+                    enabled = false
+                }
+
+                named(remapJarTaskName) {
+                    enabled = false
+                }
+
+                named(includeJarTaskName) {
                     enabled = false
                 }
             }
@@ -379,6 +422,18 @@ cloche {
 
             tasks {
                 named(generateModsTomlTaskName) {
+                    enabled = false
+                }
+
+                named(jarTaskName) {
+                    enabled = false
+                }
+
+                named(remapJarTaskName) {
+                    enabled = false
+                }
+
+                named(includeJarTaskName) {
                     enabled = false
                 }
             }
@@ -434,6 +489,9 @@ val MinecraftTarget.generateModsManifestTaskName: String
 
 val MinecraftTarget.jarTaskName: String
     get() = lowerCamelCaseGradleName(featureName, "jar")
+
+val MinecraftTarget.remapJarTaskName: String
+    get() = lowerCamelCaseGradleName(featureName, "remapJar")
 
 tasks {
     withType<ProcessResources> {

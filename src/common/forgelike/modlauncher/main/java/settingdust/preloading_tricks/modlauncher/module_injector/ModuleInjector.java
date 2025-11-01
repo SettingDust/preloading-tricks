@@ -4,7 +4,6 @@ import cpw.mods.cl.ModuleClassLoader;
 import cpw.mods.jarhandling.SecureJar;
 import cpw.mods.modlauncher.api.IModuleLayerManager;
 import settingdust.preloading_tricks.forgelike.module_injector.accessor.ConfigurationAccessor;
-import settingdust.preloading_tricks.forgelike.module_injector.accessor.ModuleAccessor;
 import settingdust.preloading_tricks.forgelike.module_injector.accessor.ModuleLayerAccessor;
 import settingdust.preloading_tricks.modlauncher.module_injector.accessor.LauncherAccessor;
 import settingdust.preloading_tricks.modlauncher.module_injector.accessor.ModuleClassLoaderAccessor;
@@ -56,17 +55,8 @@ public class ModuleInjector {
                 targetConfiguration
             );
 
-            // Add reads to all modules in current layer
-            for (var existingModuleInLayer : targetLayer.modules()) {
-                ModuleAccessor.implAddReads(existingModuleInLayer, module);
-            }
-
-            // Add reads to modules required by this module (from saved reads)
-            for (var required : reads) {
-                // findModule will search in parent layers automatically
-                targetLayer.findModule(required.name())
-                           .ifPresent(it -> ModuleAccessor.implAddReads(module, it));
-            }
+            // Establish read relationships
+            ModuleOperationHelper.setupModuleReads(module, targetLayer, reads);
         }
 
         ModuleLayerAccessor.clearModules(targetLayer);

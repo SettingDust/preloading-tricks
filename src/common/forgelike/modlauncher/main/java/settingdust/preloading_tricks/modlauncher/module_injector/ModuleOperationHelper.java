@@ -76,6 +76,39 @@ public class ModuleOperationHelper {
     }
 
     /**
+     * Establishes read relationships for a module in target layer.
+     * <ul>
+     *   <li>All existing modules in target layer can read the new module</li>
+     *   <li>New module can read all existing modules in target layer (bidirectional)</li>
+     *   <li>New module can read its declared dependencies</li>
+     * </ul>
+     *
+     * @param module the module to setup reads for
+     * @param targetLayer target layer containing the module
+     * @param declaredReads the module's declared read dependencies from configuration
+     */
+    public static void setupModuleReads(
+        Module module,
+        ModuleLayer targetLayer,
+        Iterable<ResolvedModule> declaredReads
+    ) {
+        // Add reads to all modules in target layer (bidirectional)
+        for (var existingModuleInLayer : targetLayer.modules()) {
+            ModuleAccessor.implAddReads(existingModuleInLayer, module);
+            if (!module.canRead(existingModuleInLayer)) {
+                ModuleAccessor.implAddReads(module, existingModuleInLayer);
+            }
+        }
+
+        // Add reads to modules required by this module (from declared reads)
+        for (var required : declaredReads) {
+            // findModule will search in parent layers automatically
+            targetLayer.findModule(required.name())
+                       .ifPresent(it -> ModuleAccessor.implAddReads(module, it));
+        }
+    }
+
+    /**
      * Updates the class loader's package lookup map with new modules.
      *
      * @param classLoader class loader to update

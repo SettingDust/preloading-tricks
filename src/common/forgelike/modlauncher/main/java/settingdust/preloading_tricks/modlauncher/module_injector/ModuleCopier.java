@@ -43,6 +43,9 @@ public class ModuleCopier {
             sourceLayer.findModule(moduleName)
                        .orElseThrow(() -> new RuntimeException("Module %s not found".formatted(moduleName)));
 
+        // Save reads before modifying configuration (which affects hashCode)
+        var reads = resolvedModule.reads();
+
         ModuleAccessor.setLayer(module, targetLayer);
 
         var toPackageLookup = new HashMap<>(ModuleClassLoaderAccessor.getPackageLookup(targetClassLoader));
@@ -57,6 +60,9 @@ public class ModuleCopier {
 
         ModuleLayerAccessor.getNameToModule(targetLayer).put(resolvedModule.name(), module);
         ModuleOperationHelper.addModuleToConfiguration(toConfiguration, resolvedModule);
+
+        // Establish read relationships
+        ModuleOperationHelper.setupModuleReads(module, targetLayer, reads);
 
         ModuleClassLoaderAccessor.setPackageLookup(targetClassLoader, toPackageLookup);
         ModuleClassLoaderAccessor.setResolvedRoots(targetClassLoader, toResolvedRoots);

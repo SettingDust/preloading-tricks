@@ -4,7 +4,6 @@ import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
 import earth.terrarium.cloche.INCLUDE_TRANSFORMED_OUTPUT_ATTRIBUTE
 import earth.terrarium.cloche.REMAPPED_ATTRIBUTE
 import earth.terrarium.cloche.api.attributes.IncludeTransformationStateAttribute
-import earth.terrarium.cloche.api.attributes.RemapNamespaceAttribute
 import earth.terrarium.cloche.api.attributes.TargetAttributes
 import earth.terrarium.cloche.api.metadata.CommonMetadata
 import earth.terrarium.cloche.api.target.FabricTarget
@@ -74,21 +73,10 @@ class MinecraftVersionCompatibilityRule : AttributeCompatibilityRule<String> {
     }
 }
 
-class ModLoaderCompatibilityRule : AttributeCompatibilityRule<String> {
-    override fun execute(details: CompatibilityCheckDetails<String>) {
-        if (details.producerValue == "common")
-            details.compatible()
-    }
-}
-
 dependencies {
     attributesSchema {
         attribute(TargetAttributes.MINECRAFT_VERSION) {
             compatibilityRules.add(MinecraftVersionCompatibilityRule::class)
-        }
-
-        attribute(TargetAttributes.MOD_LOADER) {
-            compatibilityRules.add(ModLoaderCompatibilityRule::class)
         }
     }
 }
@@ -178,9 +166,6 @@ cloche {
                 entrypoint("afl:prePrePreLaunch", "$group.fabric.PreloadingTricksLanguageAdapterEntrypoint")
                 custom("afl:classtransform", "$id.fabric.classtransform.json")
             }
-
-            dependencies {
-            }
         }
     }
 
@@ -212,7 +197,6 @@ cloche {
                     .attribute(ArtifactTypeDefinition.ARTIFACT_TYPE_ATTRIBUTE, ArtifactTypeDefinition.JAR_TYPE)
                     .attribute(REMAPPED_ATTRIBUTE, false)
                     .attribute(INCLUDE_TRANSFORMED_OUTPUT_ATTRIBUTE, true)
-                    .attribute(RemapNamespaceAttribute.ATTRIBUTE, RemapNamespaceAttribute.INITIAL)
                     .attribute(IncludeTransformationStateAttribute.ATTRIBUTE, IncludeTransformationStateAttribute.None)
             }
 
@@ -289,7 +273,6 @@ cloche {
                     .attribute(ArtifactTypeDefinition.ARTIFACT_TYPE_ATTRIBUTE, ArtifactTypeDefinition.JAR_TYPE)
                     .attribute(REMAPPED_ATTRIBUTE, false)
                     .attribute(INCLUDE_TRANSFORMED_OUTPUT_ATTRIBUTE, true)
-                    .attribute(RemapNamespaceAttribute.ATTRIBUTE, RemapNamespaceAttribute.INITIAL)
                     .attribute(
                         IncludeTransformationStateAttribute.ATTRIBUTE,
                         IncludeTransformationStateAttribute.None
@@ -362,7 +345,6 @@ cloche {
                         attribute(ArtifactTypeDefinition.ARTIFACT_TYPE_ATTRIBUTE, ArtifactTypeDefinition.JAR_TYPE)
                         attribute(REMAPPED_ATTRIBUTE, false)
                         attribute(INCLUDE_TRANSFORMED_OUTPUT_ATTRIBUTE, true)
-                        attribute(RemapNamespaceAttribute.ATTRIBUTE, RemapNamespaceAttribute.INITIAL)
                         attribute(IncludeTransformationStateAttribute.ATTRIBUTE, IncludeTransformationStateAttribute.None)
                     }
 

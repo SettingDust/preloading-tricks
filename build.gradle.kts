@@ -521,10 +521,20 @@ tasks {
         from(forgeServiceJar.map { zipTree(it.archiveFile) })
         manifest.from(forgeServiceJar.get().manifest)
 
-        val neoforgeServiceJar =
+        val neoforgeModlauncherJar =
             project.tasks.named<Jar>(cloche.targets.getByName("neoforge:modlauncher").includeJarTaskName)
-        from(neoforgeServiceJar.map { zipTree(it.archiveFile) }) {
-            duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+        from(neoforgeModlauncherJar.map { zipTree(it.archiveFile) }) {
+            include("settingdust/preloading_tricks/neoforge/**/*")
+            include("META-INF/services/*")
+            include("$id.neoforge.modlauncher.classtransform.json")
+        }
+
+        val neoforgeFancyModLoaderJar =
+            project.tasks.named<Jar>(cloche.targets.getByName("neoforge:fancy-mod-loader").includeJarTaskName)
+        from(neoforgeFancyModLoaderJar.map { zipTree(it.archiveFile) }) {
+            include("settingdust/preloading_tricks/neoforge/**/*")
+            include("META-INF/services/*")
+            include("$id.neoforge.fml.classtransform.json")
         }
 
         append("META-INF/accesstransformer.cfg")

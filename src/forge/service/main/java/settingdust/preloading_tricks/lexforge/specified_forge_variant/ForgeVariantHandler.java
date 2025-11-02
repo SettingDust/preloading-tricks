@@ -1,6 +1,7 @@
 package settingdust.preloading_tricks.lexforge.specified_forge_variant;
 
 import cpw.mods.niofs.union.UnionPath;
+import net.minecraftforge.fml.loading.FMLLoader;
 import net.minecraftforge.fml.loading.moddiscovery.ModFile;
 import settingdust.preloading_tricks.PreloadingTricks;
 import settingdust.preloading_tricks.api.PreloadingTricksCallback;
@@ -13,6 +14,12 @@ import java.nio.file.Path;
 public class ForgeVariantHandler implements PreloadingTricksCallback {
     @Override
     public void onSetupMods() {
+        try {
+            FMLLoader.class.getSimpleName();
+        } catch (Throwable e) {
+            return;
+        }
+
         var manager = PreloadingTricksModManager.<PreloadingTricksModManager<ModFile>>get();
 
         try {

@@ -1,5 +1,6 @@
 package settingdust.preloading_tricks.neoforge.modlauncher.specified_forge_variant;
 
+import net.neoforged.fml.loading.FMLLoader;
 import net.neoforged.fml.loading.moddiscovery.ModFile;
 import settingdust.preloading_tricks.PreloadingTricks;
 import settingdust.preloading_tricks.api.PreloadingTricksCallback;
@@ -12,6 +13,12 @@ import java.nio.file.Path;
 public class ForgeVariantHandler implements PreloadingTricksCallback {
     @Override
     public void onSetupMods() {
+        try {
+            FMLLoader.class.getSimpleName();
+        } catch (Throwable e) {
+            return;
+        }
+
         var manager = PreloadingTricksModManager.<PreloadingTricksModManager<ModFile>>get();
 
         try {

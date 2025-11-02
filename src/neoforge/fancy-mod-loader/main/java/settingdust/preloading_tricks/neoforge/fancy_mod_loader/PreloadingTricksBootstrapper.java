@@ -39,10 +39,16 @@ public class PreloadingTricksBootstrapper implements GraphicsBootstrapper {
                                           InvocationTargetException,
                                           NoSuchMethodException,
                                           IllegalAccessException {
+        if (!Thread.currentThread().getContextClassLoader().getClass().getSimpleName()
+                   .equals("jdk.internal.loader.ClassLoaders$AppClassLoader")) {
+            PreloadingTricks.LOGGER.debug("Looks like we are in older neoforge fancy mod loader. Needn't to run");
+            return;
+        }
+
         var codeSource = PreloadingTricksBootstrapper.class.getProtectionDomain().getCodeSource();
         var rootPath = Paths.get(codeSource.getLocation().toURI());
 
-        var libsDir = rootPath.resolve("libs");
+        var libsDir = rootPath.resolve("libs/boot");
         if (Files.exists(libsDir)) {
             for (final var path : Files.list(libsDir)
                                        .filter(it -> it.getFileName().toString().endsWith(".jar"))

@@ -1,5 +1,15 @@
 fix: `setAccessible` for `setMod`
 
+## [2.4.1] - 2025-11-07
+### :sparkles: New Features
+- [`5d6b0a2`](https://github.com/SettingDust/preloading-tricks/commit/5d6b0a2f7a1ad32c126e688569ce81db4382f224) - **forgelike**: read the modules after copy *(commit by [@SettingDust](https://github.com/SettingDust))*
+
+### :bug: Bug Fixes
+- [`4a07435`](https://github.com/SettingDust/preloading-tricks/commit/4a074354f90f150656a4e4a4bfb0b14ea5a1a36e) - **forgelike**: handle the dependencies in mod setup callback *(commit by [@SettingDust](https://github.com/SettingDust))*
+- [`5f853f5`](https://github.com/SettingDust/preloading-tricks/commit/5f853f50620f2edd188d26a2a675384e302f4dde) - **neoforge**: don't load the other loaders' services *(commit by [@SettingDust](https://github.com/SettingDust))*
+- [`20422f7`](https://github.com/SettingDust/preloading-tricks/commit/20422f73c4374c924dba5e940df458c213b4d0d5) - **neoforge/fancy_mod_loader**: correct the hooks to avoid crash *(commit by [@SettingDust](https://github.com/SettingDust))*
+
+
 ## [2.4.0] - 2025-11-01
 ### :sparkles: New Features
 - [`d7d8b16`](https://github.com/SettingDust/preloading-tricks/commit/d7d8b163bcef8b4d0183eb734d3b8d8b4f9b35a5) - add more helper for module class loader modify *(commit by [@SettingDust](https://github.com/SettingDust))*
@@ -148,3 +158,4 @@ fix: `setAccessible` for `setMod`
 [2.2.2]: https://github.com/SettingDust/preloading-tricks/compare/2.2.1...2.2.2
 [2.3.0]: https://github.com/SettingDust/preloading-tricks/compare/2.2.2...2.3.0
 [2.4.0]: https://github.com/SettingDust/preloading-tricks/compare/2.3.0...2.4.0
+[2.4.1]: https://github.com/SettingDust/preloading-tricks/compare/2.4.0...2.4.1

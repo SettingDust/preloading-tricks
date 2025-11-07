@@ -1,6 +1,6 @@
 package settingdust.preloading_tricks.neoforge.modlauncher.specified_forge_variant;
 
-import net.neoforged.fml.loading.FMLLoader;
+import cpw.mods.jarhandling.SecureJar;
 import net.neoforged.fml.loading.moddiscovery.ModFile;
 import settingdust.preloading_tricks.PreloadingTricks;
 import settingdust.preloading_tricks.api.PreloadingTricksCallback;
@@ -14,7 +14,7 @@ public class ForgeVariantHandler implements PreloadingTricksCallback {
     @Override
     public void onSetupMods() {
         try {
-            FMLLoader.class.getSimpleName();
+            SecureJar.class.getSimpleName();
         } catch (Throwable e) {
             return;
         }

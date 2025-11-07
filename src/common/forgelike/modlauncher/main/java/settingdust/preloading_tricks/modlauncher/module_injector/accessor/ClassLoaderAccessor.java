@@ -16,7 +16,7 @@ public class ClassLoaderAccessor {
 
     static {
         try {
-            var lookup = JavaBypass.TRUSTED_LOOKUP.in(clazz);
+            var lookup = JavaBypass.getTrustedLookup().in(clazz);
             package2certsField = lookup.findVarHandle(
                 ClassLoader.class,
                 "package2certs",

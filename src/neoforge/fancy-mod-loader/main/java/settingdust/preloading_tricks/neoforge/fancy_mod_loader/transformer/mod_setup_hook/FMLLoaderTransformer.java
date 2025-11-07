@@ -1,16 +1,16 @@
 package settingdust.preloading_tricks.neoforge.fancy_mod_loader.transformer.mod_setup_hook;
 
-import net.lenni0451.classtransform.InjectionCallback;
 import net.lenni0451.classtransform.annotations.CInline;
 import net.lenni0451.classtransform.annotations.CTarget;
 import net.lenni0451.classtransform.annotations.CTransformer;
 import net.lenni0451.classtransform.annotations.injection.CInject;
+import net.lenni0451.reflect.Classes;
+import net.lenni0451.reflect.stream.RStream;
 import net.neoforged.fml.classloading.JarContentsModule;
 import net.neoforged.fml.classloading.transformation.ClassProcessorAuditLog;
 import net.neoforged.fml.classloading.transformation.ClassProcessorSet;
 import net.neoforged.fml.jarcontents.JarContents;
 import net.neoforged.fml.loading.FMLLoader;
-import settingdust.preloading_tricks.neoforge.fancy_mod_loader.class_transform.ClassTransformFancyModLoader;
 
 import java.util.List;
 
@@ -23,16 +23,29 @@ public class FMLLoaderTransformer {
         ClassProcessorAuditLog auditTrail,
         List<JarContentsModule> content
     ) {
-        ClassTransformFancyModLoader.addConfigForGameLayer(content);
+        var currentClassLoader = FMLLoader.getCurrent().getCurrentClassLoader();
+        var classTransformClass = Classes.byName(
+            "settingdust.preloading_tricks.neoforge.fancy_mod_loader.class_transform.ClassTransformFancyModLoader",
+            currentClassLoader
+        );
+        RStream.of(classTransformClass).methods()
+               .by("addConfigForGameLayer")
+               .invokeArgs(content);
     }
 
     @CInline
     @CInject(method = "appendLoader", target = @CTarget("TAIL"))
     private void preloading_tricks$onAppendLoader(
         String loaderName,
-        List<JarContents> jars,
-        InjectionCallback callback
+        List<JarContents> jars
     ) {
-        ClassTransformFancyModLoader.addConfigForLayer(loaderName, jars);
+        var currentClassLoader = FMLLoader.getCurrent().getCurrentClassLoader();
+        var classTransformClass = Classes.byName(
+            "settingdust.preloading_tricks.neoforge.fancy_mod_loader.class_transform.ClassTransformFancyModLoader",
+            currentClassLoader
+        );
+        RStream.of(classTransformClass).methods()
+               .by("addConfigForLayer")
+               .invokeArgs(loaderName, jars);
     }
 }

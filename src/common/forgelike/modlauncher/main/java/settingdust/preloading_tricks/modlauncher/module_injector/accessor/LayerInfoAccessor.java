@@ -13,7 +13,7 @@ public class LayerInfoAccessor {
     static {
         try {
             clazz = Class.forName("cpw.mods.modlauncher.ModuleLayerHandler$LayerInfo");
-            var lookup = JavaBypass.TRUSTED_LOOKUP.in(clazz);
+            var lookup = JavaBypass.getTrustedLookup().in(clazz);
             cl = lookup.findGetter(clazz, "cl", ModuleClassLoader.class);
         } catch (ClassNotFoundException | IllegalAccessException | NoSuchFieldException e) {
             throw new RuntimeException(e);

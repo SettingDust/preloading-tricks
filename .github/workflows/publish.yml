@@ -15,14 +15,14 @@ jobs:
           cache: 'gradle'
 
       - name: Setup Gradle
-        uses: gradle/actions/setup-gradle@v4
+        uses: gradle/actions/setup-gradle@v5
         with:
           cache-read-only: false
 
       - uses: burrunan/gradle-cache-action@v3
         name: Execute Gradle build
         with:
-          arguments: remapFabricMinecraftIntermediary build
+          arguments: build
 
       - name: Update CHANGELOG
         id: changelog
@@ -58,8 +58,7 @@ jobs:
 
           game-versions: |
             1.20.1
-            1.21
-            1.21.1
+            [1.21,)
 
           game-version-filter: releases
 
@@ -68,7 +67,7 @@ jobs:
             21
 
       - name: Commit CHANGELOG.md
-        uses: stefanzweifel/git-auto-commit-action@v6
+        uses: stefanzweifel/git-auto-commit-action@v7
         with:
           branch: main
           commit_message: 'docs: update CHANGELOG.md for ${{ github.ref_name }} [skip ci]'

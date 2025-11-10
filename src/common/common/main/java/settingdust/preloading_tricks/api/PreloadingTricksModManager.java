@@ -28,8 +28,9 @@ public interface PreloadingTricksModManager<M> {
      * Supplier that discovers the module manager implementation through the {@link ServiceLoader} mechanism.
      * Results are memoized to ensure singleton behavior.
      */
+    @SuppressWarnings("RedundantTypeArguments")
     Supplier<PreloadingTricksModManager<?>> supplier =
-        Suppliers.memoize(() -> ServiceLoaderUtil.findService(PreloadingTricksModManager.class));
+        Suppliers.<PreloadingTricksModManager<?>>memoize(() -> ServiceLoaderUtil.findService(PreloadingTricksModManager.class));
 
     /**
      * Retrieves the singleton instance of the module manager.

@@ -195,6 +195,13 @@ cloche {
             minecraftVersion = "1.20.1"
             loaderVersion = "47.4.4"
 
+            metadata {
+                modLoader = "lowcodefml"
+                loaderVersion {
+                    start = "0"
+                }
+            }
+
             dependsOn(common, commonForgeLike, commonModLauncher)
 
             dependencies {
@@ -221,10 +228,6 @@ cloche {
             }
 
             tasks {
-                named(generateModsTomlTaskName) {
-                    enabled = false
-                }
-
                 named<Jar>(jarTaskName) {
                     from(embedBoot) {
                         into("libs/boot")
@@ -274,6 +277,13 @@ cloche {
             minecraftVersion = "1.21.1"
             loaderVersion = "21.1.213"
 
+            metadata {
+                modLoader = "lowcodefml"
+                loaderVersion {
+                    start = "0"
+                }
+            }
+
             dependencies {
                 catalog.reflect.let {
                     implementation(it)
@@ -314,10 +324,6 @@ cloche {
             }
 
             tasks {
-                named(generateModsTomlTaskName) {
-                    enabled = false
-                }
-
                 named<Jar>(jarTaskName) {
                     from(embedBoot) {
                         into("libs/boot")

@@ -1,0 +1,171 @@
+package settingdust.preloading_tricks.fabric;
+
+import net.fabricmc.loader.api.FabricLoader;
+import net.fabricmc.loader.impl.FabricLoaderImpl;
+import net.fabricmc.loader.impl.discovery.*;
+import net.fabricmc.loader.impl.gui.FabricGuiEntry;
+import net.fabricmc.loader.impl.launch.FabricLauncherBase;
+import net.fabricmc.loader.impl.metadata.DependencyOverrides;
+import net.fabricmc.loader.impl.metadata.VersionOverrides;
+import net.fabricmc.loader.impl.util.SystemProperties;
+import settingdust.preloading_tricks.PreloadingTricks;
+import settingdust.preloading_tricks.api.PreloadingTricksCallback;
+import settingdust.preloading_tricks.api.PreloadingTricksModManager;
+import settingdust.preloading_tricks.fabric.mod_candidate.DefinedModCandidateFinder;
+import settingdust.preloading_tricks.fabric.mod_candidate.ModContainerModCandidateFinder;
+import settingdust.preloading_tricks.fabric.util.FabricLoaderImplAccessor;
+
+import java.io.IOException;
+import java.util.*;
+import java.util.function.Function;
+import java.util.stream.Collectors;
+
+public class FabricPreloadingTricksCallback implements PreloadingTricksCallback {
+    @Override
+    public void onSetupMods() {
+        var service = PreloadingTricksModManager.<FabricModManager>get();
+
+        var remapRegularMods = FabricLoader.getInstance().isDevelopmentEnvironment();
+        var versionOverrides = new VersionOverrides();
+        var dependencyOverrides = new DependencyOverrides(FabricLoaderImpl.INSTANCE.getConfigDir());
+
+        var discoverer = new ModDiscoverer(versionOverrides, dependencyOverrides);
+        discoverer.addCandidateFinder(new DefinedModCandidateFinder(remapRegularMods));
+        discoverer.addCandidateFinder(new ModContainerModCandidateFinder(service.all()));
+
+        PreloadingTricksCallback.invoker.onCollectModCandidates();
+
+        var envDisabledMods = new HashMap<String, Set<ModCandidateImpl>>();
+
+        try {
+            var modCandidates = discoverer.discoverMods(FabricLoaderImpl.INSTANCE, envDisabledMods);
+
+            modCandidates = ModResolver.resolve(
+                modCandidates,
+                FabricLoader.getInstance().getEnvironmentType(),
+                envDisabledMods
+            );
+
+            dumpModList(modCandidates);
+            FabricLoaderImpl.INSTANCE.dumpNonFabricMods(discoverer.getNonFabricMods());
+
+            var cacheDir = FabricLoader.getInstance().getGameDir().resolve(FabricLoaderImpl.CACHE_DIR_NAME);
+            var outputDir = cacheDir.resolve("processedMods");
+
+            if (remapRegularMods) {
+                if (System.getProperty(SystemProperties.REMAP_CLASSPATH_FILE) == null) {
+                    PreloadingTricks.LOGGER.warn(
+                        "Runtime mod remapping disabled due to no fabric.remapClasspathFile being specified. You may need to update loom.");
+                } else {
+                    RuntimeModRemapper.remap(modCandidates, cacheDir.resolve("tmp"), outputDir);
+                }
+            }
+
+            var idToCandidates = modCandidates.stream().collect(Collectors.toMap(
+                ModCandidateImpl::getId,
+                Function.identity()
+            ));
+
+            var iterator = FabricLoaderImplAccessor.modMap().entrySet().iterator();
+            while (iterator.hasNext()) {
+                var entry = iterator.next();
+                var id = entry.getKey();
+                var modContainer = entry.getValue();
+                if (Objects.equals(idToCandidates.get(id).getPaths(), modContainer.getCodeSourcePaths())) {
+                    idToCandidates.remove(id);
+                } else {
+                    iterator.remove();
+                    service.remove(modContainer);
+                }
+            }
+
+            for (final var mod : idToCandidates.values()) {
+                if (!mod.hasPath() && !mod.isBuiltin()) {
+                    try {
+                        mod.setPaths(Collections.singletonList(mod.copyToDir(outputDir, false)));
+                    } catch (IOException e) {
+                        throw new RuntimeException("Error extracting mod " + mod, e);
+                    }
+                }
+
+                service.add(mod);
+                for (final var path : mod.getPaths()) {
+                    // This may add two different version of mod to the classpath.
+                    // Should remove the old path in the loop before.
+                    // But it's difficult.
+                    // So I leave this here.
+                    // I believe the KnotClassLoader is smart enough to pick the correct class!
+                    FabricLauncherBase.getLauncher().addToClassPath(path);
+                }
+            }
+        } catch (ModResolutionException e) {
+            FabricGuiEntry.displayCriticalError(e, true);
+        }
+    }
+
+    public static void dumpModList(Collection<ModCandidateImpl> mods) {
+        StringBuilder modListText = new StringBuilder();
+
+        boolean[] lastItemOfNestLevel = new boolean[mods.size()];
+        List<ModCandidateImpl> topLevelMods = mods.stream()
+                                                  .filter(mod -> mod.getParentMods().isEmpty())
+                                                  .toList();
+        int topLevelModsCount = topLevelMods.size();
+
+        for (int i = 0; i < topLevelModsCount; i++) {
+            boolean lastItem = i == topLevelModsCount - 1;
+
+            if (lastItem) lastItemOfNestLevel[0] = true;
+
+            dumpModList0(topLevelMods.get(i), modListText, 0, lastItemOfNestLevel);
+        }
+
+        int modsCount = mods.size();
+        PreloadingTricks.LOGGER.info(
+            "Loading {} additional mod{}:{}",
+            modsCount,
+            modsCount != 1 ? "s" : "",
+            modListText
+        );
+    }
+
+    private static void dumpModList0(
+        ModCandidateImpl mod,
+        StringBuilder log,
+        int nestLevel,
+        boolean[] lastItemOfNestLevel
+    ) {
+        if (!log.isEmpty()) log.append('\n');
+
+        for (int depth = 0; depth < nestLevel; depth++) {
+            log.append(depth == 0 ? "\t" : lastItemOfNestLevel[depth] ? "     " : "   | ");
+        }
+
+        log.append(nestLevel == 0 ? "\t" : "  ");
+        log.append(nestLevel == 0 ? "-" : lastItemOfNestLevel[nestLevel] ? " \\--" : " |--");
+        log.append(' ');
+        log.append(mod.getId());
+        log.append(' ');
+        log.append(mod.getVersion().getFriendlyString());
+
+        List<ModCandidateImpl> nestedMods = new ArrayList<>(mod.getNestedMods());
+        nestedMods.sort(Comparator.comparing(nestedMod -> nestedMod.getMetadata().getId()));
+
+        if (!nestedMods.isEmpty()) {
+            Iterator<ModCandidateImpl> iterator = nestedMods.iterator();
+            ModCandidateImpl nestedMod;
+            boolean lastItem;
+
+            while (iterator.hasNext()) {
+                nestedMod = iterator.next();
+                lastItem = !iterator.hasNext();
+
+                if (lastItem) lastItemOfNestLevel[nestLevel + 1] = true;
+
+                dumpModList0(nestedMod, log, nestLevel + 1, lastItemOfNestLevel);
+
+                if (lastItem) lastItemOfNestLevel[nestLevel + 1] = false;
+            }
+        }
+    }
+}

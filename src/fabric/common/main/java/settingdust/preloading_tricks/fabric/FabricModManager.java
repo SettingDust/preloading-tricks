@@ -3,6 +3,7 @@ package settingdust.preloading_tricks.fabric;
 import net.fabricmc.loader.impl.ModContainerImpl;
 import net.fabricmc.loader.impl.discovery.ModCandidateImpl;
 import settingdust.preloading_tricks.api.PreloadingTricksModManager;
+import settingdust.preloading_tricks.fabric.util.FabricLoaderImplAccessor;
 import settingdust.preloading_tricks.fabric.virtual_mod.VirtualModContainer;
 
 import java.nio.file.Path;
@@ -38,7 +39,7 @@ public class FabricModManager implements PreloadingTricksModManager<ModContainer
         }
     }
 
-    public void add(ModCandidateImpl modCandidate) throws Throwable {
+    public void add(ModCandidateImpl modCandidate) {
         FabricLoaderImplAccessor.addMod(modCandidate);
     }
 
@@ -53,7 +54,8 @@ public class FabricModManager implements PreloadingTricksModManager<ModContainer
         var metadata = modContainer.getMetadata();
         modMap.remove(metadata.getId());
         for (String provide : metadata.getProvides()) {
-            modMap.remove(provide);
+            if (modMap.get(provide).equals(modContainer))
+                modMap.remove(provide);
         }
     }
 
@@ -84,7 +86,13 @@ public class FabricModManager implements PreloadingTricksModManager<ModContainer
 
     @Override
     public void removeById(final String id) {
-        mods.remove(modMap.remove(id));
+        var modContainer = modMap.remove(id);
+        var metadata = modContainer.getMetadata();
+        mods.remove(modContainer);
+        for (String provide : metadata.getProvides()) {
+            if (modMap.get(provide).equals(modContainer))
+                modMap.remove(provide);
+        }
     }
 
     @Override

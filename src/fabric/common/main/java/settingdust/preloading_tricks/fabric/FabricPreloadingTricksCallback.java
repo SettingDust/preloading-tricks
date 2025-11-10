@@ -17,8 +17,6 @@ import settingdust.preloading_tricks.fabric.util.FabricLoaderImplAccessor;
 
 import java.io.IOException;
 import java.util.*;
-import java.util.function.Function;
-import java.util.stream.Collectors;
 
 public class FabricPreloadingTricksCallback implements PreloadingTricksCallback {
     @Override
@@ -46,25 +44,13 @@ public class FabricPreloadingTricksCallback implements PreloadingTricksCallback 
                 envDisabledMods
             );
 
-            dumpModList(modCandidates);
-            FabricLoaderImpl.INSTANCE.dumpNonFabricMods(discoverer.getNonFabricMods());
-
-            var cacheDir = FabricLoader.getInstance().getGameDir().resolve(FabricLoaderImpl.CACHE_DIR_NAME);
-            var outputDir = cacheDir.resolve("processedMods");
-
-            if (remapRegularMods) {
-                if (System.getProperty(SystemProperties.REMAP_CLASSPATH_FILE) == null) {
-                    PreloadingTricks.LOGGER.warn(
-                        "Runtime mod remapping disabled due to no fabric.remapClasspathFile being specified. You may need to update loom.");
-                } else {
-                    RuntimeModRemapper.remap(modCandidates, cacheDir.resolve("tmp"), outputDir);
+            var idToCandidates = new HashMap<String, ModCandidateImpl>();
+            for (final var candidate : modCandidates) {
+                idToCandidates.put(candidate.getId(), candidate);
+                for (final var provide : candidate.getProvides()) {
+                    idToCandidates.put(provide, candidate);
                 }
             }
-
-            var idToCandidates = modCandidates.stream().collect(Collectors.toMap(
-                ModCandidateImpl::getId,
-                Function.identity()
-            ));
 
             var iterator = FabricLoaderImplAccessor.modMap().entrySet().iterator();
             while (iterator.hasNext()) {
@@ -76,6 +62,21 @@ public class FabricPreloadingTricksCallback implements PreloadingTricksCallback 
                 } else {
                     iterator.remove();
                     service.remove(modContainer);
+                }
+            }
+
+            dumpModList(idToCandidates.values());
+            FabricLoaderImpl.INSTANCE.dumpNonFabricMods(discoverer.getNonFabricMods());
+
+            var cacheDir = FabricLoader.getInstance().getGameDir().resolve(FabricLoaderImpl.CACHE_DIR_NAME);
+            var outputDir = cacheDir.resolve("processedMods");
+
+            if (remapRegularMods) {
+                if (System.getProperty(SystemProperties.REMAP_CLASSPATH_FILE) == null) {
+                    PreloadingTricks.LOGGER.warn(
+                        "Runtime mod remapping disabled due to no fabric.remapClasspathFile being specified. You may need to update loom.");
+                } else {
+                    RuntimeModRemapper.remap(idToCandidates.values(), cacheDir.resolve("tmp"), outputDir);
                 }
             }
 
@@ -122,7 +123,7 @@ public class FabricPreloadingTricksCallback implements PreloadingTricksCallback 
 
         int modsCount = mods.size();
         PreloadingTricks.LOGGER.info(
-            "Loading {} additional mod{}:{}",
+            "Loading {} additional mod{}:{}\n",
             modsCount,
             modsCount != 1 ? "s" : "",
             modListText

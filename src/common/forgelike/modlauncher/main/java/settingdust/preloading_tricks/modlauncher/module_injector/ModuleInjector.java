@@ -10,8 +10,11 @@ import settingdust.preloading_tricks.modlauncher.module_injector.accessor.Module
 import settingdust.preloading_tricks.modlauncher.module_injector.accessor.ModuleLayerHandlerAccessor;
 
 import java.lang.module.Configuration;
+import java.lang.module.ResolvedModule;
 import java.nio.file.Path;
 import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Set;
 
 /**
  * Main facade for module injection operations.
@@ -42,21 +45,23 @@ public class ModuleInjector {
         ModuleOperationHelper.mergeConfigurations(targetConfiguration, moduleConfig);
 
         var allResolvedModules = ConfigurationAccessor.getModules(moduleConfig);
+        var moduleToReads = new HashMap<Module, Set<ResolvedModule>>();
 
         for (var resolvedModule : allResolvedModules) {
             // Save reads before modifying cf field (which affects hashCode)
             var reads = resolvedModule.reads();
 
             // Create and register module
-            var module = ModuleOperationHelper.createAndRegisterModule(
+            moduleToReads.put(ModuleOperationHelper.createAndRegisterModule(
                 resolvedModule,
                 targetLayer,
                 targetClassLoader,
                 targetConfiguration
-            );
+            ), reads);
+        }
 
-            // Establish read relationships
-            ModuleOperationHelper.setupModuleReads(module, targetLayer, reads);
+        for (final var module : moduleToReads.entrySet()) {
+            ModuleOperationHelper.setupModuleReads(module.getKey(), targetLayer, module.getValue());
         }
 
         ModuleLayerAccessor.clearModules(targetLayer);

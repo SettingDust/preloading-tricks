@@ -92,19 +92,19 @@ public class ModuleOperationHelper {
         ModuleLayer targetLayer,
         Iterable<ResolvedModule> declaredReads
     ) {
+        // Add reads to modules required by this module (from declared reads)
+        for (var required : declaredReads) {
+            // findModule will search in parent layers automatically
+            targetLayer.findModule(required.name())
+                       .ifPresent(it -> ModuleAccessor.implAddReads(module, it));
+        }
+
         // Add reads to all modules in target layer (bidirectional)
         for (var existingModuleInLayer : targetLayer.modules()) {
             ModuleAccessor.implAddReads(existingModuleInLayer, module);
             if (!module.canRead(existingModuleInLayer)) {
                 ModuleAccessor.implAddReads(module, existingModuleInLayer);
             }
-        }
-
-        // Add reads to modules required by this module (from declared reads)
-        for (var required : declaredReads) {
-            // findModule will search in parent layers automatically
-            targetLayer.findModule(required.name())
-                       .ifPresent(it -> ModuleAccessor.implAddReads(module, it));
         }
     }
 

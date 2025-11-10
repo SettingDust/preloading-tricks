@@ -19,6 +19,10 @@ public final class ServiceLoaderUtil {
         return ServiceLoader.load(clazz);
     }
 
+    public static <T> ServiceLoader<T> load(Class<T> clazz, ClassLoader cl) {
+        return ServiceLoader.load(clazz, cl);
+    }
+
     public static <T> T findService(Class<T> clazz, ServiceLoader<T> serviceLoader) {
         return findService(clazz, serviceLoader, defaultLogger);
     }
@@ -33,6 +37,10 @@ public final class ServiceLoaderUtil {
 
     public static <T> Iterable<T> findServices(Class<T> clazz, ModuleLayer layer) {
         return findServices(clazz, load(clazz, layer), defaultLogger, true);
+    }
+
+    public static <T> Iterable<T> findServices(Class<T> clazz, ServiceLoader<T> serviceLoader, boolean required) {
+        return findServices(clazz, serviceLoader, defaultLogger, required);
     }
 
     public static <T> Iterable<T> findServices(

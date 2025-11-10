@@ -1,10 +1,10 @@
 package settingdust.preloading_tricks.lexforge;
 
+import cpw.mods.niofs.union.UnionPath;
 import net.minecraftforge.fml.loading.FMLLoader;
 import net.minecraftforge.fml.loading.moddiscovery.ModFile;
 import settingdust.preloading_tricks.PreloadingTricks;
 import settingdust.preloading_tricks.api.PreloadingTricksCallback;
-import settingdust.preloading_tricks.api.PreloadingTricksModCandidatesManager;
 import settingdust.preloading_tricks.api.PreloadingTricksModManager;
 import settingdust.preloading_tricks.forgelike.specified_forge_variant.ForgeVariants;
 
@@ -20,14 +20,22 @@ public class LexForgePreloadingTricksCallback implements PreloadingTricksCallbac
             return;
         }
 
-        var candidatesManager = PreloadingTricksModCandidatesManager.get();
+        var manager = PreloadingTricksModManager.<PreloadingTricksModManager<ModFile>>get();
+
         try {
-            candidatesManager.add(Path.of(getClass().getProtectionDomain().getCodeSource().getLocation().toURI()));
+            var mod = manager.createVirtualMod(
+                PreloadingTricks.MOD_ID,
+                ((UnionPath) Path.of(this.getClass()
+                                         .getProtectionDomain()
+                                         .getCodeSource()
+                                         .getLocation()
+                                         .toURI())).getFileSystem().getPrimaryPath()
+            );
+            manager.add(mod);
         } catch (URISyntaxException e) {
             throw new RuntimeException(e);
         }
 
-        var manager = PreloadingTricksModManager.<PreloadingTricksModManager<ModFile>>get();
         manager.removeIf(it -> {
             var manifest = it.getSecureJar().moduleDataProvider().getManifest();
             var variantString = manifest.getMainAttributes().getValue(ForgeVariants.MANIFEST_KEY);

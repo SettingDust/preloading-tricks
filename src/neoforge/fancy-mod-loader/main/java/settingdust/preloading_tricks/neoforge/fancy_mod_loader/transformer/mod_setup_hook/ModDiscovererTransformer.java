@@ -30,7 +30,7 @@ public class ModDiscovererTransformer {
                                                                             IllegalAccessException,
                                                                             NoSuchMethodException,
                                                                             InvocationTargetException {
-        LOGGER.info("PreloadingTricks calling SetupModCallback in `ModDiscoverer#discoverMods`");
+        LOGGER.info("PreloadingTricks calling PreloadingTricksCallback in `ModDiscoverer#discoverMods`");
         var currentClassLoader = FMLLoader.getCurrent().getCurrentClassLoader();
         var managerClazz = currentClassLoader.loadClass(
             "settingdust.preloading_tricks.neoforge.fancy_mod_loader.NeoForgeModManager");

@@ -25,7 +25,11 @@ public interface PreloadingTricksCallback {
      * Results are memoized for performance optimization.
      */
     Supplier<Iterable<PreloadingTricksCallback>> supplier =
-        Suppliers.memoize(() -> ServiceLoaderUtil.findServices(PreloadingTricksCallback.class, false));
+        Suppliers.memoize(() -> ServiceLoaderUtil.findServices(
+            PreloadingTricksCallback.class,
+            ServiceLoaderUtil.load(PreloadingTricksCallback.class, PreloadingTricksCallback.class.getClassLoader()),
+            false
+        ));
 
     /**
      * Global callback invoker responsible for iterating through all registered callback implementations
@@ -50,9 +54,12 @@ public interface PreloadingTricksCallback {
 
         @Override
         public void onSetupMods() {
+            var oldClassLoader = Thread.currentThread().getContextClassLoader();
+            Thread.currentThread().setContextClassLoader(PreloadingTricksModManager.class.getClassLoader());
             for (final var callback : supplier.get()) {
                 callback.onSetupMods();
             }
+            Thread.currentThread().setContextClassLoader(oldClassLoader);
         }
     };
 

@@ -27,7 +27,7 @@ public class ModDiscovererTransformer {
         )
     )
     private List<ModFile> preloading_tricks$onSetupMods(List<ModFile> mods) {
-        LOGGER.info("PreloadingTricks calling SetupModCallback in `ModDiscoverer#discoverMods`");
+        LOGGER.info("PreloadingTricks calling PreloadingTricksCallback in `ModDiscoverer#discoverMods`");
         var serviceLayer =
             Launcher.INSTANCE.findLayerManager()
                              .orElseThrow()

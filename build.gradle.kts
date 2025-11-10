@@ -228,6 +228,10 @@ cloche {
             }
 
             tasks {
+                named(generateModsTomlTaskName) {
+                    enabled = false
+                }
+
                 named<Jar>(jarTaskName) {
                     from(embedBoot) {
                         into("libs/boot")
@@ -324,6 +328,10 @@ cloche {
             }
 
             tasks {
+                named(generateModsTomlTaskName) {
+                    enabled = false
+                }
+
                 named<Jar>(jarTaskName) {
                     from(embedBoot) {
                         into("libs/boot")

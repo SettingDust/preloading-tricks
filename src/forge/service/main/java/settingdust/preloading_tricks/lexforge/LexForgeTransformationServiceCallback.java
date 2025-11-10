@@ -5,11 +5,11 @@ import net.minecraftforge.fml.loading.FMLLoader;
 import settingdust.preloading_tricks.PreloadingTricks;
 import settingdust.preloading_tricks.forgelike.class_transform.ClassTransformBootstrap;
 import settingdust.preloading_tricks.modlauncher.PreloadingTricksTransformationService;
+import settingdust.preloading_tricks.modlauncher.TransformationServiceCallback;
 
 import java.io.IOException;
 
-public class TransformationServiceCallback implements
-                                           settingdust.preloading_tricks.modlauncher.TransformationServiceCallback {
+public class LexForgeTransformationServiceCallback implements TransformationServiceCallback {
     @Override
     public void init() {
         try {

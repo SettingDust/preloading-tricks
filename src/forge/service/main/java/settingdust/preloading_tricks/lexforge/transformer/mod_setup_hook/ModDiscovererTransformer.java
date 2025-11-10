@@ -1,14 +1,16 @@
 package settingdust.preloading_tricks.lexforge.transformer.mod_setup_hook;
 
+import cpw.mods.modlauncher.Launcher;
+import cpw.mods.modlauncher.api.IModuleLayerManager;
 import net.lenni0451.classtransform.annotations.CShadow;
 import net.lenni0451.classtransform.annotations.CTarget;
 import net.lenni0451.classtransform.annotations.CTransformer;
 import net.lenni0451.classtransform.annotations.injection.CModifyExpressionValue;
+import net.lenni0451.reflect.Classes;
+import net.lenni0451.reflect.stream.RStream;
 import net.minecraftforge.fml.loading.moddiscovery.ModDiscoverer;
 import net.minecraftforge.fml.loading.moddiscovery.ModFile;
 import org.slf4j.Logger;
-import settingdust.preloading_tricks.api.PreloadingTricksCallback;
-import settingdust.preloading_tricks.lexforge.LexForgeModManager;
 
 import java.util.List;
 
@@ -26,9 +28,28 @@ public class ModDiscovererTransformer {
     )
     private List<ModFile> preloading_tricks$onSetupMods(List<ModFile> mods) {
         LOGGER.info("PreloadingTricks calling SetupModCallback in `ModDiscoverer#discoverMods`");
-        LexForgeModManager.mods = mods;
-        PreloadingTricksCallback.invoker.onSetupMods();
-        LexForgeModManager.mods = null;
+        var serviceLayer =
+            Launcher.INSTANCE.findLayerManager()
+                             .orElseThrow()
+                             .getLayer(IModuleLayerManager.Layer.SERVICE)
+                             .orElseThrow();
+
+        var serviceClassLoader = serviceLayer.modules().iterator().next().getClassLoader();
+
+        var managerClazz = RStream.of(Classes.byName(
+            "settingdust.preloading_tricks.lexforge.LexForgeModManager",
+            serviceClassLoader
+        ));
+        var modsField = managerClazz.fields().by("mods");
+
+        modsField.set(mods);
+        var callbackClazz = RStream.of(Classes.byName(
+            "settingdust.preloading_tricks.api.PreloadingTricksCallback",
+            serviceClassLoader
+        ));
+        var setupModsMethod = callbackClazz.methods().by("onSetupMods");
+        setupModsMethod.invokeInstance(callbackClazz.fields().by("invoker").get());
+        modsField.set(null);
         return mods;
     }
 }

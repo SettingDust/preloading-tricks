@@ -12,10 +12,11 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import settingdust.preloading_tricks.PreloadingTricks;
 import settingdust.preloading_tricks.forgelike.class_transform.ClassTransformBootstrap;
+import settingdust.preloading_tricks.forgelike.module_injector.accessor.ModuleAccessor;
+import settingdust.preloading_tricks.forgelike.module_injector.accessor.ModuleLayerAccessor;
 import settingdust.preloading_tricks.modlauncher.class_transform.ClassTransformLaunchPlugin;
 import settingdust.preloading_tricks.modlauncher.module_injector.ModuleConfigurationCreator;
 import settingdust.preloading_tricks.modlauncher.module_injector.ModuleInjector;
-import settingdust.preloading_tricks.modlauncher.module_injector.ModuleMover;
 import settingdust.preloading_tricks.modlauncher.module_injector.accessor.LauncherAccessor;
 import settingdust.preloading_tricks.modlauncher.module_injector.accessor.ModuleClassLoaderAccessor;
 import settingdust.preloading_tricks.modlauncher.module_injector.accessor.ModuleLayerHandlerAccessor;
@@ -50,11 +51,15 @@ public class PreloadingTricksTransformationService implements ITransformationSer
                 LauncherAccessor.getModuleLayer(IModuleLayerManager.Layer.BOOT)
             );
 
-            LOGGER.info("Move self to BOOT layer");
-            ModuleMover.move(
-                PreloadingTricksTransformationService.class,
-                IModuleLayerManager.Layer.BOOT
-            );
+            // Maybe need make all the SERVICE modules read the modules added
+            var bootNameToModule =
+                ModuleLayerAccessor.getNameToModule(LauncherAccessor.getModuleLayer(IModuleLayerManager.Layer.BOOT));
+            for (final var module : configuration.modules()) {
+                ModuleAccessor.implAddReads(
+                    PreloadingTricksTransformationService.class.getModule(),
+                    bootNameToModule.get(module.name())
+                );
+            }
 
             new ClassTransformBootstrap();
         } catch (IOException | URISyntaxException e) {

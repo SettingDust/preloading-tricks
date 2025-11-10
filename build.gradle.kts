@@ -560,22 +560,32 @@ tasks {
         dependsOn(shadowContainersJar, shadowSourcesJar)
     }
 
-    // https://github.com/terrarium-earth/cloche/issues/115
-    val remapFabricMinecraftIntermediary by registering {
-        dependsOn(cloche.targets.filterIsInstance<FabricTarget>().flatMap {
-            listOf(
+    for (target in cloche.targets.filterIsInstance<FabricTarget>()) {
+        named(lowerCamelCaseGradleName("accessWiden", target.featureName, "commonMinecraft")) {
+            dependsOn(
                 lowerCamelCaseGradleName(
                     "remap",
-                    it.name,
+                    target.featureName,
                     "commonMinecraft",
                     MinecraftCodevFabricPlugin.INTERMEDIARY_MAPPINGS_NAMESPACE,
                 ), lowerCamelCaseGradleName(
                     "remap",
-                    it.name,
+                    target.featureName,
                     "clientMinecraft",
                     MinecraftCodevFabricPlugin.INTERMEDIARY_MAPPINGS_NAMESPACE,
-                )
+                ), lowerCamelCaseGradleName("generate", target.featureName, "MappingsArtifact")
             )
-        })
+        }
+
+        named(lowerCamelCaseGradleName("accessWiden", target.featureName, "Minecraft")) {
+            dependsOn(
+                lowerCamelCaseGradleName(
+                    "remap",
+                    target.featureName,
+                    "clientMinecraft",
+                    MinecraftCodevFabricPlugin.INTERMEDIARY_MAPPINGS_NAMESPACE,
+                ), lowerCamelCaseGradleName("generate", target.featureName, "MappingsArtifact")
+            )
+        }
     }
 }

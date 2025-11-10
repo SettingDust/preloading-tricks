@@ -24,4 +24,4 @@ jobs:
       - uses: burrunan/gradle-cache-action@v3
         name: Execute Gradle build
         with:
-          arguments: remapFabricMinecraftIntermediary build
+          arguments: build

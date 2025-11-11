@@ -1,5 +1,10 @@
 fix: `setAccessible` for `setMod`
 
+## [2.5.3] - 2025-11-11
+### :bug: Bug Fixes
+- [`5fc81cd`](https://github.com/SettingDust/preloading-tricks/commit/5fc81cd97a303ce08825af377180a6f5760f8b52) - **fabric**: compare the origin paths instead of transformed path *(commit by [@SettingDust](https://github.com/SettingDust))*
+
+
 ## [2.5.1] - 2025-11-11
 ### :bug: Bug Fixes
 - [`7565c40`](https://github.com/SettingDust/preloading-tricks/commit/7565c4068071de463d0bd6e64adc3e1fe2d34223) - **fabric**: include the language adapters for mods *(commit by [@SettingDust](https://github.com/SettingDust))*
@@ -182,3 +187,4 @@ fix: `setAccessible` for `setMod`
 [2.4.1]: https://github.com/SettingDust/preloading-tricks/compare/2.4.0...2.4.1
 [2.5.0]: https://github.com/SettingDust/preloading-tricks/compare/2.4.1...2.5.0
 [2.5.1]: https://github.com/SettingDust/preloading-tricks/compare/2.5.0...2.5.1
+[2.5.3]: https://github.com/SettingDust/preloading-tricks/compare/2.5.2...2.5.3

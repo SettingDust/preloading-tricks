@@ -1,5 +1,10 @@
 fix: `setAccessible` for `setMod`
 
+## [2.5.1] - 2025-11-11
+### :bug: Bug Fixes
+- [`7565c40`](https://github.com/SettingDust/preloading-tricks/commit/7565c4068071de463d0bd6e64adc3e1fe2d34223) - **fabric**: include the language adapters for mods *(commit by [@SettingDust](https://github.com/SettingDust))*
+
+
 ## [2.5.0] - 2025-11-11
 ### :sparkles: New Features
 - [`241435a`](https://github.com/SettingDust/preloading-tricks/commit/241435aeb02c4942d89678dbd34eddf326bd6483) - add candidate manager api *(commit by [@SettingDust](https://github.com/SettingDust))*
@@ -176,3 +181,4 @@ fix: `setAccessible` for `setMod`
 [2.4.0]: https://github.com/SettingDust/preloading-tricks/compare/2.3.0...2.4.0
 [2.4.1]: https://github.com/SettingDust/preloading-tricks/compare/2.4.0...2.4.1
 [2.5.0]: https://github.com/SettingDust/preloading-tricks/compare/2.4.1...2.5.0
+[2.5.1]: https://github.com/SettingDust/preloading-tricks/compare/2.5.0...2.5.1

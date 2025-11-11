@@ -129,7 +129,10 @@ cloche {
             dependencies {
                 fabricApi("0.92.6")
 
-                implementation(catalog.asmFabricLoader)
+                catalog.asmFabricLoader.let {
+                    implementation(it)
+                    include(it)
+                }
             }
         }
 
@@ -137,16 +140,6 @@ cloche {
             minecraftVersion = "1.21.1"
 
             runs { client() }
-
-            metadata {
-                dependency {
-                    modId = "minecraft"
-                    type = CommonMetadata.Dependency.Type.Required
-                    version {
-                        start = "1.21"
-                    }
-                }
-            }
 
             dependencies {
                 fabricApi("0.116.6")
@@ -179,6 +172,10 @@ cloche {
             metadata {
                 entrypoint("afl:prePrePreLaunch", "$group.fabric.PreloadingTricksLanguageAdapterEntrypoint")
                 custom("afl:classtransform", "$id.fabric.classtransform.json")
+
+                dependency {
+                    modId = "asmfabricloader"
+                }
             }
         }
     }

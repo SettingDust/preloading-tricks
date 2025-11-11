@@ -1,5 +1,21 @@
 fix: `setAccessible` for `setMod`
 
+## [2.5.0] - 2025-11-11
+### :sparkles: New Features
+- [`241435a`](https://github.com/SettingDust/preloading-tricks/commit/241435aeb02c4942d89678dbd34eddf326bd6483) - add candidate manager api *(commit by [@SettingDust](https://github.com/SettingDust))*
+- [`c5d111e`](https://github.com/SettingDust/preloading-tricks/commit/c5d111eb200a300ba0b00629e73896f37c71244f) - **fabric**: add candidate manager *(commit by [@SettingDust](https://github.com/SettingDust))*
+- [`353e72b`](https://github.com/SettingDust/preloading-tricks/commit/353e72b304e64f448c26d797f3209e8fbddea901) - **lexforge**: add candidate manager *(commit by [@SettingDust](https://github.com/SettingDust))*
+- [`52590b4`](https://github.com/SettingDust/preloading-tricks/commit/52590b409e345f104c0884e32e74fde96aebe7c0) - **forgelike**: don't move self to boot *(commit by [@SettingDust](https://github.com/SettingDust))*
+- [`850643b`](https://github.com/SettingDust/preloading-tricks/commit/850643b17d7d0ab54a39999251afe33a30464d95) - **neoforge/modlauncher**: add candidate manager *(commit by [@SettingDust](https://github.com/SettingDust))*
+
+### :bug: Bug Fixes
+- [`2ac20b8`](https://github.com/SettingDust/preloading-tricks/commit/2ac20b8573fcbeb9ffd6fbc001924427e1832cab) - **forgelike**: modify the reads after added all the modules *(commit by [@SettingDust](https://github.com/SettingDust))*
+- [`f45146e`](https://github.com/SettingDust/preloading-tricks/commit/f45146e936096910c01ed735fe89aaaccc6dfe62) - **forgelike**: find the service in the right class loader *(commit by [@SettingDust](https://github.com/SettingDust))*
+- [`fe60811`](https://github.com/SettingDust/preloading-tricks/commit/fe60811ccc43a995485e6bc11558f91389dd7ba0) - **fabric**: filter out the exists mods correctly *(commit by [@SettingDust](https://github.com/SettingDust))*
+- [`51ef112`](https://github.com/SettingDust/preloading-tricks/commit/51ef112c4173224bce87a8bb3a93a375c4ff7e57) - **neoforge/modlauncher**: work in dev env *(commit by [@SettingDust](https://github.com/SettingDust))*
+- [`6e344d4`](https://github.com/SettingDust/preloading-tricks/commit/6e344d46890c8fd4437907e9215afe69b155d5fd) - **forgelike**: don't load manager implementation on wrong variant *(commit by [@SettingDust](https://github.com/SettingDust))*
+
+
 ## [2.4.1] - 2025-11-07
 ### :sparkles: New Features
 - [`5d6b0a2`](https://github.com/SettingDust/preloading-tricks/commit/5d6b0a2f7a1ad32c126e688569ce81db4382f224) - **forgelike**: read the modules after copy *(commit by [@SettingDust](https://github.com/SettingDust))*
@@ -159,3 +175,4 @@ fix: `setAccessible` for `setMod`
 [2.3.0]: https://github.com/SettingDust/preloading-tricks/compare/2.2.2...2.3.0
 [2.4.0]: https://github.com/SettingDust/preloading-tricks/compare/2.3.0...2.4.0
 [2.4.1]: https://github.com/SettingDust/preloading-tricks/compare/2.4.0...2.4.1
+[2.5.0]: https://github.com/SettingDust/preloading-tricks/compare/2.4.1...2.5.0

@@ -23,6 +23,8 @@ public class DefinedCandidateLocator implements IModFileCandidateLocator {
     @Override
     public void findCandidates(final ILaunchContext context, final IDiscoveryPipeline pipeline) {
         PreloadingTricksCallback.invoker.onCollectModCandidates();
-        pipeline.addPath(definedCandidates, ModFileDiscoveryAttributes.DEFAULT, IncompatibleFileReporting.WARN_ALWAYS);
+        for (final var candidate : definedCandidates) {
+            pipeline.addPath(candidate, ModFileDiscoveryAttributes.DEFAULT, IncompatibleFileReporting.WARN_ALWAYS);
+        }
     }
 }

@@ -1,5 +1,6 @@
 package settingdust.preloading_tricks.lexforge;
 
+import net.minecraftforge.fml.loading.FMLLoader;
 import net.minecraftforge.fml.loading.moddiscovery.ModFile;
 import net.minecraftforge.fml.loading.moddiscovery.ModFileInfo;
 import settingdust.preloading_tricks.api.PreloadingTricksModManager;
@@ -15,6 +16,10 @@ import java.util.function.Predicate;
 
 public class LexForgeModManager implements PreloadingTricksModManager<ModFile> {
     public static List<ModFile> mods = List.of();
+
+    public LexForgeModManager() {
+        FMLLoader.class.getSimpleName();
+    }
 
     @Override
     public Collection<ModFile> all() {

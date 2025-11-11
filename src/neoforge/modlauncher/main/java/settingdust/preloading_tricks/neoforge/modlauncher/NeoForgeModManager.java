@@ -1,5 +1,6 @@
 package settingdust.preloading_tricks.neoforge.modlauncher;
 
+import cpw.mods.jarhandling.SecureJar;
 import net.neoforged.fml.loading.moddiscovery.ModFile;
 import net.neoforged.fml.loading.moddiscovery.ModFileInfo;
 import settingdust.preloading_tricks.api.PreloadingTricksModManager;
@@ -15,6 +16,10 @@ import java.util.function.Predicate;
 
 public class NeoForgeModManager implements PreloadingTricksModManager<ModFile> {
     public static List<ModFile> mods = null;
+
+    public NeoForgeModManager() {
+        SecureJar.class.getSimpleName();
+    }
 
     @Override
     public Collection<ModFile> all() {

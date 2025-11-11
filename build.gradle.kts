@@ -189,6 +189,9 @@ cloche {
     val commonModLauncher = common("common:forgelike:modlauncher") {
         dependsOn(common, commonForgeLike)
     }
+    val commonNeoForge = common("common:forgelike:neoforge") {
+        dependsOn(common, commonForgeLike)
+    }
 
     run forge@{
         val forge = forge("forge:service") {
@@ -276,7 +279,7 @@ cloche {
 
     run neoforge@{
         val neoforgeModlauncher = neoforge("neoforge:modlauncher") {
-            dependsOn(common, commonForgeLike, commonModLauncher)
+            dependsOn(common, commonForgeLike, commonModLauncher, commonNeoForge)
 
             minecraftVersion = "1.21.1"
             loaderVersion = "21.1.213"
@@ -341,7 +344,7 @@ cloche {
         }
 
         val neoforgeFancyModLoader = neoforge("neoforge:fancy-mod-loader") {
-            dependsOn(common, commonForgeLike)
+            dependsOn(common, commonForgeLike, commonNeoForge)
 
             minecraftVersion = "1.21.10"
             loaderVersion = "21.10.38-beta"

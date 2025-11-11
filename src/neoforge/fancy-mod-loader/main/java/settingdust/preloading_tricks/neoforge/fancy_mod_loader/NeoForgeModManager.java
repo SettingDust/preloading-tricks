@@ -17,6 +17,10 @@ import java.util.function.Predicate;
 public class NeoForgeModManager implements PreloadingTricksModManager<ModFile> {
     public static List<ModFile> mods = null;
 
+    public NeoForgeModManager() {
+        JarContents.class.getSimpleName();
+    }
+
     @Override
     public Collection<ModFile> all() {
         return mods;

@@ -1,4 +1,4 @@
-package settingdust.preloading_tricks.neoforge.modlauncher.mod_candidate;
+package settingdust.preloading_tricks.forgelike.neoforge.mod_candidate;
 
 import net.neoforged.neoforgespi.ILaunchContext;
 import net.neoforged.neoforgespi.locating.IDiscoveryPipeline;

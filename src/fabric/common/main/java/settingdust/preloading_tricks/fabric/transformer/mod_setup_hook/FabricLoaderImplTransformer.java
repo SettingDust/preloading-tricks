@@ -25,7 +25,7 @@ public class FabricLoaderImplTransformer {
     private void preloading_tricks$onSetupMods() throws ClassNotFoundException {
         Log.info(
             PreloadingTricksLanguageAdapterEntrypoint.LOG_CATEGORY,
-            "PreloadingTricks calling SetupModsCallback in `FabricLoaderImpl#setupMods`"
+            "PreloadingTricks calling PreloadingTricksCallback in `FabricLoaderImpl#setupMods`"
         );
         var knotClassLoader = FabricLauncherBase.getLauncher().getTargetClassLoader();
         @SuppressWarnings("unchecked") var callbackClass = (Class<PreloadingTricksCallback>) Class.forName(

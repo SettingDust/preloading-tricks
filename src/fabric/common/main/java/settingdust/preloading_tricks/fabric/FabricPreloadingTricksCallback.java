@@ -1,7 +1,9 @@
 package settingdust.preloading_tricks.fabric;
 
 import net.fabricmc.loader.api.FabricLoader;
+import net.fabricmc.loader.api.LanguageAdapter;
 import net.fabricmc.loader.impl.FabricLoaderImpl;
+import net.fabricmc.loader.impl.ModContainerImpl;
 import net.fabricmc.loader.impl.discovery.*;
 import net.fabricmc.loader.impl.gui.FabricGuiEntry;
 import net.fabricmc.loader.impl.launch.FabricLauncherBase;
@@ -89,7 +91,8 @@ public class FabricPreloadingTricksCallback implements PreloadingTricksCallback 
                     }
                 }
 
-                service.add(mod);
+                var container = new ModContainerImpl(mod);
+                service.add(container);
                 for (final var path : mod.getPaths()) {
                     // This may add two different version of mod to the classpath.
                     // Should remove the old path in the loop before.
@@ -98,6 +101,7 @@ public class FabricPreloadingTricksCallback implements PreloadingTricksCallback 
                     // I believe the KnotClassLoader is smart enough to pick the correct class!
                     FabricLauncherBase.getLauncher().addToClassPath(path);
                 }
+                setupLanguageAdapter(container);
             }
         } catch (ModResolutionException e) {
             FabricGuiEntry.displayCriticalError(e, true);
@@ -166,6 +170,30 @@ public class FabricPreloadingTricksCallback implements PreloadingTricksCallback 
                 dumpModList0(nestedMod, log, nestLevel + 1, lastItemOfNestLevel);
 
                 if (lastItem) lastItemOfNestLevel[nestLevel + 1] = false;
+            }
+        }
+    }
+
+    private void setupLanguageAdapter(ModContainerImpl mod) {
+        var adapterMap = FabricLoaderImplAccessor.adapterMap();
+        // add language adapters
+        for (var laEntry : mod.getMetadata().getLanguageAdapterDefinitions().entrySet()) {
+            if (adapterMap.containsKey(laEntry.getKey())) {
+                throw new RuntimeException(
+                    "Duplicate language adapter key: " + laEntry.getKey() + "! (" + laEntry.getValue() + ", " +
+                    adapterMap.get(laEntry.getKey()).getClass().getName() + ")");
+            }
+
+            try {
+                adapterMap.put(
+                    laEntry.getKey(), (LanguageAdapter) Class.forName(
+                        laEntry.getValue(),
+                        true,
+                        FabricLauncherBase.getLauncher().getTargetClassLoader()
+                    ).getDeclaredConstructor().newInstance()
+                );
+            } catch (Exception e) {
+                throw new RuntimeException("Failed to instantiate language adapter: " + laEntry.getKey(), e);
             }
         }
     }

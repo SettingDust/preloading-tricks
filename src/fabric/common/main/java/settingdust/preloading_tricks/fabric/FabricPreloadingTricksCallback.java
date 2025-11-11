@@ -59,7 +59,7 @@ public class FabricPreloadingTricksCallback implements PreloadingTricksCallback 
                 var entry = iterator.next();
                 var id = entry.getKey();
                 var modContainer = entry.getValue();
-                if (Objects.equals(idToCandidates.get(id).getPaths(), modContainer.getCodeSourcePaths())) {
+                if (Objects.equals(idToCandidates.get(id).getOriginPaths(), modContainer.getOrigin().getPaths())) {
                     idToCandidates.remove(id);
                 } else {
                     iterator.remove();

@@ -145,7 +145,7 @@ public final class VirtualJar implements SecureJar, Closeable {
         @Override
         @Nullable
         public URI uri() {
-            return null;
+            return getRootPath().toUri();
         }
 
         @Override

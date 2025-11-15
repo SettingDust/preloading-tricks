@@ -1,5 +1,10 @@
 fix: `setAccessible` for `setMod`
 
+## [2.5.4] - 2025-11-15
+### :bug: Bug Fixes
+- [`7efcba2`](https://github.com/SettingDust/preloading-tricks/commit/7efcba217494be021976acf5d63b43e9fc93dc58) - crash with puzzlelib *(commit by [@SettingDust](https://github.com/SettingDust))*
+
+
 ## [2.5.3] - 2025-11-11
 ### :bug: Bug Fixes
 - [`5fc81cd`](https://github.com/SettingDust/preloading-tricks/commit/5fc81cd97a303ce08825af377180a6f5760f8b52) - **fabric**: compare the origin paths instead of transformed path *(commit by [@SettingDust](https://github.com/SettingDust))*
@@ -188,3 +193,4 @@ fix: `setAccessible` for `setMod`
 [2.5.0]: https://github.com/SettingDust/preloading-tricks/compare/2.4.1...2.5.0
 [2.5.1]: https://github.com/SettingDust/preloading-tricks/compare/2.5.0...2.5.1
 [2.5.3]: https://github.com/SettingDust/preloading-tricks/compare/2.5.2...2.5.3
+[2.5.4]: https://github.com/SettingDust/preloading-tricks/compare/2.5.3...2.5.4

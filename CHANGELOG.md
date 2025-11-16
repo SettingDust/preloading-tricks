@@ -1,5 +1,11 @@
 fix: `setAccessible` for `setMod`
 
+## [2.5.5] - 2025-11-16
+### :bug: Bug Fixes
+- [`2520676`](https://github.com/SettingDust/preloading-tricks/commit/2520676b0f9a5f8921e3c20efd0952e20a43ef96) - check the correct class for neoforge 1.21 *(commit by [@SettingDust](https://github.com/SettingDust))*
+- [`3767aa5`](https://github.com/SettingDust/preloading-tricks/commit/3767aa5262e6c29f526dd6ae500b8ce326e7d519) - check if there is mod infos in mod *(commit by [@SettingDust](https://github.com/SettingDust))*
+
+
 ## [2.5.4] - 2025-11-15
 ### :bug: Bug Fixes
 - [`7efcba2`](https://github.com/SettingDust/preloading-tricks/commit/7efcba217494be021976acf5d63b43e9fc93dc58) - crash with puzzlelib *(commit by [@SettingDust](https://github.com/SettingDust))*
@@ -194,3 +200,4 @@ fix: `setAccessible` for `setMod`
 [2.5.1]: https://github.com/SettingDust/preloading-tricks/compare/2.5.0...2.5.1
 [2.5.3]: https://github.com/SettingDust/preloading-tricks/compare/2.5.2...2.5.3
 [2.5.4]: https://github.com/SettingDust/preloading-tricks/compare/2.5.3...2.5.4
+[2.5.5]: https://github.com/SettingDust/preloading-tricks/compare/2.5.4...2.5.5

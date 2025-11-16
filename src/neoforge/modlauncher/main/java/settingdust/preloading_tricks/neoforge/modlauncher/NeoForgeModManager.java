@@ -61,7 +61,7 @@ public class NeoForgeModManager implements PreloadingTricksModManager<ModFile> {
         var iterator = mods.iterator();
         while (iterator.hasNext()) {
             var mod = iterator.next();
-            if (mod.getModInfos().isEmpty()) continue;
+            if (mod.getModInfos() == null || mod.getModInfos().isEmpty()) continue;
             if (!(mod.getModFileInfo() instanceof ModFileInfo modFileInfo)) continue;
             var filtered = mod.getModInfos().stream().filter(it -> !ids.contains(it.getModId())).toList();
             if (filtered.isEmpty()) {

@@ -1,5 +1,10 @@
 fix: `setAccessible` for `setMod`
 
+## [2.5.6] - 2025-11-16
+### :bug: Bug Fixes
+- [`4f5817f`](https://github.com/SettingDust/preloading-tricks/commit/4f5817fcd4ad84c6735d84fdf6716e0d1a4c3ddb) - check if there is mod file info in mod *(commit by [@SettingDust](https://github.com/SettingDust))*
+
+
 ## [2.5.5] - 2025-11-16
 ### :bug: Bug Fixes
 - [`2520676`](https://github.com/SettingDust/preloading-tricks/commit/2520676b0f9a5f8921e3c20efd0952e20a43ef96) - check the correct class for neoforge 1.21 *(commit by [@SettingDust](https://github.com/SettingDust))*
@@ -201,3 +206,4 @@ fix: `setAccessible` for `setMod`
 [2.5.3]: https://github.com/SettingDust/preloading-tricks/compare/2.5.2...2.5.3
 [2.5.4]: https://github.com/SettingDust/preloading-tricks/compare/2.5.3...2.5.4
 [2.5.5]: https://github.com/SettingDust/preloading-tricks/compare/2.5.4...2.5.5
+[2.5.6]: https://github.com/SettingDust/preloading-tricks/compare/2.5.5...2.5.6

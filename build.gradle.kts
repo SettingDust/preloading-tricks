@@ -538,6 +538,7 @@ tasks {
         val neoforgeModlauncherJar =
             project.tasks.named<Jar>(cloche.targets.getByName("neoforge:modlauncher").includeJarTaskName)
         from(neoforgeModlauncherJar.map { zipTree(it.archiveFile) }) {
+            include("settingdust/preloading_tricks/forgelike/neoforge/**/*")
             include("settingdust/preloading_tricks/neoforge/**/*")
             include("META-INF/services/*")
             include("$id.neoforge.modlauncher.classtransform.json")
@@ -546,6 +547,7 @@ tasks {
         val neoforgeFancyModLoaderJar =
             project.tasks.named<Jar>(cloche.targets.getByName("neoforge:fancy-mod-loader").includeJarTaskName)
         from(neoforgeFancyModLoaderJar.map { zipTree(it.archiveFile) }) {
+            include("settingdust/preloading_tricks/forgelike/neoforge/**/*")
             include("settingdust/preloading_tricks/neoforge/**/*")
             include("META-INF/services/*")
             include("$id.neoforge.fml.classtransform.json")

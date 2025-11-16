@@ -1,5 +1,6 @@
-package settingdust.preloading_tricks.neoforge.modlauncher.specified_forge_variant;
+package settingdust.preloading_tricks.neoforge.fancy_mod_loader;
 
+import net.neoforged.fml.classloading.ModuleClassLoader;
 import net.neoforged.fml.loading.moddiscovery.ModFile;
 import settingdust.preloading_tricks.PreloadingTricks;
 import settingdust.preloading_tricks.api.PreloadingTricksCallback;
@@ -9,11 +10,11 @@ import settingdust.preloading_tricks.forgelike.specified_forge_variant.ForgeVari
 import java.net.URISyntaxException;
 import java.nio.file.Path;
 
-public class ForgeVariantHandler implements PreloadingTricksCallback {
+public class NeoForgePreloadingTricksCallback implements PreloadingTricksCallback {
     @Override
     public void onSetupMods() {
         try {
-            ModFile.class.getSimpleName();
+            ModuleClassLoader.class.getSimpleName();
         } catch (Throwable e) {
             return;
         }
@@ -31,10 +32,12 @@ public class ForgeVariantHandler implements PreloadingTricksCallback {
         }
 
         manager.removeIf(it -> {
-            var manifest = it.getSecureJar().moduleDataProvider().getManifest();
+            var manifest = it.getContents().getManifest();
             var variantString = manifest.getMainAttributes().getValue(ForgeVariants.MANIFEST_KEY);
             if (variantString == null) return false;
-            var variant = ForgeVariants.BY_NAME.get(variantString.toLowerCase());
+            var variant =
+                ForgeVariants.BY_NAME.get(variantString
+                                                  .toLowerCase());
             var shouldRemove = variant != null && variant != ForgeVariants.NeoForge;
             if (shouldRemove)
                 PreloadingTricks.LOGGER.debug("Removing {} for variant {}", it.getFilePath(), variant);

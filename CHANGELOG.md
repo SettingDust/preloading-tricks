@@ -1,5 +1,14 @@
 fix: `setAccessible` for `setMod`
 
+## [2.5.7] - 2025-11-18
+### :bug: Bug Fixes
+- [`a65b9cb`](https://github.com/SettingDust/preloading-tricks/commit/a65b9cbc89cad5be2533b33484a85f1ede7f85b3) - remove unused service *(commit by [@SettingDust](https://github.com/SettingDust))*
+- [`7032dd8`](https://github.com/SettingDust/preloading-tricks/commit/7032dd8a923c2eac1ec8372f6c7335e36332199d) - **fabric**: crash when setup mods *(commit by [@SettingDust](https://github.com/SettingDust))*
+
+### :wrench: Chores
+- [`6ae7c62`](https://github.com/SettingDust/preloading-tricks/commit/6ae7c62940862519f7e5d01732e06af2cefa6968) - move the preloading callbacks for neoforge *(commit by [@SettingDust](https://github.com/SettingDust))*
+
+
 ## [2.5.6] - 2025-11-16
 ### :bug: Bug Fixes
 - [`4f5817f`](https://github.com/SettingDust/preloading-tricks/commit/4f5817fcd4ad84c6735d84fdf6716e0d1a4c3ddb) - check if there is mod file info in mod *(commit by [@SettingDust](https://github.com/SettingDust))*
@@ -207,3 +216,4 @@ fix: `setAccessible` for `setMod`
 [2.5.4]: https://github.com/SettingDust/preloading-tricks/compare/2.5.3...2.5.4
 [2.5.5]: https://github.com/SettingDust/preloading-tricks/compare/2.5.4...2.5.5
 [2.5.6]: https://github.com/SettingDust/preloading-tricks/compare/2.5.5...2.5.6
+[2.5.7]: https://github.com/SettingDust/preloading-tricks/compare/2.5.6...2.5.7

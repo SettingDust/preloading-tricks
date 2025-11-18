@@ -10,9 +10,9 @@ import net.lenni0451.classtransform.annotations.CShadow;
 import net.lenni0451.classtransform.annotations.CTarget;
 import net.lenni0451.classtransform.annotations.CTransformer;
 import net.lenni0451.classtransform.annotations.injection.CInject;
-import net.lenni0451.reflect.stream.RStream;
 import settingdust.preloading_tricks.api.PreloadingTricksCallback;
 
+import java.lang.reflect.InvocationTargetException;
 import java.util.List;
 
 @CTransformer(FabricLoaderImpl.class)
@@ -22,7 +22,12 @@ public class FabricLoaderImplTransformer {
 
     @CInject(method = "setupMods", target = @CTarget(value = "HEAD"))
     @CInline
-    private void preloading_tricks$onSetupMods() throws ClassNotFoundException {
+    private void preloading_tricks$onSetupMods() throws
+                                                 ClassNotFoundException,
+                                                 NoSuchFieldException,
+                                                 IllegalAccessException,
+                                                 NoSuchMethodException,
+                                                 InvocationTargetException {
         Log.info(
             LogCategory.createCustom("PreloadingTricks"),
             "PreloadingTricks calling PreloadingTricksCallback in `FabricLoaderImpl#setupMods`"
@@ -33,8 +38,7 @@ public class FabricLoaderImplTransformer {
             true,
             knotClassLoader
         );
-        var stream = RStream.of(callbackClass);
-        var invoker = stream.fields().by("invoker").get(null);
-        stream.methods().by("onSetupMods").invokeInstance(invoker);
+        var invoker = callbackClass.getField("invoker").get(null);
+        callbackClass.getMethod("onSetupMods").invoke(invoker);
     }
 }

@@ -2,6 +2,7 @@ package settingdust.preloading_tricks.fabric;
 
 import net.fabricmc.loader.api.FabricLoader;
 import net.fabricmc.loader.api.LanguageAdapter;
+import net.fabricmc.loader.api.metadata.ModOrigin;
 import net.fabricmc.loader.impl.FabricLoaderImpl;
 import net.fabricmc.loader.impl.ModContainerImpl;
 import net.fabricmc.loader.impl.discovery.*;
@@ -59,7 +60,20 @@ public class FabricPreloadingTricksCallback implements PreloadingTricksCallback 
                 var entry = iterator.next();
                 var id = entry.getKey();
                 var modContainer = entry.getValue();
-                if (Objects.equals(idToCandidates.get(id).getOriginPaths(), modContainer.getOrigin().getPaths())) {
+                var origin = modContainer.getOrigin();
+                var candidate = idToCandidates.get(id);
+                var exists = origin.getKind() == ModOrigin.Kind.PATH
+                             && Objects.equals(origin.getPaths(), candidate.getOriginPaths());
+                if (!exists) {
+                    var candidateParentMods = candidate.getParentMods();
+                    if (!candidateParentMods.isEmpty()) {
+                        var parentMod = candidateParentMods.iterator().next();
+                        exists = origin.getKind() == ModOrigin.Kind.NESTED
+                                 && Objects.equals(origin.getParentModId(), parentMod.getId())
+                                 && Objects.equals(origin.getParentSubLocation(), candidate.getLocalPath());
+                    }
+                }
+                if (exists) {
                     idToCandidates.remove(id);
                 } else {
                     iterator.remove();

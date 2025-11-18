@@ -4,6 +4,7 @@ import net.fabricmc.loader.impl.FabricLoaderImpl;
 import net.fabricmc.loader.impl.ModContainerImpl;
 import net.fabricmc.loader.impl.launch.FabricLauncherBase;
 import net.fabricmc.loader.impl.util.log.Log;
+import net.fabricmc.loader.impl.util.log.LogCategory;
 import net.lenni0451.classtransform.annotations.CInline;
 import net.lenni0451.classtransform.annotations.CShadow;
 import net.lenni0451.classtransform.annotations.CTarget;
@@ -11,7 +12,6 @@ import net.lenni0451.classtransform.annotations.CTransformer;
 import net.lenni0451.classtransform.annotations.injection.CInject;
 import net.lenni0451.reflect.stream.RStream;
 import settingdust.preloading_tricks.api.PreloadingTricksCallback;
-import settingdust.preloading_tricks.fabric.PreloadingTricksLanguageAdapterEntrypoint;
 
 import java.util.List;
 
@@ -24,7 +24,7 @@ public class FabricLoaderImplTransformer {
     @CInline
     private void preloading_tricks$onSetupMods() throws ClassNotFoundException {
         Log.info(
-            PreloadingTricksLanguageAdapterEntrypoint.LOG_CATEGORY,
+            LogCategory.createCustom("PreloadingTricks"),
             "PreloadingTricks calling PreloadingTricksCallback in `FabricLoaderImpl#setupMods`"
         );
         var knotClassLoader = FabricLauncherBase.getLauncher().getTargetClassLoader();

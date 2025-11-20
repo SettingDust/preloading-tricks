@@ -10,6 +10,7 @@ import settingdust.preloading_tricks.forgelike.specified_forge_variant.ForgeVari
 
 import java.net.URISyntaxException;
 import java.nio.file.Path;
+import java.util.Set;
 
 public class LexForgePreloadingTricksCallback implements PreloadingTricksCallback {
     @Override
@@ -43,8 +44,18 @@ public class LexForgePreloadingTricksCallback implements PreloadingTricksCallbac
             var variant = ForgeVariants.BY_NAME.get(variantString.toLowerCase());
             var shouldRemove = variant != null && variant != ForgeVariants.LexForge;
             if (shouldRemove)
-                PreloadingTricks.LOGGER.debug("Removing {} for variant {}", it.getFilePath(), variant);
+                PreloadingTricks.LOGGER.debug("Avoid {} from loading for variant {}", it.getFilePath(), variant);
             return shouldRemove;
+        });
+
+        var packagesToRemove = Set.of("net.lenni0451.reflect");
+
+        manager.removeIf(mod -> {
+            var jar = mod.getSecureJar();
+            var needRemove = packagesToRemove.stream().anyMatch(it -> jar.getPackages().contains(it));
+            if (needRemove)
+                PreloadingTricks.LOGGER.debug("Avoid {} from loading for packages {}", mod.getFilePath(), packagesToRemove);
+            return needRemove;
         });
     }
 }

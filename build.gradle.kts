@@ -52,6 +52,21 @@ repositories {
         }
     }
 
+    exclusiveContent {
+        forRepository {
+            maven("https://mvn.devos.one/snapshots")
+        }
+        filter {
+            includeGroup("xyz.bluspring")
+        }
+    }
+
+    maven("https://maven.lenni0451.net/snapshots/") {
+        content {
+            includeGroupAndSubgroups("net.lenni0451")
+        }
+    }
+
     mavenCentral()
 
     cloche {

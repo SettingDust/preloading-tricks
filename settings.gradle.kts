@@ -157,10 +157,10 @@ dependencyResolutionManagement.versionCatalogs.create("catalog") {
 
     maven(
         id = "asmFabricLoader",
-        group = "de.florianmichael",
+        group = "xyz.bluspring",
         artifact = "AsmFabricLoader",
         mcVersionToVersion = mapOf(
-            "*" to "1.1.7"
+            "*" to "1.3.3-SNAPSHOT"
         ),
         versionFormat = { _, v -> v },
         mapping = listOf(

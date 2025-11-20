@@ -7,6 +7,7 @@ import cpw.mods.modlauncher.api.IModuleLayerManager;
 import cpw.mods.modlauncher.api.ITransformationService;
 import cpw.mods.modlauncher.serviceapi.ILaunchPluginService;
 import cpw.mods.niofs.union.UnionPath;
+import net.lenni0451.reflect.Agents;
 import net.lenni0451.reflect.stream.RStream;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -77,6 +78,12 @@ public class PreloadingTricksTransformationService implements ITransformationSer
         PreloadingTricks.LOGGER.info("{} Installed", PreloadingTricks.NAME);
 
         injectClassTransform();
+
+        try {
+            ClassTransformBootstrap.INSTANCE.getTransformerManager().hookInstrumentation(Agents.getInstrumentation());
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     private static void injectClassTransform() {

@@ -173,7 +173,7 @@ dependencyResolutionManagement.versionCatalogs.create("catalog") {
     )
 
     library("reflect", "net.lenni0451", "Reflect").version("1.5.0")
-    val classTransform = "1.14.1"
+    val classTransform = "1.15.0-SNAPSHOT"
     library("classTransform", "net.lenni0451.classtransform", "core").version(classTransform)
     library(
         "classTransform-AdditionalClassProvider",

@@ -40,8 +40,8 @@ public class VirtualModMetadata implements ModMetadata, LoaderModMetadata {
     }
 
     @Override
-    public String getAccessWidener() {
-        return null;
+    public String getClassTweaker() {
+        return "";
     }
 
     @Override

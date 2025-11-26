@@ -10,7 +10,6 @@ import net.lenni0451.classtransform.annotations.CShadow;
 import net.lenni0451.classtransform.annotations.CTarget;
 import net.lenni0451.classtransform.annotations.CTransformer;
 import net.lenni0451.classtransform.annotations.injection.CInject;
-import settingdust.preloading_tricks.api.PreloadingTricksCallback;
 
 import java.lang.reflect.InvocationTargetException;
 import java.util.List;
@@ -33,7 +32,7 @@ public class FabricLoaderImplTransformer {
             "PreloadingTricks calling PreloadingTricksCallback in `FabricLoaderImpl#setupMods`"
         );
         var knotClassLoader = FabricLauncherBase.getLauncher().getTargetClassLoader();
-        @SuppressWarnings("unchecked") var callbackClass = (Class<PreloadingTricksCallback>) Class.forName(
+        var callbackClass = Class.forName(
             "settingdust.preloading_tricks.api.PreloadingTricksCallback",
             true,
             knotClassLoader

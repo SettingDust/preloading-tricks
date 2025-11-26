@@ -24,7 +24,7 @@ plugins {
 
     id("com.gradleup.shadow") version "9.2.2"
 
-    id("earth.terrarium.cloche") version "0.16.19-dust"
+    id("earth.terrarium.cloche") version "0.16.20-dust"
 }
 
 val archive_name: String by rootProject.properties
@@ -178,7 +178,7 @@ cloche {
         }
 
         targets.withType<FabricTarget> {
-            loaderVersion = "0.17.2"
+            loaderVersion = "0.18.1"
 
             includedClient()
 
@@ -187,6 +187,13 @@ cloche {
             metadata {
                 entrypoint("afl:prePrePreLaunch", "$group.fabric.PreloadingTricksLanguageAdapterEntrypoint")
                 custom("afl:classtransform", "$id.fabric.classtransform.json")
+
+                dependency {
+                    modId = "fabricloader"
+                    version {
+                        start = "0.18"
+                    }
+                }
 
                 dependency {
                     modId = "asmfabricloader"

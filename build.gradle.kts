@@ -12,6 +12,7 @@ import earth.terrarium.cloche.api.target.MinecraftTarget
 import earth.terrarium.cloche.target.LazyConfigurableInternal
 import groovy.lang.Closure
 import net.msrandom.minecraftcodev.core.utils.lowerCamelCaseGradleName
+import net.msrandom.minecraftcodev.fabric.MinecraftCodevFabricPlugin
 import net.msrandom.minecraftcodev.runs.MinecraftRunConfiguration
 import org.gradle.jvm.tasks.Jar
 
@@ -23,7 +24,7 @@ plugins {
 
     id("com.gradleup.shadow") version "9.2.2"
 
-    id("earth.terrarium.cloche") version "0.16.12-dust"
+    id("earth.terrarium.cloche") version "0.16.19-dust"
 }
 
 val archive_name: String by rootProject.properties
@@ -592,11 +593,30 @@ tasks {
 
     for (target in cloche.targets.filterIsInstance<FabricTarget>()) {
         named(lowerCamelCaseGradleName("accessWiden", target.featureName, "commonMinecraft")) {
-            dependsOn(lowerCamelCaseGradleName("generate", target.featureName, "MappingsArtifact"))
+            dependsOn(
+                lowerCamelCaseGradleName(
+                    "remap",
+                    target.featureName,
+                    "commonMinecraft",
+                    MinecraftCodevFabricPlugin.INTERMEDIARY_MAPPINGS_NAMESPACE,
+                ), lowerCamelCaseGradleName(
+                    "remap",
+                    target.featureName,
+                    "clientMinecraft",
+                    MinecraftCodevFabricPlugin.INTERMEDIARY_MAPPINGS_NAMESPACE,
+                ), lowerCamelCaseGradleName("generate", target.featureName, "MappingsArtifact")
+            )
         }
 
         named(lowerCamelCaseGradleName("accessWiden", target.featureName, "Minecraft")) {
-            dependsOn(lowerCamelCaseGradleName("generate", target.featureName, "MappingsArtifact"))
+            dependsOn(
+                lowerCamelCaseGradleName(
+                    "remap",
+                    target.featureName,
+                    "clientMinecraft",
+                    MinecraftCodevFabricPlugin.INTERMEDIARY_MAPPINGS_NAMESPACE,
+                ), lowerCamelCaseGradleName("generate", target.featureName, "MappingsArtifact")
+            )
         }
     }
 }

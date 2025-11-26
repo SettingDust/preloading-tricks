@@ -1,5 +1,10 @@
 fix: `setAccessible` for `setMod`
 
+## [2.5.10] - 2025-11-26
+### :wrench: Chores
+- [`a1b3842`](https://github.com/SettingDust/preloading-tricks/commit/a1b38424b8f3400d56ac073639b6a902924b2bd1) - update asm fabric loader *(commit by [@SettingDust](https://github.com/SettingDust))*
+
+
 ## [2.5.9] - 2025-11-20
 ### :bug: Bug Fixes
 - [`6b6aebb`](https://github.com/SettingDust/preloading-tricks/commit/6b6aebbb0ca3cf8f3d08e27efd2d605310d7d810) - crash with mods includes Reflect *(commit by [@SettingDust](https://github.com/SettingDust))*
@@ -223,3 +228,4 @@ fix: `setAccessible` for `setMod`
 [2.5.6]: https://github.com/SettingDust/preloading-tricks/compare/2.5.5...2.5.6
 [2.5.7]: https://github.com/SettingDust/preloading-tricks/compare/2.5.6...2.5.7
 [2.5.9]: https://github.com/SettingDust/preloading-tricks/compare/2.5.8...2.5.9
+[2.5.10]: https://github.com/SettingDust/preloading-tricks/compare/2.5.9...2.5.10

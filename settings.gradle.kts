@@ -156,22 +156,7 @@ dependencyResolutionManagement.versionCatalogs.create("catalog") {
         )
     )
 
-    maven(
-        id = "asmFabricLoader",
-        group = "xyz.bluspring",
-        artifact = "AsmFabricLoader",
-        mcVersionToVersion = mapOf(
-            "*" to "1.3.3-SNAPSHOT"
-        ),
-        versionFormat = { _, v -> v },
-        mapping = listOf(
-            VariantMapping(
-                "*", mapOf(
-                    "common" to VariantConfig
-                )
-            )
-        )
-    )
+    library("asmFabricLoader", "de.florianmichael", "AsmFabricLoader").version("2.0.1")
 
     library("reflect", "net.lenni0451", "Reflect").version("1.5.0")
     val classTransform = "1.15.0-SNAPSHOT"

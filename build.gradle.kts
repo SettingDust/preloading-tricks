@@ -23,7 +23,7 @@ plugins {
 
     id("com.gradleup.shadow") version "9.2.2"
 
-    id("earth.terrarium.cloche") version "0.16.12-dust"
+    id("earth.terrarium.cloche") version "0.16.19-dust"
 }
 
 val archive_name: String by rootProject.properties

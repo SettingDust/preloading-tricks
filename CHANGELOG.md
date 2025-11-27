@@ -1,5 +1,12 @@
 fix: `setAccessible` for `setMod`
 
+## [2.6.0] - 2025-11-27
+### :sparkles: New Features
+- [`a2ad33d`](https://github.com/SettingDust/preloading-tricks/commit/a2ad33dd4b00a7df8a70ded0ca25c94e52ab3657) - update to fabric loader 0.18.1 *(commit by [@SettingDust](https://github.com/SettingDust))*
+- [`3ba9b90`](https://github.com/SettingDust/preloading-tricks/commit/3ba9b900d6bd869934ea45a407fc4e64a7461b50) - find the callback implementations in multiple class loaders *(commit by [@SettingDust](https://github.com/SettingDust))*
+- [`4a04bb0`](https://github.com/SettingDust/preloading-tricks/commit/4a04bb08bbd59a79f4cca1bb712292eea77a997e) - add missing language adapter callback for forge like *(commit by [@SettingDust](https://github.com/SettingDust))*
+
+
 ## [2.5.10] - 2025-11-26
 ### :wrench: Chores
 - [`a1b3842`](https://github.com/SettingDust/preloading-tricks/commit/a1b38424b8f3400d56ac073639b6a902924b2bd1) - update asm fabric loader *(commit by [@SettingDust](https://github.com/SettingDust))*
@@ -229,3 +236,4 @@ fix: `setAccessible` for `setMod`
 [2.5.7]: https://github.com/SettingDust/preloading-tricks/compare/2.5.6...2.5.7
 [2.5.9]: https://github.com/SettingDust/preloading-tricks/compare/2.5.8...2.5.9
 [2.5.10]: https://github.com/SettingDust/preloading-tricks/compare/2.5.9...2.5.10
+[2.6.0]: https://github.com/SettingDust/preloading-tricks/compare/2.5.10...2.6.0

@@ -1,4 +1,4 @@
-package settingdust.preloading_tricks.neoforge.modlauncher.transformer.mod_setup_hook;
+package settingdust.preloading_tricks.neoforge.modlauncher.transformer.preloading_callback;
 
 import cpw.mods.modlauncher.Launcher;
 import cpw.mods.modlauncher.api.IModuleLayerManager;

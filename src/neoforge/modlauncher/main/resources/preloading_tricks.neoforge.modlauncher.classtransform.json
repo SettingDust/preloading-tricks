@@ -1,6 +1,7 @@
 {
   "package": "settingdust.preloading_tricks.neoforge.modlauncher.transformer",
   "transformers": [
-    "mod_setup_hook.ModDiscovererTransformer"
+    "preloading_callback.ModDiscovererTransformer",
+    "preloading_callback.LanguageProviderLoaderTransformer"
   ]
 }

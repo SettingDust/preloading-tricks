@@ -1,4 +1,4 @@
-package settingdust.preloading_tricks.neoforge.fancy_mod_loader.transformer.mod_setup_hook;
+package settingdust.preloading_tricks.neoforge.fancy_mod_loader.transformer.preloading_callback;
 
 import net.lenni0451.classtransform.annotations.CInline;
 import net.lenni0451.classtransform.annotations.CTarget;
@@ -23,11 +23,8 @@ public class FMLLoaderTransformer {
         ClassProcessorAuditLog auditTrail,
         List<JarContentsModule> content
     ) {
-        var currentClassLoader = FMLLoader.getCurrent().getCurrentClassLoader();
         var classTransformClass = Classes.byName(
-            "settingdust.preloading_tricks.neoforge.fancy_mod_loader.class_transform.ClassTransformFancyModLoader",
-            currentClassLoader
-        );
+            "settingdust.preloading_tricks.neoforge.fancy_mod_loader.class_transform.ClassTransformFancyModLoader");
         RStream.of(classTransformClass).methods()
                .by("addConfigForGameLayer")
                .invokeArgs(content);
@@ -39,11 +36,8 @@ public class FMLLoaderTransformer {
         String loaderName,
         List<JarContents> jars
     ) {
-        var currentClassLoader = FMLLoader.getCurrent().getCurrentClassLoader();
         var classTransformClass = Classes.byName(
-            "settingdust.preloading_tricks.neoforge.fancy_mod_loader.class_transform.ClassTransformFancyModLoader",
-            currentClassLoader
-        );
+            "settingdust.preloading_tricks.neoforge.fancy_mod_loader.class_transform.ClassTransformFancyModLoader");
         RStream.of(classTransformClass).methods()
                .by("addConfigForLayer")
                .invokeArgs(loaderName, jars);

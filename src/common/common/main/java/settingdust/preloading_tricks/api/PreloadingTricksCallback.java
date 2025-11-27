@@ -1,7 +1,7 @@
 package settingdust.preloading_tricks.api;
 
-import com.google.common.collect.Iterables;
 import com.google.common.collect.Sets;
+import com.google.common.collect.Streams;
 import settingdust.preloading_tricks.util.ServiceLoaderUtil;
 
 import java.util.Set;
@@ -25,15 +25,13 @@ public interface PreloadingTricksCallback {
     );
 
     private static Iterable<PreloadingTricksCallback> findAllCallbacks() {
-        return Iterables.concat(
-            CLASS_LOADERS.stream().map(it ->
-                ServiceLoaderUtil.findServices(
-                    PreloadingTricksCallback.class,
-                    ServiceLoaderUtil.load(PreloadingTricksCallback.class, it),
-                    false
-                )
-            ).toArray(Iterable[]::new)
-        );
+        return CLASS_LOADERS.stream().flatMap(it ->
+            Streams.stream(ServiceLoaderUtil.findServices(
+                PreloadingTricksCallback.class,
+                ServiceLoaderUtil.load(PreloadingTricksCallback.class, it),
+                false
+            ))
+        ).toList();
     }
 
     /**

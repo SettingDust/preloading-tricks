@@ -1,4 +1,4 @@
-package settingdust.preloading_tricks.lexforge.transformer.mod_setup_hook;
+package settingdust.preloading_tricks.lexforge.transformer.preloading_callback;
 
 import cpw.mods.modlauncher.Launcher;
 import cpw.mods.modlauncher.api.IModuleLayerManager;
@@ -27,7 +27,7 @@ public class ModDiscovererTransformer {
         )
     )
     private List<ModFile> preloading_tricks$onSetupMods(List<ModFile> mods) {
-        LOGGER.info("PreloadingTricks calling PreloadingTricksCallback in `ModDiscoverer#discoverMods`");
+        LOGGER.info("PreloadingTricks calling PreloadingTricksCallback#onSetupMods in `ModDiscoverer#discoverMods`");
         var serviceLayer =
             Launcher.INSTANCE.findLayerManager()
                              .orElseThrow()

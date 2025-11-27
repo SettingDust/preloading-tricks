@@ -1,4 +1,4 @@
-package settingdust.preloading_tricks.neoforge.fancy_mod_loader.transformer.mod_setup_hook;
+package settingdust.preloading_tricks.neoforge.fancy_mod_loader.transformer.preloading_callback;
 
 import net.lenni0451.classtransform.annotations.CShadow;
 import net.lenni0451.classtransform.annotations.CTarget;

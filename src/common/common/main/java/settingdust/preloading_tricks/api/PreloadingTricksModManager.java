@@ -30,7 +30,10 @@ public interface PreloadingTricksModManager<M> {
      */
     @SuppressWarnings("RedundantTypeArguments")
     Supplier<PreloadingTricksModManager<?>> supplier =
-        Suppliers.<PreloadingTricksModManager<?>>memoize(() -> ServiceLoaderUtil.findService(PreloadingTricksModManager.class));
+        Suppliers.<PreloadingTricksModManager<?>>memoize(() -> ServiceLoaderUtil.findService(
+            PreloadingTricksModManager.class,
+            ServiceLoader.load(PreloadingTricksModManager.class, PreloadingTricksModManager.class.getClassLoader())
+        ));
 
     /**
      * Retrieves the singleton instance of the module manager.

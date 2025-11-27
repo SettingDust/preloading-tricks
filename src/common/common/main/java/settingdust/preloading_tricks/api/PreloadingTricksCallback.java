@@ -1,10 +1,10 @@
 package settingdust.preloading_tricks.api;
 
-import com.google.common.base.Suppliers;
+import com.google.common.collect.Iterables;
+import com.google.common.collect.Sets;
 import settingdust.preloading_tricks.util.ServiceLoaderUtil;
 
-import java.util.ServiceLoader;
-import java.util.function.Supplier;
+import java.util.Set;
 
 /**
  * Callback interface for preloading phase hooks, used to execute custom logic at key stages of module loading.
@@ -20,16 +20,21 @@ import java.util.function.Supplier;
  * @see PreloadingTricksModManager
  */
 public interface PreloadingTricksCallback {
-    /**
-     * Supplier that discovers all registered callback implementations through the {@link ServiceLoader} mechanism.
-     * Results are memoized for performance optimization.
-     */
-    Supplier<Iterable<PreloadingTricksCallback>> supplier =
-        Suppliers.memoize(() -> ServiceLoaderUtil.findServices(
-            PreloadingTricksCallback.class,
-            ServiceLoaderUtil.load(PreloadingTricksCallback.class, PreloadingTricksCallback.class.getClassLoader()),
-            false
-        ));
+    Set<ClassLoader> CLASS_LOADERS = Sets.newHashSet(
+        PreloadingTricksCallback.class.getClassLoader()
+    );
+
+    private static Iterable<PreloadingTricksCallback> findAllCallbacks() {
+        return Iterables.concat(
+            CLASS_LOADERS.stream().map(it ->
+                ServiceLoaderUtil.findServices(
+                    PreloadingTricksCallback.class,
+                    ServiceLoaderUtil.load(PreloadingTricksCallback.class, it),
+                    false
+                )
+            ).toArray(Iterable[]::new)
+        );
+    }
 
     /**
      * Global callback invoker responsible for iterating through all registered callback implementations
@@ -40,26 +45,26 @@ public interface PreloadingTricksCallback {
     PreloadingTricksCallback invoker = new PreloadingTricksCallback() {
         @Override
         public void onSetupLanguageAdapter() {
-            for (final var callback : supplier.get()) {
+            PreloadingTricksCallback.CLASS_LOADERS.add(Thread.currentThread().getContextClassLoader());
+            for (final var callback : findAllCallbacks()) {
                 callback.onSetupLanguageAdapter();
             }
         }
 
         @Override
         public void onCollectModCandidates() {
-            for (final var callback : supplier.get()) {
+            PreloadingTricksCallback.CLASS_LOADERS.add(Thread.currentThread().getContextClassLoader());
+            for (final var callback : findAllCallbacks()) {
                 callback.onCollectModCandidates();
             }
         }
 
         @Override
         public void onSetupMods() {
-            var oldClassLoader = Thread.currentThread().getContextClassLoader();
-            Thread.currentThread().setContextClassLoader(PreloadingTricksModManager.class.getClassLoader());
-            for (final var callback : supplier.get()) {
+            PreloadingTricksCallback.CLASS_LOADERS.add(Thread.currentThread().getContextClassLoader());
+            for (final var callback : findAllCallbacks()) {
                 callback.onSetupMods();
             }
-            Thread.currentThread().setContextClassLoader(oldClassLoader);
         }
     };
 

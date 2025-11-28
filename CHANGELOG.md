@@ -1,5 +1,10 @@
 fix: `setAccessible` for `setMod`
 
+## [2.6.1] - 2025-11-28
+### :bug: Bug Fixes
+- [`d593043`](https://github.com/SettingDust/preloading-tricks/commit/d5930434d9cc301d51d15770f218698ba14d163f) - throw an exception if can't get instrumentation *(commit by [@SettingDust](https://github.com/SettingDust))*
+
+
 ## [2.6.0] - 2025-11-27
 ### :sparkles: New Features
 - [`a2ad33d`](https://github.com/SettingDust/preloading-tricks/commit/a2ad33dd4b00a7df8a70ded0ca25c94e52ab3657) - update to fabric loader 0.18.1 *(commit by [@SettingDust](https://github.com/SettingDust))*
@@ -237,3 +242,4 @@ fix: `setAccessible` for `setMod`
 [2.5.9]: https://github.com/SettingDust/preloading-tricks/compare/2.5.8...2.5.9
 [2.5.10]: https://github.com/SettingDust/preloading-tricks/compare/2.5.9...2.5.10
 [2.6.0]: https://github.com/SettingDust/preloading-tricks/compare/2.5.10...2.6.0
+[2.6.1]: https://github.com/SettingDust/preloading-tricks/compare/2.6.0...2.6.1

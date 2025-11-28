@@ -1,5 +1,10 @@
 fix: `setAccessible` for `setMod`
 
+## [2.7.1] - 2025-11-28
+### :sparkles: New Features
+- [`b8847ce`](https://github.com/SettingDust/preloading-tricks/commit/b8847cef99242240d24c292e5ce38054450347f9) - make all the service modules read the added boot modules *(commit by [@SettingDust](https://github.com/SettingDust))*
+
+
 ## [2.7.0] - 2025-11-28
 ### :sparkles: New Features
 - [`7a9908d`](https://github.com/SettingDust/preloading-tricks/commit/7a9908db7b6f6cba4067a1bbf71aae0c62c85fe3) - add `getById` mod manager api *(commit by [@SettingDust](https://github.com/SettingDust))*
@@ -249,3 +254,4 @@ fix: `setAccessible` for `setMod`
 [2.6.0]: https://github.com/SettingDust/preloading-tricks/compare/2.5.10...2.6.0
 [2.6.1]: https://github.com/SettingDust/preloading-tricks/compare/2.6.0...2.6.1
 [2.7.0]: https://github.com/SettingDust/preloading-tricks/compare/2.6.1...2.7.0
+[2.7.1]: https://github.com/SettingDust/preloading-tricks/compare/2.7.0...2.7.1

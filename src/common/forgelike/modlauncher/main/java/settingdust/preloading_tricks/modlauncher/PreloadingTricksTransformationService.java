@@ -46,20 +46,19 @@ public class PreloadingTricksTransformationService implements ITransformationSer
                      .toList(),
                 ModuleClassLoaderAccessor.getConfiguration(bootClassLoader)
             );
+            var bootLayer = LauncherAccessor.getModuleLayer(IModuleLayerManager.Layer.BOOT);
             ModuleInjector.inject(
                 configuration,
                 bootClassLoader,
-                LauncherAccessor.getModuleLayer(IModuleLayerManager.Layer.BOOT)
+                bootLayer
             );
 
-            // Maybe need make all the SERVICE modules read the modules added
-            var bootNameToModule =
-                ModuleLayerAccessor.getNameToModule(LauncherAccessor.getModuleLayer(IModuleLayerManager.Layer.BOOT));
+            var bootNameToModule = ModuleLayerAccessor.getNameToModule(bootLayer);
+            var serviceModules = LauncherAccessor.getModuleLayer(IModuleLayerManager.Layer.SERVICE).modules();
             for (final var module : configuration.modules()) {
-                ModuleAccessor.implAddReads(
-                    PreloadingTricksTransformationService.class.getModule(),
-                    bootNameToModule.get(module.name())
-                );
+                for (final var serviceModule : serviceModules) {
+                    ModuleAccessor.implAddReads(serviceModule, bootNameToModule.get(module.name()));
+                }
             }
 
             try {

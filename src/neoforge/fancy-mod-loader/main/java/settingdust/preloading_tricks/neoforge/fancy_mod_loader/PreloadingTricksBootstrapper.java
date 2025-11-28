@@ -42,6 +42,15 @@ public class PreloadingTricksBootstrapper implements GraphicsBootstrapper {
                 );
             }
         );
+
+        try {
+            Agents.getInstrumentation();
+        } catch (InternalError e) {
+            throw new IllegalStateException(
+                PreloadingTricks.NAME + " can't be loaded. Failing to get instrumentation",
+                e
+            );
+        }
         new ClassTransformBootstrap();
         PreloadingTricks.LOGGER.info("[{}] Installed", PreloadingTricks.NAME);
         ClassTransformBootstrap.INSTANCE.addConfig("preloading_tricks.neoforge.fml.classtransform.json");

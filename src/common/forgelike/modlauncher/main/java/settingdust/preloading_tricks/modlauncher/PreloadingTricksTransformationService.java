@@ -62,6 +62,15 @@ public class PreloadingTricksTransformationService implements ITransformationSer
                 );
             }
 
+            try {
+                Agents.getInstrumentation();
+            } catch (InternalError e) {
+                throw new IllegalStateException(
+                    PreloadingTricks.NAME + " can't be loaded. Failing to get instrumentation",
+                    e
+                );
+            }
+
             new ClassTransformBootstrap();
         } catch (IOException | URISyntaxException e) {
             throw new RuntimeException(e);

@@ -1,5 +1,10 @@
 fix: `setAccessible` for `setMod`
 
+## [2.7.0] - 2025-11-28
+### :sparkles: New Features
+- [`7a9908d`](https://github.com/SettingDust/preloading-tricks/commit/7a9908db7b6f6cba4067a1bbf71aae0c62c85fe3) - add `getById` mod manager api *(commit by [@SettingDust](https://github.com/SettingDust))*
+
+
 ## [2.6.1] - 2025-11-28
 ### :bug: Bug Fixes
 - [`d593043`](https://github.com/SettingDust/preloading-tricks/commit/d5930434d9cc301d51d15770f218698ba14d163f) - throw an exception if can't get instrumentation *(commit by [@SettingDust](https://github.com/SettingDust))*
@@ -243,3 +248,4 @@ fix: `setAccessible` for `setMod`
 [2.5.10]: https://github.com/SettingDust/preloading-tricks/compare/2.5.9...2.5.10
 [2.6.0]: https://github.com/SettingDust/preloading-tricks/compare/2.5.10...2.6.0
 [2.6.1]: https://github.com/SettingDust/preloading-tricks/compare/2.6.0...2.6.1
+[2.7.0]: https://github.com/SettingDust/preloading-tricks/compare/2.6.1...2.7.0

@@ -37,6 +37,15 @@ public class NeoForgeModManager implements PreloadingTricksModManager<ModFile> {
     }
 
     @Override
+    public ModFile getById(final String id) {
+        return mods.stream()
+                   .filter(it -> it.getModFileInfo() != null &&
+                                 it.getModInfos().stream().anyMatch(modInfo -> modInfo.getModId().equals(id)))
+                   .findFirst()
+                   .orElse(null);
+    }
+
+    @Override
     public void remove(final ModFile mod) {
         mods.remove(mod);
     }

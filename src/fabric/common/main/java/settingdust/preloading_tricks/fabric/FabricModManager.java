@@ -49,6 +49,11 @@ public class FabricModManager implements PreloadingTricksModManager<ModContainer
     }
 
     @Override
+    public ModContainerImpl getById(final String id) {
+        return modMap.get(id);
+    }
+
+    @Override
     public void remove(ModContainerImpl modContainer) {
         mods.remove(modContainer);
         var metadata = modContainer.getMetadata();

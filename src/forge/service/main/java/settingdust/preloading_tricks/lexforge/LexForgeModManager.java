@@ -37,6 +37,15 @@ public class LexForgeModManager implements PreloadingTricksModManager<ModFile> {
     }
 
     @Override
+    public ModFile getById(final String id) {
+        return mods.stream()
+                   .filter(mod -> mod.getModFileInfo() != null &&
+                                  mod.getModInfos().stream().anyMatch(it -> it.getModId().equals(id)))
+                   .findFirst()
+                   .orElse(null);
+    }
+
+    @Override
     public void remove(final ModFile mod) {
         mods.remove(mod);
     }

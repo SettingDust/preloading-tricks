@@ -69,6 +69,8 @@ public interface PreloadingTricksModManager<M> {
      */
     void addAll(Collection<M> mod);
 
+    M getById(String id);
+
     /**
      * Removes a specific module.
      *

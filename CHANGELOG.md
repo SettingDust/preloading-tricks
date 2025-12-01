@@ -1,5 +1,10 @@
 fix: `setAccessible` for `setMod`
 
+## [2.7.5] - 2025-12-01
+### :bug: Bug Fixes
+- [`080deb6`](https://github.com/SettingDust/preloading-tricks/commit/080deb6ae68f97cdf2c3336f5eec30cbbe6b4fc7) - avoid preloading callback throw wrong loader *(commit by [@SettingDust](https://github.com/SettingDust))*
+
+
 ## [2.7.4] - 2025-12-01
 ### :bug: Bug Fixes
 - [`42663f3`](https://github.com/SettingDust/preloading-tricks/commit/42663f3fa625c1eb6e504b63d2597f2937522349) - **fabric**: passing the right paths *(commit by [@SettingDust](https://github.com/SettingDust))*
@@ -276,3 +281,4 @@ fix: `setAccessible` for `setMod`
 [2.7.2]: https://github.com/SettingDust/preloading-tricks/compare/2.7.1...2.7.2
 [2.7.3]: https://github.com/SettingDust/preloading-tricks/compare/2.7.2...2.7.3
 [2.7.4]: https://github.com/SettingDust/preloading-tricks/compare/2.7.3...2.7.4
+[2.7.5]: https://github.com/SettingDust/preloading-tricks/compare/2.7.4...2.7.5

@@ -16,13 +16,19 @@ import settingdust.preloading_tricks.modlauncher.PreloadingTricksCallbackHelper;
 public class LanguageProviderLoaderTransformer {
     @CShadow private static Logger LOGGER;
 
-    @CInject(method = "<init>", target = @CTarget(value = "HEAD"))
+    @CInject(
+        method = "<init>",
+        target = @CTarget(
+            value = "INVOKE",
+            target = "Lnet/neoforged/fml/util/ServiceLoaderUtil;loadServices(Lnet/neoforged/neoforgespi/ILaunchContext;Ljava/lang/Class;)Ljava/util/List;"
+        )
+    )
     private void preloading_tricks$onSetupLanguageAdapter() {
         LOGGER.info(
             "PreloadingTricks calling PreloadingTricksCallback#onSetupLanguageAdapter in `LanguageLoadingProvider#<init>`");
         try {
             PreloadingTricksCallbackHelper.onSetupLanguageAdapter();
-        }  catch (NoClassDefFoundError e) {
+        } catch (NoClassDefFoundError e) {
             var serviceLayer =
                 Launcher.INSTANCE.findLayerManager()
                                  .orElseThrow()

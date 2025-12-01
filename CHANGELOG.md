@@ -1,5 +1,13 @@
 fix: `setAccessible` for `setMod`
 
+## [2.7.3] - 2025-12-01
+### :bug: Bug Fixes
+- [`4d3bdca`](https://github.com/SettingDust/preloading-tricks/commit/4d3bdca7111125f4944826271cf8e44a61326dc5) - **neoforge/modlauncher**: crash by wrong transformer for LanguageProviderLoader *(commit by [@SettingDust](https://github.com/SettingDust))*
+
+### :recycle: Refactors
+- [`eab99b7`](https://github.com/SettingDust/preloading-tricks/commit/eab99b73a579c4f6cf99fcad777565cc30497917) - add loader predicates to avoid crash with mods like connector or kilt *(commit by [@SettingDust](https://github.com/SettingDust))*
+
+
 ## [2.7.2] - 2025-12-01
 ### :bug: Bug Fixes
 - [`ad3007c`](https://github.com/SettingDust/preloading-tricks/commit/ad3007cdd1d2d122cec1187b78f1da134d2f83db) - **forgelike**: using bytebuddy agent to avoid `InternalError` crash when load agent *(commit by [@SettingDust](https://github.com/SettingDust))*
@@ -261,3 +269,4 @@ fix: `setAccessible` for `setMod`
 [2.7.0]: https://github.com/SettingDust/preloading-tricks/compare/2.6.1...2.7.0
 [2.7.1]: https://github.com/SettingDust/preloading-tricks/compare/2.7.0...2.7.1
 [2.7.2]: https://github.com/SettingDust/preloading-tricks/compare/2.7.1...2.7.2
+[2.7.3]: https://github.com/SettingDust/preloading-tricks/compare/2.7.2...2.7.3

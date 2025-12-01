@@ -1,5 +1,10 @@
 fix: `setAccessible` for `setMod`
 
+## [2.7.4] - 2025-12-01
+### :bug: Bug Fixes
+- [`42663f3`](https://github.com/SettingDust/preloading-tricks/commit/42663f3fa625c1eb6e504b63d2597f2937522349) - **fabric**: passing the right paths *(commit by [@SettingDust](https://github.com/SettingDust))*
+
+
 ## [2.7.3] - 2025-12-01
 ### :bug: Bug Fixes
 - [`4d3bdca`](https://github.com/SettingDust/preloading-tricks/commit/4d3bdca7111125f4944826271cf8e44a61326dc5) - **neoforge/modlauncher**: crash by wrong transformer for LanguageProviderLoader *(commit by [@SettingDust](https://github.com/SettingDust))*
@@ -270,3 +275,4 @@ fix: `setAccessible` for `setMod`
 [2.7.1]: https://github.com/SettingDust/preloading-tricks/compare/2.7.0...2.7.1
 [2.7.2]: https://github.com/SettingDust/preloading-tricks/compare/2.7.1...2.7.2
 [2.7.3]: https://github.com/SettingDust/preloading-tricks/compare/2.7.2...2.7.3
+[2.7.4]: https://github.com/SettingDust/preloading-tricks/compare/2.7.3...2.7.4

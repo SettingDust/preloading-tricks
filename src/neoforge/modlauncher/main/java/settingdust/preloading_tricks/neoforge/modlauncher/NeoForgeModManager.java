@@ -1,12 +1,12 @@
 package settingdust.preloading_tricks.neoforge.modlauncher;
 
-import cpw.mods.jarhandling.SecureJar;
 import net.neoforged.fml.loading.moddiscovery.ModFile;
 import net.neoforged.fml.loading.moddiscovery.ModFileInfo;
 import settingdust.preloading_tricks.api.PreloadingTricksModManager;
 import settingdust.preloading_tricks.neoforge.modlauncher.accessor.ModFileInfoAccessor;
 import settingdust.preloading_tricks.neoforge.modlauncher.virtual_mod.VirtualJar;
 import settingdust.preloading_tricks.neoforge.modlauncher.virtual_mod.VirtualModFile;
+import settingdust.preloading_tricks.util.LoaderPredicates;
 
 import java.nio.file.Path;
 import java.util.Collection;
@@ -18,7 +18,7 @@ public class NeoForgeModManager implements PreloadingTricksModManager<ModFile> {
     public static List<ModFile> mods = null;
 
     public NeoForgeModManager() {
-        SecureJar.class.getSimpleName();
+        LoaderPredicates.NeoForgeModLauncher.throwIfNot();
     }
 
     @Override

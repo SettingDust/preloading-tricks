@@ -38,13 +38,12 @@ public class PreloadingTricksTransformationService implements ITransformationSer
             var codeSource = PreloadingTricksTransformationService.class.getProtectionDomain().getCodeSource();
             var rootPath = (UnionPath) Path.of(codeSource.getLocation().toURI());
 
-            LOGGER.info("Inject jars into BOOT layer");
             var bootClassLoader = ModuleLayerHandlerAccessor.getModuleClassLoader(IModuleLayerManager.Layer.BOOT);
             var bootJars = Files.list(rootPath.resolve("libs/boot"))
                                 .filter(it -> it.getFileName().toString().endsWith(".jar"))
                                 .toList();
-            LOGGER.info("Inject {} jars into BOOT layer", bootJars.size());
-            LOGGER.debug("Inject jars: {}", bootJars);
+            LOGGER.info("Injected {} jars into BOOT layer", bootJars.size());
+            LOGGER.debug("Injected jars: {}", bootJars);
             var configuration = ModuleConfigurationCreator.createConfigurationFromPaths(
                 bootJars,
                 ModuleClassLoaderAccessor.getConfiguration(bootClassLoader)

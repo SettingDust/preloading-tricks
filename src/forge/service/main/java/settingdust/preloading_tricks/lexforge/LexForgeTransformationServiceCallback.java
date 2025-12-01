@@ -1,19 +1,18 @@
 package settingdust.preloading_tricks.lexforge;
 
-import net.minecraftforge.fml.loading.FMLLoader;
 import settingdust.preloading_tricks.PreloadingTricks;
 import settingdust.preloading_tricks.forgelike.class_transform.ClassTransformBootstrap;
 import settingdust.preloading_tricks.modlauncher.PreloadingTricksTransformationService;
 import settingdust.preloading_tricks.modlauncher.TransformationServiceCallback;
+import settingdust.preloading_tricks.util.LoaderPredicates;
 
 public class LexForgeTransformationServiceCallback implements TransformationServiceCallback {
     @Override
     public void init() {
-        try {
-            FMLLoader.class.getSimpleName();
-        } catch (Throwable e) {
+        if (!LoaderPredicates.Forge.strictTest()) {
             return;
         }
+
         PreloadingTricksTransformationService.init();
 
         ClassTransformBootstrap.INSTANCE.addConfig(

@@ -5,6 +5,7 @@ import net.fabricmc.loader.impl.discovery.ModCandidateImpl;
 import settingdust.preloading_tricks.api.PreloadingTricksModManager;
 import settingdust.preloading_tricks.fabric.util.FabricLoaderImplAccessor;
 import settingdust.preloading_tricks.fabric.virtual_mod.VirtualModContainer;
+import settingdust.preloading_tricks.util.LoaderPredicates;
 
 import java.nio.file.Path;
 import java.util.Collection;
@@ -19,6 +20,8 @@ public class FabricModManager implements PreloadingTricksModManager<ModContainer
     private final Map<String, ModContainerImpl> modMap;
 
     public FabricModManager() {
+        LoaderPredicates.Fabric.throwIfNot();
+
         mods = FabricLoaderImplAccessor.mods();
         modMap = FabricLoaderImplAccessor.modMap();
     }

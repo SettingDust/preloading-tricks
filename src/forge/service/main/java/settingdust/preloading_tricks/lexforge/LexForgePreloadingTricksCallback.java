@@ -1,12 +1,12 @@
 package settingdust.preloading_tricks.lexforge;
 
 import cpw.mods.niofs.union.UnionPath;
-import net.minecraftforge.fml.loading.FMLLoader;
 import net.minecraftforge.fml.loading.moddiscovery.ModFile;
 import settingdust.preloading_tricks.PreloadingTricks;
 import settingdust.preloading_tricks.api.PreloadingTricksCallback;
 import settingdust.preloading_tricks.api.PreloadingTricksModManager;
 import settingdust.preloading_tricks.forgelike.specified_forge_variant.ForgeVariants;
+import settingdust.preloading_tricks.util.LoaderPredicates;
 
 import java.net.URISyntaxException;
 import java.nio.file.Path;
@@ -15,11 +15,7 @@ import java.util.Set;
 public class LexForgePreloadingTricksCallback implements PreloadingTricksCallback {
     @Override
     public void onSetupMods() {
-        try {
-            FMLLoader.class.getSimpleName();
-        } catch (Throwable e) {
-            return;
-        }
+        LoaderPredicates.Forge.throwIfNot();
 
         var manager = PreloadingTricksModManager.<PreloadingTricksModManager<ModFile>>get();
 

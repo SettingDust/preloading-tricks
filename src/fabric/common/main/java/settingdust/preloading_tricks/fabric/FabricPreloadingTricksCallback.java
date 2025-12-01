@@ -17,11 +17,16 @@ import settingdust.preloading_tricks.api.PreloadingTricksModManager;
 import settingdust.preloading_tricks.fabric.mod_candidate.DefinedModCandidateFinder;
 import settingdust.preloading_tricks.fabric.mod_candidate.ModContainerModCandidateFinder;
 import settingdust.preloading_tricks.fabric.util.FabricLoaderImplAccessor;
+import settingdust.preloading_tricks.util.LoaderPredicates;
 
 import java.io.IOException;
 import java.util.*;
 
 public class FabricPreloadingTricksCallback implements PreloadingTricksCallback {
+    public FabricPreloadingTricksCallback() {
+        LoaderPredicates.Fabric.throwIfNot();
+    }
+
     @Override
     public void onSetupMods() {
         var service = PreloadingTricksModManager.<FabricModManager>get();

@@ -1,14 +1,16 @@
 package settingdust.preloading_tricks.forgelike.neoforge.mod_candidate;
 
-import net.neoforged.neoforgespi.locating.IModFileCandidateLocator;
 import settingdust.preloading_tricks.api.PreloadingTricksModCandidatesManager;
+import settingdust.preloading_tricks.util.LoaderPredicates;
 
 import java.nio.file.Path;
 import java.util.Collection;
 
 public class NeoForgeModCandidatesManager implements PreloadingTricksModCandidatesManager {
     public NeoForgeModCandidatesManager() {
-        IModFileCandidateLocator.class.getSimpleName();
+        if (!LoaderPredicates.NeoForgeModLauncher.strictTest() && !LoaderPredicates.NeoForge.strictTest()) {
+            throw new IllegalStateException("NeoForgeModCandidatesManager won't run on wrong loader");
+        }
     }
 
     @Override

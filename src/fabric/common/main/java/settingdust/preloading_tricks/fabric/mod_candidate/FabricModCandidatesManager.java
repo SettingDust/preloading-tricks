@@ -1,11 +1,16 @@
 package settingdust.preloading_tricks.fabric.mod_candidate;
 
 import settingdust.preloading_tricks.api.PreloadingTricksModCandidatesManager;
+import settingdust.preloading_tricks.util.LoaderPredicates;
 
 import java.nio.file.Path;
 import java.util.Collection;
 
 public class FabricModCandidatesManager implements PreloadingTricksModCandidatesManager {
+    public FabricModCandidatesManager() {
+        LoaderPredicates.Fabric.throwIfNot();
+    }
+
     @Override
     public void add(final Path path) {
         DefinedModCandidateFinder.definedCandidates.add(path);

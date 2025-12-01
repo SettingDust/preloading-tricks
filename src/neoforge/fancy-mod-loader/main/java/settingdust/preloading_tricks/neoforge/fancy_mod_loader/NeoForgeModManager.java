@@ -7,6 +7,7 @@ import net.neoforged.fml.loading.moddiscovery.ModJarMetadata;
 import settingdust.preloading_tricks.api.PreloadingTricksModManager;
 import settingdust.preloading_tricks.neoforge.fancy_mod_loader.accessor.ModFileInfoAccessor;
 import settingdust.preloading_tricks.neoforge.fancy_mod_loader.virtual_mod.VirtualModFile;
+import settingdust.preloading_tricks.util.LoaderPredicates;
 
 import java.nio.file.Path;
 import java.util.Collection;
@@ -18,7 +19,7 @@ public class NeoForgeModManager implements PreloadingTricksModManager<ModFile> {
     public static List<ModFile> mods = null;
 
     public NeoForgeModManager() {
-        JarContents.class.getSimpleName();
+        LoaderPredicates.NeoForge.throwIfNot();
     }
 
     @Override

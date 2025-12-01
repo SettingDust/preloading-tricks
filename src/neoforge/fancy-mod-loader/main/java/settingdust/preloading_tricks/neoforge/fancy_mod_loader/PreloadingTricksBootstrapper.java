@@ -7,16 +7,16 @@ import net.neoforged.neoforgespi.earlywindow.GraphicsBootstrapper;
 import settingdust.preloading_tricks.PreloadingTricks;
 import settingdust.preloading_tricks.forgelike.UcpClassLoaderInjector;
 import settingdust.preloading_tricks.forgelike.class_transform.ClassTransformBootstrap;
+import settingdust.preloading_tricks.util.LoaderPredicates;
 
 import java.io.IOException;
 import java.net.URISyntaxException;
-import java.net.URLClassLoader;
 import java.nio.file.Path;
 
 public class PreloadingTricksBootstrapper implements GraphicsBootstrapper {
     public PreloadingTricksBootstrapper() throws URISyntaxException, IOException {
-        if (!(Thread.currentThread().getContextClassLoader() instanceof URLClassLoader)) {
-            PreloadingTricks.LOGGER.debug("Looks like we are in older neoforge fancy mod loader. Needn't to run");
+        if (!LoaderPredicates.NeoForge.strictTest()) {
+            PreloadingTricks.LOGGER.debug("Looks like we are in wrong loader. Needn't to run");
             return;
         }
 

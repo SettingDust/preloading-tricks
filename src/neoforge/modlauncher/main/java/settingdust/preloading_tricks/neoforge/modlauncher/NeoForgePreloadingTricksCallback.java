@@ -1,11 +1,11 @@
 package settingdust.preloading_tricks.neoforge.modlauncher;
 
-import cpw.mods.jarhandling.SecureJar;
 import net.neoforged.fml.loading.moddiscovery.ModFile;
 import settingdust.preloading_tricks.PreloadingTricks;
 import settingdust.preloading_tricks.api.PreloadingTricksCallback;
 import settingdust.preloading_tricks.api.PreloadingTricksModManager;
 import settingdust.preloading_tricks.forgelike.specified_forge_variant.ForgeVariants;
+import settingdust.preloading_tricks.util.LoaderPredicates;
 
 import java.net.URISyntaxException;
 import java.nio.file.Path;
@@ -14,12 +14,7 @@ import java.util.Set;
 public class NeoForgePreloadingTricksCallback implements PreloadingTricksCallback {
     @Override
     public void onSetupMods() {
-        try {
-            ModFile.class.getSimpleName();
-            SecureJar.class.getSimpleName();
-        } catch (Throwable e) {
-            return;
-        }
+        LoaderPredicates.NeoForgeModLauncher.throwIfNot();
 
         var manager = PreloadingTricksModManager.<PreloadingTricksModManager<ModFile>>get();
 

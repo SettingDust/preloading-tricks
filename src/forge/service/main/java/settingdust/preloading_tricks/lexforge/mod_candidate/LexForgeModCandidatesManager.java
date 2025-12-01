@@ -1,14 +1,14 @@
 package settingdust.preloading_tricks.lexforge.mod_candidate;
 
-import net.minecraftforge.forgespi.locating.IModLocator;
 import settingdust.preloading_tricks.api.PreloadingTricksModCandidatesManager;
+import settingdust.preloading_tricks.util.LoaderPredicates;
 
 import java.nio.file.Path;
 import java.util.Collection;
 
 public class LexForgeModCandidatesManager implements PreloadingTricksModCandidatesManager {
     public LexForgeModCandidatesManager() {
-        IModLocator.class.getSimpleName();
+        LoaderPredicates.Forge.throwIfNot();
     }
 
     @Override

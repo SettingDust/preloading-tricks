@@ -137,9 +137,27 @@ cloche {
         }
 
         fabric("version:fabric:1.20.1") {
+            dependsOn(fabricCommon)
+
             minecraftVersion = "1.20.1"
 
             runs { client() }
+
+            metadata {
+                entrypoint("afl:prePrePreLaunch", "$group.fabric.PreloadingTricksLanguageAdapterEntrypoint")
+                custom("afl:classtransform", "$id.fabric.classtransform.json")
+
+                dependency {
+                    modId = "fabricloader"
+                    version {
+                        start = "0.18"
+                    }
+                }
+
+                dependency {
+                    modId = "asmfabricloader"
+                }
+            }
 
             dependencies {
                 fabricApi("0.92.6")
@@ -181,24 +199,6 @@ cloche {
             loaderVersion = "0.18.1"
 
             includedClient()
-
-            dependsOn(fabricCommon)
-
-            metadata {
-                entrypoint("afl:prePrePreLaunch", "$group.fabric.PreloadingTricksLanguageAdapterEntrypoint")
-                custom("afl:classtransform", "$id.fabric.classtransform.json")
-
-                dependency {
-                    modId = "fabricloader"
-                    version {
-                        start = "0.18"
-                    }
-                }
-
-                dependency {
-                    modId = "asmfabricloader"
-                }
-            }
         }
     }
 
@@ -231,6 +231,8 @@ cloche {
 
                 implementation(catalog.classTransform)
                 implementation(catalog.classTransform.additionalClassProvider)
+
+                implementation(catalog.bytebuddy.agent)
             }
 
             val embedBoot by configurations.register(lowerCamelCaseGradleName(featureName, "embedBoot")) {
@@ -247,6 +249,7 @@ cloche {
                 embedBoot(catalog.reflect)
                 embedBoot(catalog.classTransform)
                 embedBoot(catalog.classTransform.additionalClassProvider)
+                embedBoot(catalog.bytebuddy.agent)
             }
 
             tasks {
@@ -328,6 +331,10 @@ cloche {
                     }
                     legacyClasspath(it)
                 }
+                catalog.bytebuddy.agent.let {
+                    implementation(it)
+                    legacyClasspath(it)
+                }
             }
 
             val embedBoot by configurations.register(lowerCamelCaseGradleName(featureName, "embedBoot")) {
@@ -347,6 +354,7 @@ cloche {
                 embedBoot(catalog.reflect)
                 embedBoot(catalog.classTransform)
                 embedBoot(catalog.classTransform.additionalClassProvider)
+                embedBoot(catalog.bytebuddy.agent)
             }
 
             tasks {
@@ -384,6 +392,10 @@ cloche {
                         exclude(group = "com.google.guava")
                         exclude(group = "org.ow2.asm")
                     }
+                    legacyClasspath(it)
+                }
+                catalog.bytebuddy.agent.let {
+                    implementation(it)
                     legacyClasspath(it)
                 }
             }

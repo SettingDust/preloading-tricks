@@ -1,6 +1,6 @@
 package settingdust.preloading_tricks.neoforge.fancy_mod_loader;
 
-import net.lenni0451.reflect.Agents;
+import net.bytebuddy.agent.ByteBuddyAgent;
 import net.neoforged.fml.jarcontents.JarContents;
 import net.neoforged.fml.loading.FMLLoader;
 import net.neoforged.neoforgespi.earlywindow.GraphicsBootstrapper;
@@ -43,18 +43,12 @@ public class PreloadingTricksBootstrapper implements GraphicsBootstrapper {
             }
         );
 
-        try {
-            Agents.getInstrumentation();
-        } catch (InternalError e) {
-            throw new IllegalStateException(
-                PreloadingTricks.NAME + " can't be loaded. Failing to get instrumentation",
-                e
-            );
-        }
-        new ClassTransformBootstrap();
+        ByteBuddyAgent.install();
+
+        new ClassTransformBootstrap(ByteBuddyAgent.getInstrumentation());
         PreloadingTricks.LOGGER.info("[{}] Installed", PreloadingTricks.NAME);
         ClassTransformBootstrap.INSTANCE.addConfig("preloading_tricks.neoforge.fml.classtransform.json");
-        ClassTransformBootstrap.INSTANCE.getTransformerManager().hookInstrumentation(Agents.getInstrumentation());
+        ClassTransformBootstrap.INSTANCE.getTransformerManager().hookInstrumentation(ByteBuddyAgent.getInstrumentation());
     }
 
     @Override

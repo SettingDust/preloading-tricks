@@ -7,7 +7,7 @@ import cpw.mods.modlauncher.api.IModuleLayerManager;
 import cpw.mods.modlauncher.api.ITransformationService;
 import cpw.mods.modlauncher.serviceapi.ILaunchPluginService;
 import cpw.mods.niofs.union.UnionPath;
-import net.lenni0451.reflect.Agents;
+import net.bytebuddy.agent.ByteBuddyAgent;
 import net.lenni0451.reflect.stream.RStream;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -40,10 +40,13 @@ public class PreloadingTricksTransformationService implements ITransformationSer
 
             LOGGER.info("Inject jars into BOOT layer");
             var bootClassLoader = ModuleLayerHandlerAccessor.getModuleClassLoader(IModuleLayerManager.Layer.BOOT);
+            var bootJars = Files.list(rootPath.resolve("libs/boot"))
+                                .filter(it -> it.getFileName().toString().endsWith(".jar"))
+                                .toList();
+            LOGGER.info("Inject {} jars into BOOT layer", bootJars.size());
+            LOGGER.debug("Inject jars: {}", bootJars);
             var configuration = ModuleConfigurationCreator.createConfigurationFromPaths(
-                Files.list(rootPath.resolve("libs/boot"))
-                     .filter(it -> it.getFileName().toString().endsWith(".jar"))
-                     .toList(),
+                bootJars,
                 ModuleClassLoaderAccessor.getConfiguration(bootClassLoader)
             );
             var bootLayer = LauncherAccessor.getModuleLayer(IModuleLayerManager.Layer.BOOT);
@@ -61,16 +64,9 @@ public class PreloadingTricksTransformationService implements ITransformationSer
                 }
             }
 
-            try {
-                Agents.getInstrumentation();
-            } catch (InternalError e) {
-                throw new IllegalStateException(
-                    PreloadingTricks.NAME + " can't be loaded. Failing to get instrumentation",
-                    e
-                );
-            }
+            ByteBuddyAgent.install();
 
-            new ClassTransformBootstrap();
+            new ClassTransformBootstrap(ByteBuddyAgent.getInstrumentation());
         } catch (IOException | URISyntaxException e) {
             throw new RuntimeException(e);
         }
@@ -87,11 +83,7 @@ public class PreloadingTricksTransformationService implements ITransformationSer
 
         injectClassTransform();
 
-        try {
-            ClassTransformBootstrap.INSTANCE.getTransformerManager().hookInstrumentation(Agents.getInstrumentation());
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
+        ClassTransformBootstrap.INSTANCE.getTransformerManager().hookInstrumentation(ByteBuddyAgent.getInstrumentation());
     }
 
     private static void injectClassTransform() {

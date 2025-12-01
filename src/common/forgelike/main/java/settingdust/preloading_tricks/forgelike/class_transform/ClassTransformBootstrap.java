@@ -4,11 +4,11 @@ import com.google.gson.Gson;
 import net.lenni0451.classtransform.TransformerManager;
 import net.lenni0451.classtransform.additionalclassprovider.InstrumentationClassProvider;
 import net.lenni0451.classtransform.utils.ASMUtils;
-import net.lenni0451.reflect.Agents;
 
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.lang.instrument.Instrumentation;
 
 public final class ClassTransformBootstrap {
     public static final String CLASS_TRANSFORM_CONFIG = "ClassTransformConfig";
@@ -17,10 +17,10 @@ public final class ClassTransformBootstrap {
     private final TransformerManager transformerManager;
     private final Gson gson = new Gson();
 
-    public ClassTransformBootstrap() throws IOException {
+    public ClassTransformBootstrap(Instrumentation instrumentation) throws IOException {
         if (INSTANCE != null) throw new IllegalStateException("ClassTransformBootstrap is already initialized");
         INSTANCE = this;
-        transformerManager = new TransformerManager(new InstrumentationClassProvider(Agents.getInstrumentation()));
+        transformerManager = new TransformerManager(new InstrumentationClassProvider(instrumentation));
     }
 
     public TransformerManager getTransformerManager() {

@@ -166,6 +166,8 @@ dependencyResolutionManagement.versionCatalogs.create("catalog") {
         "net.lenni0451.classtransform",
         "additionalclassprovider"
     ).version(classTransform)
+
+    library("bytebuddy-agent", "net.bytebuddy", "byte-buddy-agent").version("1.18.2")
 }
 
 plugins {

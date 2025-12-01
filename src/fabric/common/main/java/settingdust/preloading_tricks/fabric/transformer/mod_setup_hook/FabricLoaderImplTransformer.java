@@ -21,12 +21,13 @@ public class FabricLoaderImplTransformer {
 
     @CInject(method = "setupMods", target = @CTarget(value = "HEAD"))
     @CInline
-    private void preloading_tricks$onSetupMods() throws
-                                                 ClassNotFoundException,
-                                                 NoSuchFieldException,
-                                                 IllegalAccessException,
-                                                 NoSuchMethodException,
-                                                 InvocationTargetException {
+    private void preloading_tricks$onSetupMods()
+        throws
+        ClassNotFoundException,
+        NoSuchFieldException,
+        IllegalAccessException,
+        NoSuchMethodException,
+        InvocationTargetException {
         Log.info(
             LogCategory.createCustom("PreloadingTricks"),
             "PreloadingTricks calling PreloadingTricksCallback in `FabricLoaderImpl#setupMods`"

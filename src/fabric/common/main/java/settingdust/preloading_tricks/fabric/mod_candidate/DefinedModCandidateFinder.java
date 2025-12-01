@@ -16,6 +16,8 @@ public class DefinedModCandidateFinder extends ClasspathModCandidateFinder {
 
     @Override
     public void findCandidates(ModCandidateConsumer out) {
-        out.accept(definedCandidates, requiresRemap);
+        for (final var definedCandidate : definedCandidates) {
+            out.accept(List.of(definedCandidate), requiresRemap);
+        }
     }
 }

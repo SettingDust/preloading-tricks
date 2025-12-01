@@ -146,7 +146,7 @@ public class FabricPreloadingTricksCallback implements PreloadingTricksCallback 
 
         int modsCount = mods.size();
         PreloadingTricks.LOGGER.info(
-            "Loading {} additional mod{}:{}\n",
+            "Loading {} additional mod{}:\n{}",
             modsCount,
             modsCount != 1 ? "s" : "",
             modListText

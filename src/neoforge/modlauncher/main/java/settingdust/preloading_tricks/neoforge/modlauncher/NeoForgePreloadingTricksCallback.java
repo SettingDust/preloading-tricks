@@ -12,10 +12,12 @@ import java.nio.file.Path;
 import java.util.Set;
 
 public class NeoForgePreloadingTricksCallback implements PreloadingTricksCallback {
+    public NeoForgePreloadingTricksCallback() {
+        LoaderPredicates.NeoForgeModLauncher.throwIfNot();
+    }
+
     @Override
     public void onSetupMods() {
-        LoaderPredicates.NeoForgeModLauncher.throwIfNot();
-
         var manager = PreloadingTricksModManager.<PreloadingTricksModManager<ModFile>>get();
 
         try {

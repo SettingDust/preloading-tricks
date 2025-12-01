@@ -13,10 +13,12 @@ import java.nio.file.Path;
 import java.util.Set;
 
 public class LexForgePreloadingTricksCallback implements PreloadingTricksCallback {
+    public LexForgePreloadingTricksCallback() {
+        LoaderPredicates.Forge.throwIfNot();
+    }
+
     @Override
     public void onSetupMods() {
-        LoaderPredicates.Forge.throwIfNot();
-
         var manager = PreloadingTricksModManager.<PreloadingTricksModManager<ModFile>>get();
 
         try {

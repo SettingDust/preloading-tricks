@@ -11,10 +11,12 @@ import java.net.URISyntaxException;
 import java.nio.file.Path;
 
 public class NeoForgePreloadingTricksCallback implements PreloadingTricksCallback {
+    public NeoForgePreloadingTricksCallback() {
+        LoaderPredicates.NeoForge.throwIfNot();
+    }
+
     @Override
     public void onSetupMods() {
-        LoaderPredicates.NeoForge.throwIfNot();
-
         var manager = PreloadingTricksModManager.<PreloadingTricksModManager<ModFile>>get();
 
         try {

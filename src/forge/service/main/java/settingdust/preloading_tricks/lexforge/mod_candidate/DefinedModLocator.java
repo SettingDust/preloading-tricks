@@ -21,11 +21,6 @@ public class DefinedModLocator extends AbstractJarFileModLocator {
     }
 
     @Override
-    public ModFileOrException createMod(final Path... path) {
-        return super.createMod(path);
-    }
-
-    @Override
     protected String getDefaultJarModType() {
         return IModFile.Type.GAMELIBRARY.name();
     }

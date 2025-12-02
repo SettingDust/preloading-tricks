@@ -8,7 +8,7 @@ public enum LoaderPredicates {
     Fabric(() -> {
         var result = false;
         try {
-            Class.forName("net.fabricmc.loader.api.FabricLoader");
+            Class.forName("net.fabricmc.loader.impl.launch.knot.Knot");
             result = true;
         } catch (ClassNotFoundException ignored) {
         }
@@ -17,6 +17,7 @@ public enum LoaderPredicates {
     Forge(() -> {
         var result = false;
         try {
+            Class.forName("cpw.mods.bootstraplauncher.BootstrapLauncher");
             Class.forName("net.minecraftforge.fml.loading.FMLLoader");
             result = true;
         } catch (ClassNotFoundException ignored) {
@@ -26,6 +27,7 @@ public enum LoaderPredicates {
     NeoForgeModLauncher(() -> {
         var result = false;
         try {
+            Class.forName("cpw.mods.bootstraplauncher.BootstrapLauncher");
             Class.forName("net.neoforged.fml.loading.FMLLoader");
             Class.forName("cpw.mods.jarhandling.SecureJar");
             result = true;
@@ -52,19 +54,8 @@ public enum LoaderPredicates {
         return predicate.getAsBoolean();
     }
 
-    public boolean strictTest() {
-        if (!test()) return false;
-        for (final var loader : LoaderPredicates.values()) {
-            if (loader == this) continue;
-            if (loader.test()) {
-                return false;
-            }
-        }
-        return true;
-    }
-
     public void throwIfNot() {
-        if (!strictTest()) {
+        if (!test()) {
             throw new IllegalStateException(name() + " is not for current loader");
         }
     }

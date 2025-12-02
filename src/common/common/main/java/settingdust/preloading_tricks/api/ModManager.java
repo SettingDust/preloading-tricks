@@ -1,14 +1,9 @@
 package settingdust.preloading_tricks.api;
 
-import com.google.common.base.Suppliers;
-import settingdust.preloading_tricks.util.ServiceLoaderUtil;
-
 import java.nio.file.Path;
 import java.util.Collection;
-import java.util.ServiceLoader;
 import java.util.Set;
 import java.util.function.Predicate;
-import java.util.function.Supplier;
 
 /**
  * Module management interface providing access and modification capabilities for the module list during the preloading phase.
@@ -23,31 +18,7 @@ import java.util.function.Supplier;
  * @see java.util.ServiceLoader
  * @see PreloadingTricksCallback
  */
-public interface PreloadingTricksModManager<M> {
-    /**
-     * Supplier that discovers the module manager implementation through the {@link ServiceLoader} mechanism.
-     * Results are memoized to ensure singleton behavior.
-     */
-    @SuppressWarnings("RedundantTypeArguments")
-    Supplier<PreloadingTricksModManager<?>> supplier =
-        Suppliers.<PreloadingTricksModManager<?>>memoize(() -> ServiceLoaderUtil.findService(
-            PreloadingTricksModManager.class,
-            ServiceLoader.load(PreloadingTricksModManager.class, PreloadingTricksModManager.class.getClassLoader())
-        ));
-
-    /**
-     * Retrieves the singleton instance of the module manager.
-     *
-     * <p>This method returns the module manager implementation discovered via {@link ServiceLoader}.
-     * The return value should be cast to the concrete implementation class.</p>
-     *
-     * @param <I> The implementation type, should be {@link PreloadingTricksModManager} implementation class or this interface with the correct {@link M} type parameter
-     * @return The singleton instance of the module manager
-     */
-    static <I extends PreloadingTricksModManager<?>> I get() {
-        return (I) supplier.get();
-    }
-
+public interface ModManager<M> {
     /**
      * Retrieves all currently managed modules.
      *
@@ -76,35 +47,35 @@ public interface PreloadingTricksModManager<M> {
      *
      * @param mod The module instance to remove
      */
-    void remove(M mod);
+    boolean remove(M mod);
 
     /**
      * Removes modules matching the specified predicate condition.
      *
      * @param predicate A predicate function used to determine which modules to remove
      */
-    void removeIf(Predicate<M> predicate);
+    boolean removeIf(Predicate<M> predicate);
 
     /**
      * Batch removes multiple modules.
      *
      * @param mods A collection containing the modules to remove
      */
-    void removeAll(Collection<M> mods);
+    boolean removeAll(Collection<M> mods);
 
     /**
      * Removes a single module by its ID.
      *
      * @param id The unique identifier of the module to remove
      */
-    void removeById(String id);
+    boolean removeById(String id);
 
     /**
      * Batch removes multiple modules by their IDs.
      *
      * @param ids A set containing the IDs of modules to remove
      */
-    void removeByIds(Set<String> ids);
+    boolean removeByIds(Set<String> ids);
 
     /**
      * Creates a virtual/dummy module instance with the given ID.

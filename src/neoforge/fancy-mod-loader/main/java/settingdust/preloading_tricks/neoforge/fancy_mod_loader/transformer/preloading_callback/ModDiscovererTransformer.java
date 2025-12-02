@@ -4,6 +4,7 @@ import net.lenni0451.classtransform.annotations.CShadow;
 import net.lenni0451.classtransform.annotations.CTarget;
 import net.lenni0451.classtransform.annotations.CTransformer;
 import net.lenni0451.classtransform.annotations.injection.CModifyExpressionValue;
+import net.lenni0451.reflect.stream.RStream;
 import net.neoforged.fml.loading.FMLLoader;
 import net.neoforged.fml.loading.moddiscovery.ModDiscoverer;
 import net.neoforged.fml.loading.moddiscovery.ModFile;
@@ -32,15 +33,9 @@ public class ModDiscovererTransformer {
                                                                             InvocationTargetException {
         LOGGER.info("PreloadingTricks calling PreloadingTricksCallback in `ModDiscoverer#discoverMods`");
         var currentClassLoader = FMLLoader.getCurrent().getCurrentClassLoader();
-        var managerClazz = currentClassLoader.loadClass(
-            "settingdust.preloading_tricks.neoforge.fancy_mod_loader.NeoForgeModManager");
-        var modsField = managerClazz.getDeclaredField("mods");
-        modsField.set(null, mods);
-        var callbackClazz = currentClassLoader.loadClass("settingdust.preloading_tricks.api.PreloadingTricksCallback");
-        var setupModsMethod = callbackClazz.getDeclaredMethod("onSetupMods");
-        var invoker = callbackClazz.getDeclaredField("invoker");
-        setupModsMethod.invoke(invoker.get(null));
-        modsField.set(null, null);
+        var invokerClass = currentClassLoader.loadClass(
+            "settingdust.preloading_tricks.neoforge.fancy_mod_loader.PreloadingTricksCallbacksInvoker");
+        RStream.of(invokerClass).methods().by("onSetupMods").invokeArgs(mods);
         return mods;
     }
 }

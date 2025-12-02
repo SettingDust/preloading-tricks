@@ -22,9 +22,9 @@ public class LanguageProviderLoaderTransformer {
     )
     private void preloading_tricks$onSetupLanguageAdapter() {
         LOGGER.info(
-            "PreloadingTricks calling PreloadingTricksCallback#onSetupLanguageAdapter in `LanguageLoadingProvider#<init>`");
-        var callbackClass = Classes.byName("settingdust.preloading_tricks.api.PreloadingTricksCallback");
+            "PreloadingTricks calling PreloadingTricksCallbacks.SETUP_LANGUAGE_ADAPTER in `LanguageLoadingProvider#<init>`");
+        var callbackClass = Classes.byName("settingdust.preloading_tricks.neoforge.fancy_mod_loader.PreloadingTricksCallbacksInvoker");
         var stream = RStream.of(callbackClass);
-        stream.methods().by("onSetupLanguageAdapter").invokeInstance(stream.fields().by("invoker").get());
+        stream.methods().by("onSetupLanguageAdapter").invoke();
     }
 }

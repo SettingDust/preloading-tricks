@@ -137,27 +137,9 @@ cloche {
         }
 
         fabric("version:fabric:1.20.1") {
-            dependsOn(fabricCommon)
-
             minecraftVersion = "1.20.1"
 
             runs { client() }
-
-            metadata {
-                entrypoint("afl:prePrePreLaunch", "$group.fabric.PreloadingTricksLanguageAdapterEntrypoint")
-                custom("afl:classtransform", "$id.fabric.classtransform.json")
-
-                dependency {
-                    modId = "fabricloader"
-                    version {
-                        start = "0.18"
-                    }
-                }
-
-                dependency {
-                    modId = "asmfabricloader"
-                }
-            }
 
             dependencies {
                 fabricApi("0.92.6")
@@ -196,9 +178,27 @@ cloche {
         }
 
         targets.withType<FabricTarget> {
+            dependsOn(fabricCommon)
+
             loaderVersion = "0.18.1"
 
             includedClient()
+
+            metadata {
+                entrypoint("afl:prePrePreLaunch", "$group.fabric.PreloadingTricksLanguageAdapterEntrypoint")
+                custom("afl:classtransform", "$id.fabric.classtransform.json")
+
+                dependency {
+                    modId = "fabricloader"
+                    version {
+                        start = "0.18"
+                    }
+                }
+
+                dependency {
+                    modId = "asmfabricloader"
+                }
+            }
         }
     }
 

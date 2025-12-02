@@ -2,11 +2,10 @@ package settingdust.preloading_tricks.neoforge.modlauncher;
 
 import net.neoforged.fml.loading.moddiscovery.ModFile;
 import net.neoforged.fml.loading.moddiscovery.ModFileInfo;
-import settingdust.preloading_tricks.api.PreloadingTricksModManager;
+import settingdust.preloading_tricks.api.ModManager;
 import settingdust.preloading_tricks.neoforge.modlauncher.accessor.ModFileInfoAccessor;
 import settingdust.preloading_tricks.neoforge.modlauncher.virtual_mod.VirtualJar;
 import settingdust.preloading_tricks.neoforge.modlauncher.virtual_mod.VirtualModFile;
-import settingdust.preloading_tricks.util.LoaderPredicates;
 
 import java.nio.file.Path;
 import java.util.Collection;
@@ -14,11 +13,11 @@ import java.util.List;
 import java.util.Set;
 import java.util.function.Predicate;
 
-public class NeoForgeModManager implements PreloadingTricksModManager<ModFile> {
-    public static List<ModFile> mods = null;
+public class NeoForgeModManager implements ModManager<ModFile> {
+    public List<ModFile> mods = null;
 
-    public NeoForgeModManager() {
-        LoaderPredicates.NeoForgeModLauncher.throwIfNot();
+    public NeoForgeModManager(final List<ModFile> mods) {
+        this.mods = mods;
     }
 
     @Override
@@ -46,28 +45,29 @@ public class NeoForgeModManager implements PreloadingTricksModManager<ModFile> {
     }
 
     @Override
-    public void remove(final ModFile mod) {
-        mods.remove(mod);
+    public boolean remove(final ModFile mod) {
+        return mods.remove(mod);
     }
 
     @Override
-    public void removeIf(final Predicate<ModFile> predicate) {
-        mods.removeIf(predicate);
+    public boolean removeIf(final Predicate<ModFile> predicate) {
+        return mods.removeIf(predicate);
     }
 
     @Override
-    public void removeAll(final Collection<ModFile> all) {
-        mods.removeAll(all);
+    public boolean removeAll(final Collection<ModFile> all) {
+        return mods.removeAll(all);
     }
 
     @Override
-    public void removeById(final String id) {
-        removeByIds(Set.of(id));
+    public boolean removeById(final String id) {
+        return removeByIds(Set.of(id));
     }
 
     @Override
-    public void removeByIds(final Set<String> ids) {
+    public boolean removeByIds(final Set<String> ids) {
         var iterator = mods.iterator();
+        var removed = false;
         while (iterator.hasNext()) {
             var mod = iterator.next();
             if (mod.getModFileInfo() == null || mod.getModInfos().isEmpty()) continue;
@@ -75,10 +75,13 @@ public class NeoForgeModManager implements PreloadingTricksModManager<ModFile> {
             var filtered = mod.getModInfos().stream().filter(it -> !ids.contains(it.getModId())).toList();
             if (filtered.isEmpty()) {
                 iterator.remove();
-            } else {
+                removed = true;
+            } else if (filtered.size() != mod.getModInfos().size()) {
+                removed = true;
                 ModFileInfoAccessor.setMods(modFileInfo, filtered);
             }
         }
+        return removed;
     }
 
     @Override

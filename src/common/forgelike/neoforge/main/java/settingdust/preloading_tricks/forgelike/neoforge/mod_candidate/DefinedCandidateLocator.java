@@ -6,7 +6,7 @@ import net.neoforged.neoforgespi.locating.IModFileCandidateLocator;
 import net.neoforged.neoforgespi.locating.IncompatibleFileReporting;
 import net.neoforged.neoforgespi.locating.ModFileDiscoveryAttributes;
 import settingdust.preloading_tricks.PreloadingTricks;
-import settingdust.preloading_tricks.api.PreloadingTricksCallback;
+import settingdust.preloading_tricks.api.PreloadingTricksCallbacks;
 
 import java.nio.file.Path;
 import java.util.ArrayList;
@@ -22,7 +22,9 @@ public class DefinedCandidateLocator implements IModFileCandidateLocator {
 
     @Override
     public void findCandidates(final ILaunchContext context, final IDiscoveryPipeline pipeline) {
-        PreloadingTricksCallback.invoker.onCollectModCandidates();
+        PreloadingTricksCallbacks.COLLECT_MOD_CANDIDATES
+            .getInvoker()
+            .onCollectModCandidates(new NeoForgeModCandidatesManager());
         for (final var candidate : definedCandidates) {
             pipeline.addPath(candidate, ModFileDiscoveryAttributes.DEFAULT, IncompatibleFileReporting.WARN_ALWAYS);
         }

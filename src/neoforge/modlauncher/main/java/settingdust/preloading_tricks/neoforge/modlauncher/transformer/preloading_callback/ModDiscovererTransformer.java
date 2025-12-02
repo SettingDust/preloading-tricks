@@ -11,8 +11,7 @@ import net.lenni0451.reflect.stream.RStream;
 import net.neoforged.fml.loading.moddiscovery.ModDiscoverer;
 import net.neoforged.fml.loading.moddiscovery.ModFile;
 import org.slf4j.Logger;
-import settingdust.preloading_tricks.api.PreloadingTricksCallback;
-import settingdust.preloading_tricks.neoforge.modlauncher.NeoForgeModManager;
+import settingdust.preloading_tricks.neoforge.modlauncher.PreloadingTricksCallbacksInvoker;
 
 import java.util.List;
 
@@ -32,9 +31,7 @@ public class ModDiscovererTransformer {
         LOGGER.info("PreloadingTricks calling PreloadingTricksCallback in `ModDiscoverer#discoverMods`");
 
         try {
-            NeoForgeModManager.mods = mods;
-            PreloadingTricksCallback.invoker.onSetupMods();
-            NeoForgeModManager.mods = null;
+            PreloadingTricksCallbacksInvoker.onSetupMods(mods);
         } catch (NoClassDefFoundError e) {
             var serviceLayer =
                 Launcher.INSTANCE.findLayerManager()
@@ -44,20 +41,11 @@ public class ModDiscovererTransformer {
 
             var serviceClassLoader = serviceLayer.modules().iterator().next().getClassLoader();
 
-            var managerClazz = RStream.of(Classes.byName(
-                "settingdust.preloading_tricks.neoforge.modlauncher.NeoForgeModManager",
-                serviceClassLoader
-            ));
-            var modsField = managerClazz.fields().by("mods");
-
-            modsField.set(mods);
             var callbackClazz = RStream.of(Classes.byName(
-                "settingdust.preloading_tricks.api.PreloadingTricksCallback",
+                "settingdust.preloading_tricks.neoforge.modlauncher.PreloadingTricksCallbacksInvoker",
                 serviceClassLoader
             ));
-            var setupModsMethod = callbackClazz.methods().by("onSetupMods");
-            setupModsMethod.invokeInstance(callbackClazz.fields().by("invoker").get());
-            modsField.set(null);
+            callbackClazz.methods().by("onSetupMods").invokeArgs(mods);
         }
         return mods;
     }

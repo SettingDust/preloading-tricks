@@ -27,7 +27,7 @@ public class ModDiscovererTransformer {
         )
     )
     private List<ModFile> preloading_tricks$onSetupMods(List<ModFile> mods) {
-        LOGGER.info("PreloadingTricks calling PreloadingTricksCallback#onSetupMods in `ModDiscoverer#discoverMods`");
+        LOGGER.info("PreloadingTricks calling PreloadingTricksCallbacks.SETUP_MODS in `ModDiscoverer#discoverMods`");
         var serviceLayer =
             Launcher.INSTANCE.findLayerManager()
                              .orElseThrow()
@@ -36,20 +36,11 @@ public class ModDiscovererTransformer {
 
         var serviceClassLoader = serviceLayer.modules().iterator().next().getClassLoader();
 
-        var managerClazz = RStream.of(Classes.byName(
-            "settingdust.preloading_tricks.lexforge.LexForgeModManager",
-            serviceClassLoader
-        ));
-        var modsField = managerClazz.fields().by("mods");
-
-        modsField.set(mods);
         var callbackClazz = RStream.of(Classes.byName(
-            "settingdust.preloading_tricks.api.PreloadingTricksCallback",
+            "settingdust.preloading_tricks.lexforge.PreloadingTricksCallbacksInvoker",
             serviceClassLoader
         ));
-        var setupModsMethod = callbackClazz.methods().by("onSetupMods");
-        setupModsMethod.invokeInstance(callbackClazz.fields().by("invoker").get());
-        modsField.set(null);
+        callbackClazz.methods().by("onSetupMods").invokeArgs(mods);
         return mods;
     }
 }

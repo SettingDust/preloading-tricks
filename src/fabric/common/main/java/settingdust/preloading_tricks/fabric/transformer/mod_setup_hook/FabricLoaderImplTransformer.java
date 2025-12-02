@@ -24,21 +24,19 @@ public class FabricLoaderImplTransformer {
     private void preloading_tricks$onSetupMods()
         throws
         ClassNotFoundException,
-        NoSuchFieldException,
         IllegalAccessException,
         NoSuchMethodException,
         InvocationTargetException {
         Log.info(
             LogCategory.createCustom("PreloadingTricks"),
-            "PreloadingTricks calling PreloadingTricksCallback in `FabricLoaderImpl#setupMods`"
+            "PreloadingTricks calling PreloadingTricksCallbacks.SETUP_MODS in `FabricLoaderImpl#setupMods`"
         );
         var knotClassLoader = FabricLauncherBase.getLauncher().getTargetClassLoader();
-        var callbackClass = Class.forName(
-            "settingdust.preloading_tricks.api.PreloadingTricksCallback",
+        var invokerClass = Class.forName(
+            "settingdust.preloading_tricks.fabric.PreloadingTricksCallbacksInvoker",
             true,
             knotClassLoader
         );
-        var invoker = callbackClass.getField("invoker").get(null);
-        callbackClass.getMethod("onSetupMods").invoke(invoker);
+        invokerClass.getDeclaredMethod("onSetupMods").invoke(null);
     }
 }

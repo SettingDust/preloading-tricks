@@ -1,4 +1,4 @@
-package settingdust.preloading_tricks.fabric;
+package settingdust.preloading_tricks.fabric.mod_candidate;
 
 import net.fabricmc.loader.api.FabricLoader;
 import net.fabricmc.loader.api.LanguageAdapter;
@@ -12,25 +12,15 @@ import net.fabricmc.loader.impl.metadata.DependencyOverrides;
 import net.fabricmc.loader.impl.metadata.VersionOverrides;
 import net.fabricmc.loader.impl.util.SystemProperties;
 import settingdust.preloading_tricks.PreloadingTricks;
-import settingdust.preloading_tricks.api.PreloadingTricksCallback;
-import settingdust.preloading_tricks.api.PreloadingTricksModManager;
-import settingdust.preloading_tricks.fabric.mod_candidate.DefinedModCandidateFinder;
-import settingdust.preloading_tricks.fabric.mod_candidate.ModContainerModCandidateFinder;
+import settingdust.preloading_tricks.fabric.FabricModManager;
+import settingdust.preloading_tricks.fabric.PreloadingTricksCallbacksInvoker;
 import settingdust.preloading_tricks.fabric.util.FabricLoaderImplAccessor;
-import settingdust.preloading_tricks.util.LoaderPredicates;
 
 import java.io.IOException;
 import java.util.*;
 
-public class FabricPreloadingTricksCallback implements PreloadingTricksCallback {
-    public FabricPreloadingTricksCallback() {
-        LoaderPredicates.Fabric.throwIfNot();
-    }
-
-    @Override
-    public void onSetupMods() {
-        var service = PreloadingTricksModManager.<FabricModManager>get();
-
+public class ExtraModsLoader {
+    public static void onSetupMods(FabricModManager service) {
         var remapRegularMods = FabricLoader.getInstance().isDevelopmentEnvironment();
         var versionOverrides = new VersionOverrides();
         var dependencyOverrides = new DependencyOverrides(FabricLoaderImpl.INSTANCE.getConfigDir());
@@ -39,7 +29,7 @@ public class FabricPreloadingTricksCallback implements PreloadingTricksCallback 
         discoverer.addCandidateFinder(new DefinedModCandidateFinder(remapRegularMods));
         discoverer.addCandidateFinder(new ModContainerModCandidateFinder(service.all()));
 
-        PreloadingTricksCallback.invoker.onCollectModCandidates();
+        PreloadingTricksCallbacksInvoker.onCollectModCandidates();
 
         var envDisabledMods = new HashMap<String, Set<ModCandidateImpl>>();
 
@@ -193,7 +183,7 @@ public class FabricPreloadingTricksCallback implements PreloadingTricksCallback 
         }
     }
 
-    private void setupLanguageAdapter(ModContainerImpl mod) {
+    private static void setupLanguageAdapter(ModContainerImpl mod) {
         var adapterMap = FabricLoaderImplAccessor.adapterMap();
         // add language adapters
         for (var laEntry : mod.getMetadata().getLanguageAdapterDefinitions().entrySet()) {

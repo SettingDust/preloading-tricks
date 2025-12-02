@@ -10,7 +10,7 @@ import net.lenni0451.reflect.Classes;
 import net.lenni0451.reflect.stream.RStream;
 import net.neoforged.fml.loading.LanguageProviderLoader;
 import org.slf4j.Logger;
-import settingdust.preloading_tricks.modlauncher.PreloadingTricksCallbackHelper;
+import settingdust.preloading_tricks.neoforge.modlauncher.PreloadingTricksCallbacksInvoker;
 
 @CTransformer(LanguageProviderLoader.class)
 public class LanguageProviderLoaderTransformer {
@@ -27,7 +27,7 @@ public class LanguageProviderLoaderTransformer {
         LOGGER.info(
             "PreloadingTricks calling PreloadingTricksCallback#onSetupLanguageAdapter in `LanguageLoadingProvider#<init>`");
         try {
-            PreloadingTricksCallbackHelper.onSetupLanguageAdapter();
+            PreloadingTricksCallbacksInvoker.onSetupLanguageAdapter();
         } catch (NoClassDefFoundError e) {
             var serviceLayer =
                 Launcher.INSTANCE.findLayerManager()
@@ -36,12 +36,11 @@ public class LanguageProviderLoaderTransformer {
                                  .orElseThrow();
 
             var serviceClassLoader = serviceLayer.modules().iterator().next().getClassLoader();
-            var callbackClazz = RStream.of(Classes.byName(
-                "settingdust.preloading_tricks.modlauncher.PreloadingTricksCallbackHelper",
+            var invokerClass = RStream.of(Classes.byName(
+                "settingdust.preloading_tricks.neoforge.modlauncher.PreloadingTricksCallbacksInvoker",
                 serviceClassLoader
             ));
-            var onSetupLanguageAdapterMethod = callbackClazz.methods().by("onSetupLanguageAdapter");
-            onSetupLanguageAdapterMethod.invoke();
+            invokerClass.methods().by("onSetupLanguageAdapter").invoke();
         }
     }
 }

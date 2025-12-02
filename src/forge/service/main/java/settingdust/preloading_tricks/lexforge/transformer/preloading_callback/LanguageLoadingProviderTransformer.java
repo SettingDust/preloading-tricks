@@ -24,7 +24,7 @@ public class LanguageLoadingProviderTransformer {
     )
     private void preloading_tricks$onSetupLanguageAdapter() {
         LOGGER.info(
-            "PreloadingTricks calling PreloadingTricksCallback#onSetupLanguageAdapter in `LanguageLoadingProvider#loadLanguageProviders`");
+            "PreloadingTricks calling PreloadingTricksCallbacks.SETUP_LANGUAGE_ADAPTER in `LanguageLoadingProvider#loadLanguageProviders`");
         var serviceLayer =
             Launcher.INSTANCE.findLayerManager()
                              .orElseThrow()
@@ -32,11 +32,10 @@ public class LanguageLoadingProviderTransformer {
                              .orElseThrow();
 
         var serviceClassLoader = serviceLayer.modules().iterator().next().getClassLoader();
-        var callbackClazz = RStream.of(Classes.byName(
-            "settingdust.preloading_tricks.modlauncher.PreloadingTricksCallbackHelper",
+        var invokerClass = RStream.of(Classes.byName(
+            "settingdust.preloading_tricks.lexforge.PreloadingTricksCallbacksInvoker",
             serviceClassLoader
         ));
-        var onSetupLanguageAdapterMethod = callbackClazz.methods().by("onSetupLanguageAdapter");
-        onSetupLanguageAdapterMethod.invoke();
+        invokerClass.methods().by("onSetupLanguageAdapter").invoke();
     }
 }

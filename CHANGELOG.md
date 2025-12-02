@@ -1,5 +1,10 @@
 fix: `setAccessible` for `setMod`
 
+## [3.0.0] - 2025-12-02
+### :recycle: Refactors
+- [`52571bb`](https://github.com/SettingDust/preloading-tricks/commit/52571bb18c3a103deac70465778f0785384578df) - redesign the api *(commit by [@SettingDust](https://github.com/SettingDust))*
+
+
 ## [2.7.5] - 2025-12-01
 ### :bug: Bug Fixes
 - [`080deb6`](https://github.com/SettingDust/preloading-tricks/commit/080deb6ae68f97cdf2c3336f5eec30cbbe6b4fc7) - avoid preloading callback throw wrong loader *(commit by [@SettingDust](https://github.com/SettingDust))*
@@ -282,3 +287,4 @@ fix: `setAccessible` for `setMod`
 [2.7.3]: https://github.com/SettingDust/preloading-tricks/compare/2.7.2...2.7.3
 [2.7.4]: https://github.com/SettingDust/preloading-tricks/compare/2.7.3...2.7.4
 [2.7.5]: https://github.com/SettingDust/preloading-tricks/compare/2.7.4...2.7.5
+[3.0.0]: https://github.com/SettingDust/preloading-tricks/compare/2.7.5...3.0.0

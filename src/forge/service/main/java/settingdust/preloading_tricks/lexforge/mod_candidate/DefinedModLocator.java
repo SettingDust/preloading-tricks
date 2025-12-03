@@ -3,7 +3,7 @@ package settingdust.preloading_tricks.lexforge.mod_candidate;
 import net.minecraftforge.fml.loading.moddiscovery.AbstractJarFileModLocator;
 import net.minecraftforge.forgespi.locating.IModFile;
 import settingdust.preloading_tricks.PreloadingTricks;
-import settingdust.preloading_tricks.lexforge.PreloadingTricksCallbacksInvoker;
+import settingdust.preloading_tricks.api.PreloadingTricksCallbacks;
 
 import java.nio.file.Path;
 import java.util.ArrayList;
@@ -27,7 +27,9 @@ public class DefinedModLocator extends AbstractJarFileModLocator {
 
     @Override
     public Stream<Path> scanCandidates() {
-        PreloadingTricksCallbacksInvoker.onCollectModCandidates();
+        PreloadingTricksCallbacks.COLLECT_MOD_CANDIDATES
+            .getInvoker()
+            .onCollectModCandidates(new LexForgeModCandidatesManager());
         return definedCandidates.stream();
     }
 

@@ -67,7 +67,7 @@ public final class ServiceLoaderUtil {
             } catch (Throwable t) {
                 IllegalStateException e = new IllegalStateException(prefix + "Loading " + providerName + " failed", t);
                 errors.add(e);
-                logger.debug(e);
+                logger.debug(e.getMessage(), t);
             }
 
             current = findNext(iterator, errors);
@@ -142,7 +142,7 @@ public final class ServiceLoaderUtil {
         return loadServices(clazz, load(clazz), defaultLogger, required);
     }
 
-    public static <T> int loadServices(Class<T> clazz, ServiceLoader<T> serviceLoader,boolean required) {
+    public static <T> int loadServices(Class<T> clazz, ServiceLoader<T> serviceLoader, boolean required) {
         return loadServices(clazz, serviceLoader, defaultLogger, required);
     }
 }

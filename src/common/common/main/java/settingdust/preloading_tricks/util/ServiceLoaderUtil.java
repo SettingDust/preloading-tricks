@@ -141,4 +141,8 @@ public final class ServiceLoaderUtil {
     public static <T> int loadServices(Class<T> clazz, boolean required) {
         return loadServices(clazz, load(clazz), defaultLogger, required);
     }
+
+    public static <T> int loadServices(Class<T> clazz, ServiceLoader<T> serviceLoader,boolean required) {
+        return loadServices(clazz, serviceLoader, defaultLogger, required);
+    }
 }

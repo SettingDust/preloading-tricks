@@ -30,6 +30,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;
 import java.util.Map;
+import java.util.ServiceLoader;
 import java.util.Set;
 
 public class PreloadingTricksTransformationService implements ITransformationService {
@@ -88,7 +89,11 @@ public class PreloadingTricksTransformationService implements ITransformationSer
             .getTransformerManager()
             .hookInstrumentation(ByteBuddyAgent.getInstrumentation());
 
-        ServiceLoaderUtil.loadServices(PreloadingEntrypoint.class, false);
+        ServiceLoaderUtil.loadServices(
+            PreloadingEntrypoint.class,
+            ServiceLoader.load(PreloadingEntrypoint.class, PreloadingEntrypoint.class.getClassLoader()),
+            false
+        );
     }
 
     private static void injectClassTransform() {

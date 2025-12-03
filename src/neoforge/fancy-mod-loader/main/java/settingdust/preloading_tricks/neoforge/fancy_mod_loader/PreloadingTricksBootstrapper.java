@@ -16,6 +16,7 @@ import settingdust.preloading_tricks.util.ServiceLoaderUtil;
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.nio.file.Path;
+import java.util.ServiceLoader;
 
 public class PreloadingTricksBootstrapper implements GraphicsBootstrapper {
     public PreloadingTricksBootstrapper() throws URISyntaxException, IOException {
@@ -56,7 +57,11 @@ public class PreloadingTricksBootstrapper implements GraphicsBootstrapper {
             .getTransformerManager()
             .hookInstrumentation(ByteBuddyAgent.getInstrumentation());
 
-        ServiceLoaderUtil.loadServices(PreloadingEntrypoint.class, false);
+        ServiceLoaderUtil.loadServices(
+            PreloadingEntrypoint.class,
+            ServiceLoader.load(PreloadingEntrypoint.class, PreloadingEntrypoint.class.getClassLoader()),
+            false
+        );
 
         PreloadingTricksCallbacks.SETUP_MODS.register(_manager -> {
             if (!(_manager instanceof final NeoForgeModManager manager)) return;

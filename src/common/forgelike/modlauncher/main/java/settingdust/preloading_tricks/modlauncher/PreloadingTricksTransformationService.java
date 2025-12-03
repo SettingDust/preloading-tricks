@@ -88,7 +88,7 @@ public class PreloadingTricksTransformationService implements ITransformationSer
             .getTransformerManager()
             .hookInstrumentation(ByteBuddyAgent.getInstrumentation());
 
-        ServiceLoaderUtil.loadServices(PreloadingEntrypoint.class);
+        ServiceLoaderUtil.loadServices(PreloadingEntrypoint.class, false);
     }
 
     private static void injectClassTransform() {

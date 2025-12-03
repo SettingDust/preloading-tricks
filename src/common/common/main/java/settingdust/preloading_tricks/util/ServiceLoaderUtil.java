@@ -87,17 +87,6 @@ public final class ServiceLoaderUtil {
         return results;
     }
 
-    public static <T> void loadServices(
-        Class<T> clazz,
-        ServiceLoader<T> serviceLoader,
-        Logger logger,
-        boolean required
-    ) {
-        for (T ignored : findServices(clazz, serviceLoader, logger, required)) {
-            // Force loading
-        }
-    }
-
     private static <T> Optional<ServiceLoader.Provider<T>> findNext(
         Iterator<ServiceLoader.Provider<T>> iterator,
         List<Throwable> errors
@@ -132,11 +121,24 @@ public final class ServiceLoaderUtil {
         return findServices(clazz, load(clazz), defaultLogger, required);
     }
 
-    public static <T> int loadServices(Class<T> clazz) {
+    public static <T> int loadServices(
+        Class<T> clazz,
+        ServiceLoader<T> serviceLoader,
+        Logger logger,
+        boolean required
+    ) {
         int count = 0;
-        for (T ignored : findServices(clazz, load(clazz), defaultLogger, true)) {
+        for (T ignored : findServices(clazz, serviceLoader, logger, required)) {
             count++;
         }
         return count;
+    }
+
+    public static <T> int loadServices(Class<T> clazz) {
+        return loadServices(clazz, load(clazz), defaultLogger, true);
+    }
+
+    public static <T> int loadServices(Class<T> clazz, boolean required) {
+        return loadServices(clazz, load(clazz), defaultLogger, required);
     }
 }

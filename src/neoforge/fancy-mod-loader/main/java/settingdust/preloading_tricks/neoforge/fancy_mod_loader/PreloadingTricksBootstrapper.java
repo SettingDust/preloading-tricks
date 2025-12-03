@@ -56,7 +56,7 @@ public class PreloadingTricksBootstrapper implements GraphicsBootstrapper {
             .getTransformerManager()
             .hookInstrumentation(ByteBuddyAgent.getInstrumentation());
 
-        ServiceLoaderUtil.loadServices(PreloadingEntrypoint.class);
+        ServiceLoaderUtil.loadServices(PreloadingEntrypoint.class, false);
 
         PreloadingTricksCallbacks.SETUP_MODS.register(_manager -> {
             if (!(_manager instanceof final NeoForgeModManager manager)) return;

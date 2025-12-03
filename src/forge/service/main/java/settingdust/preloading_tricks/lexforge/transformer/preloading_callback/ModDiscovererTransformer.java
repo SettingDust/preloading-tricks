@@ -63,11 +63,11 @@ public class ModDiscovererTransformer {
                              .orElseThrow();
 
         var serviceClassLoader = serviceLayer.modules().iterator().next().getClassLoader();
-        var additionalDependencySourceClass = RStream.of(Classes.byName(
-            "settingdust.preloading_tricks.lexforge.mod_candidate.LexForgeAdditionalDependencySourceManager",
+        var callbackClazz = RStream.of(Classes.byName(
+            "settingdust.preloading_tricks.lexforge.PreloadingTricksCallbacksInvoker",
             serviceClassLoader
         ));
-        additionalDependencySources = additionalDependencySourceClass.fields().by("additionalDependencySources").get();
+        additionalDependencySources = callbackClazz.methods().by("onCollectAdditionalDependencySources").invoke();
         LOGGER.info("PreloadingTricks adding additional {} dependency sources", additionalDependencySources.size());
     }
 

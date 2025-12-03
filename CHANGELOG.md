@@ -1,5 +1,10 @@
 fix: `setAccessible` for `setMod`
 
+## [3.2.2] - 2025-12-03
+### :bug: Bug Fixes
+- [`be2381f`](https://github.com/SettingDust/preloading-tricks/commit/be2381f5a629f03dc331995fcbffaa6e2b5689d7) - load entrypoints on correct class loader *(commit by [@SettingDust](https://github.com/SettingDust))*
+
+
 ## [3.2.1] - 2025-12-03
 ### :bug: Bug Fixes
 - [`e1e5495`](https://github.com/SettingDust/preloading-tricks/commit/e1e54954ed68a5361b2ca626f81e8a0ca866c501) - don't require preloading entrypoint implementations *(commit by [@SettingDust](https://github.com/SettingDust))*
@@ -306,3 +311,4 @@ fix: `setAccessible` for `setMod`
 [3.1.0]: https://github.com/SettingDust/preloading-tricks/compare/3.0.0...3.1.0
 [3.2.0]: https://github.com/SettingDust/preloading-tricks/compare/3.1.2...3.2.0
 [3.2.1]: https://github.com/SettingDust/preloading-tricks/compare/3.2.0...3.2.1
+[3.2.2]: https://github.com/SettingDust/preloading-tricks/compare/3.2.1...3.2.2

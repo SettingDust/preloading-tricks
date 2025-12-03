@@ -1,4 +1,5 @@
 @file:Suppress("UnstableApiUsage", "INVISIBLE_REFERENCE")
+@file:OptIn(ExperimentalPathApi::class)
 
 import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
 import earth.terrarium.cloche.INCLUDE_TRANSFORMED_OUTPUT_ATTRIBUTE
@@ -12,9 +13,17 @@ import earth.terrarium.cloche.api.target.MinecraftTarget
 import earth.terrarium.cloche.target.LazyConfigurableInternal
 import groovy.lang.Closure
 import net.msrandom.minecraftcodev.core.utils.lowerCamelCaseGradleName
+import net.msrandom.minecraftcodev.core.utils.toPath
+import net.msrandom.minecraftcodev.core.utils.zipFileSystem
 import net.msrandom.minecraftcodev.fabric.MinecraftCodevFabricPlugin
 import net.msrandom.minecraftcodev.runs.MinecraftRunConfiguration
 import org.gradle.jvm.tasks.Jar
+import java.nio.file.StandardCopyOption
+import kotlin.io.path.ExperimentalPathApi
+import kotlin.io.path.copyTo
+import kotlin.io.path.deleteRecursively
+import kotlin.io.path.exists
+import kotlin.io.path.name
 
 plugins {
     java
@@ -235,6 +244,34 @@ cloche {
                 implementation(catalog.bytebuddy.agent)
             }
 
+            val noNewerJavaAttribute = Attribute.of("noNewerJava", Boolean::class.javaObjectType)
+
+            abstract class RemoveNewerJavaTransform : TransformAction<TransformParameters.None> {
+                @get:InputArtifact
+                abstract val inputArtifact: Provider<FileSystemLocation>
+
+                override fun transform(outputs: TransformOutputs) {
+                    val input = inputArtifact.get().toPath()
+
+                    val newerJavaClasses = zipFileSystem(input).use {
+                        it.getPath("META-INF/versions/24").exists()
+                    }
+
+                    if (!newerJavaClasses) {
+                        outputs.file(input)
+                        return
+                    }
+
+                    val output = outputs.file(input.name.replace(".jar", "-noNewerJava.jar")).toPath()
+
+                    input.copyTo(output, StandardCopyOption.COPY_ATTRIBUTES)
+
+                    zipFileSystem(output).use { fs ->
+                        fs.getPath("META-INF/versions/24").deleteRecursively()
+                    }
+                }
+            }
+
             val embedBoot by configurations.register(lowerCamelCaseGradleName(featureName, "embedBoot")) {
                 isTransitive = false
 
@@ -243,9 +280,23 @@ cloche {
                     .attribute(REMAPPED_ATTRIBUTE, false)
                     .attribute(INCLUDE_TRANSFORMED_OUTPUT_ATTRIBUTE, true)
                     .attribute(IncludeTransformationStateAttribute.ATTRIBUTE, IncludeTransformationStateAttribute.None)
+                    .attribute(noNewerJavaAttribute, true)
             }
 
             project.dependencies {
+                attributesSchema {
+                    attribute(noNewerJavaAttribute)
+                }
+
+                artifactTypes.named(ArtifactTypeDefinition.JAR_TYPE) {
+                    attributes.attribute(noNewerJavaAttribute, false)
+                }
+
+                registerTransform(RemoveNewerJavaTransform::class) {
+                    from.attribute(noNewerJavaAttribute, false)
+                    to.attribute(noNewerJavaAttribute, true)
+                }
+
                 embedBoot(catalog.reflect)
                 embedBoot(catalog.classTransform)
                 embedBoot(catalog.classTransform.additionalClassProvider)

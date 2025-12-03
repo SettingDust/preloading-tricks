@@ -12,6 +12,7 @@ import net.lenni0451.reflect.stream.RStream;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import settingdust.preloading_tricks.PreloadingTricks;
+import settingdust.preloading_tricks.api.PreloadingEntrypoint;
 import settingdust.preloading_tricks.forgelike.class_transform.ClassTransformBootstrap;
 import settingdust.preloading_tricks.forgelike.module_injector.accessor.ModuleAccessor;
 import settingdust.preloading_tricks.forgelike.module_injector.accessor.ModuleLayerAccessor;
@@ -21,6 +22,7 @@ import settingdust.preloading_tricks.modlauncher.module_injector.ModuleInjector;
 import settingdust.preloading_tricks.modlauncher.module_injector.accessor.LauncherAccessor;
 import settingdust.preloading_tricks.modlauncher.module_injector.accessor.ModuleClassLoaderAccessor;
 import settingdust.preloading_tricks.modlauncher.module_injector.accessor.ModuleLayerHandlerAccessor;
+import settingdust.preloading_tricks.util.ServiceLoaderUtil;
 
 import java.io.IOException;
 import java.net.URISyntaxException;
@@ -82,7 +84,11 @@ public class PreloadingTricksTransformationService implements ITransformationSer
 
         injectClassTransform();
 
-        ClassTransformBootstrap.INSTANCE.getTransformerManager().hookInstrumentation(ByteBuddyAgent.getInstrumentation());
+        ClassTransformBootstrap.INSTANCE
+            .getTransformerManager()
+            .hookInstrumentation(ByteBuddyAgent.getInstrumentation());
+
+        ServiceLoaderUtil.loadServices(PreloadingEntrypoint.class);
     }
 
     private static void injectClassTransform() {

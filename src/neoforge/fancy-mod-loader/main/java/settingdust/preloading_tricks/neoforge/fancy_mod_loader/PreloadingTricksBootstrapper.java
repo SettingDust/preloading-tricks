@@ -5,11 +5,13 @@ import net.neoforged.fml.jarcontents.JarContents;
 import net.neoforged.fml.loading.FMLLoader;
 import net.neoforged.neoforgespi.earlywindow.GraphicsBootstrapper;
 import settingdust.preloading_tricks.PreloadingTricks;
+import settingdust.preloading_tricks.api.PreloadingEntrypoint;
 import settingdust.preloading_tricks.api.PreloadingTricksCallbacks;
 import settingdust.preloading_tricks.forgelike.UcpClassLoaderInjector;
 import settingdust.preloading_tricks.forgelike.class_transform.ClassTransformBootstrap;
 import settingdust.preloading_tricks.forgelike.specified_forge_variant.ForgeVariants;
 import settingdust.preloading_tricks.util.LoaderPredicates;
+import settingdust.preloading_tricks.util.ServiceLoaderUtil;
 
 import java.io.IOException;
 import java.net.URISyntaxException;
@@ -53,6 +55,8 @@ public class PreloadingTricksBootstrapper implements GraphicsBootstrapper {
         ClassTransformBootstrap.INSTANCE
             .getTransformerManager()
             .hookInstrumentation(ByteBuddyAgent.getInstrumentation());
+
+        ServiceLoaderUtil.loadServices(PreloadingEntrypoint.class);
 
         PreloadingTricksCallbacks.SETUP_MODS.register(_manager -> {
             if (!(_manager instanceof final NeoForgeModManager manager)) return;

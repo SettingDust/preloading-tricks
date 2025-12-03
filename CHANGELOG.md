@@ -1,5 +1,10 @@
 fix: `setAccessible` for `setMod`
 
+## [3.2.1] - 2025-12-03
+### :bug: Bug Fixes
+- [`e1e5495`](https://github.com/SettingDust/preloading-tricks/commit/e1e54954ed68a5361b2ca626f81e8a0ca866c501) - don't require preloading entrypoint implementations *(commit by [@SettingDust](https://github.com/SettingDust))*
+
+
 ## [3.2.0] - 2025-12-03
 ### :sparkles: New Features
 - [`116b6d1`](https://github.com/SettingDust/preloading-tricks/commit/116b6d1b1c32d8d1c079e2e5930e6656597a7fc7) - add `PreloadingEntrypoint` *(commit by [@SettingDust](https://github.com/SettingDust))*
@@ -300,3 +305,4 @@ fix: `setAccessible` for `setMod`
 [3.0.0]: https://github.com/SettingDust/preloading-tricks/compare/2.7.5...3.0.0
 [3.1.0]: https://github.com/SettingDust/preloading-tricks/compare/3.0.0...3.1.0
 [3.2.0]: https://github.com/SettingDust/preloading-tricks/compare/3.1.2...3.2.0
+[3.2.1]: https://github.com/SettingDust/preloading-tricks/compare/3.2.0...3.2.1

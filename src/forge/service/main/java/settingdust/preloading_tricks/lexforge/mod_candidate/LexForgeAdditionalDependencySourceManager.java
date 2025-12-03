@@ -2,8 +2,8 @@ package settingdust.preloading_tricks.lexforge.mod_candidate;
 
 import cpw.mods.jarhandling.SecureJar;
 import net.minecraftforge.fml.loading.moddiscovery.ModFile;
+import settingdust.preloading_tricks.api.modlauncher.AdditionalDependencySourceManager;
 import settingdust.preloading_tricks.lexforge.virtual_mod.VirtualModFile;
-import settingdust.preloading_tricks.modlauncher.AdditionalDependencySourceManager;
 
 import java.nio.file.Path;
 import java.util.ArrayList;

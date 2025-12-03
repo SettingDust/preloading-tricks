@@ -158,7 +158,7 @@ dependencyResolutionManagement.versionCatalogs.create("catalog") {
 
     library("asmFabricLoader", "de.florianmichael", "AsmFabricLoader").version("2.0.1")
 
-    library("reflect", "net.lenni0451", "Reflect").version("1.6.0-SNAPSHOT")
+    library("reflect", "net.lenni0451", "Reflect").version("1.6.0")
     val classTransform = "1.15.0-SNAPSHOT"
     library("classTransform", "net.lenni0451.classtransform", "core").version(classTransform)
     library(

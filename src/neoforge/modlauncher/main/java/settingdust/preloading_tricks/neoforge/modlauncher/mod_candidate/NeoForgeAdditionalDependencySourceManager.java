@@ -2,7 +2,7 @@ package settingdust.preloading_tricks.neoforge.modlauncher.mod_candidate;
 
 import cpw.mods.jarhandling.SecureJar;
 import net.neoforged.fml.loading.moddiscovery.ModFile;
-import settingdust.preloading_tricks.modlauncher.AdditionalDependencySourceManager;
+import settingdust.preloading_tricks.api.modlauncher.AdditionalDependencySourceManager;
 import settingdust.preloading_tricks.neoforge.modlauncher.virtual_mod.VirtualModFile;
 
 import java.nio.file.Path;

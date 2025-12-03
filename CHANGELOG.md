@@ -1,5 +1,10 @@
 fix: `setAccessible` for `setMod`
 
+## [3.2.0] - 2025-12-03
+### :sparkles: New Features
+- [`116b6d1`](https://github.com/SettingDust/preloading-tricks/commit/116b6d1b1c32d8d1c079e2e5930e6656597a7fc7) - add `PreloadingEntrypoint` *(commit by [@SettingDust](https://github.com/SettingDust))*
+
+
 ## [3.1.0] - 2025-12-02
 ### :sparkles: New Features
 - [`9a085c3`](https://github.com/SettingDust/preloading-tricks/commit/9a085c34809fbbe644f1d93a56eb251d07a84cc9) - add api for append additional dependency sources *(commit by [@SettingDust](https://github.com/SettingDust))*
@@ -294,3 +299,4 @@ fix: `setAccessible` for `setMod`
 [2.7.5]: https://github.com/SettingDust/preloading-tricks/compare/2.7.4...2.7.5
 [3.0.0]: https://github.com/SettingDust/preloading-tricks/compare/2.7.5...3.0.0
 [3.1.0]: https://github.com/SettingDust/preloading-tricks/compare/3.0.0...3.1.0
+[3.2.0]: https://github.com/SettingDust/preloading-tricks/compare/3.1.2...3.2.0

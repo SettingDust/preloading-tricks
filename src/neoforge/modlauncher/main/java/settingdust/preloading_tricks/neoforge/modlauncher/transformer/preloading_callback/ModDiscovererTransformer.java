@@ -81,7 +81,7 @@ public class ModDiscovererTransformer {
             ));
             additionalDependencySources = callbackClazz.methods().by("onCollectAdditionalDependencySources").invoke();
         }
-        LOGGER.info("PreloadingTricks adding additional {} dependency sources", additionalDependencySources.size());
+        LOGGER.info("PreloadingTricks adding {} additional dependency sources", additionalDependencySources.size());
     }
 
     @CModifyExpressionValue(

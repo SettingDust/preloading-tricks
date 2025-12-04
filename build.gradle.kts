@@ -425,7 +425,7 @@ cloche {
             dependsOn(common, commonForgeLike, commonNeoForge)
 
             minecraftVersion = "1.21.10"
-            loaderVersion = "21.10.38-beta"
+            loaderVersion = "21.10.64"
 
             dependencies {
                 catalog.reflect.let {

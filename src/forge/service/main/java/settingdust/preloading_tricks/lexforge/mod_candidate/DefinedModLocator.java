@@ -30,6 +30,7 @@ public class DefinedModLocator extends AbstractJarFileModLocator {
         PreloadingTricksCallbacks.COLLECT_MOD_CANDIDATES
             .getInvoker()
             .onCollectModCandidates(new LexForgeModCandidatesManager());
+        PreloadingTricks.LOGGER.info("Loading {} additional mods", definedCandidates.size());
         return definedCandidates.stream();
     }
 

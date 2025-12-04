@@ -25,6 +25,7 @@ public class DefinedCandidateLocator implements IModFileCandidateLocator {
         PreloadingTricksCallbacks.COLLECT_MOD_CANDIDATES
             .getInvoker()
             .onCollectModCandidates(new NeoForgeModCandidatesManager());
+        PreloadingTricks.LOGGER.info("Loading {} additional mods", definedCandidates.size());
         for (final var candidate : definedCandidates) {
             pipeline.addPath(candidate, ModFileDiscoveryAttributes.DEFAULT, IncompatibleFileReporting.WARN_ALWAYS);
         }

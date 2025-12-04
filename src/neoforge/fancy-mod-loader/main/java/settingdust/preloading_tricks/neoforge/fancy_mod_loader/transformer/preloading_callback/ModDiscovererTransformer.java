@@ -10,7 +10,6 @@ import net.neoforged.fml.loading.moddiscovery.ModDiscoverer;
 import net.neoforged.fml.loading.moddiscovery.ModFile;
 import org.slf4j.Logger;
 
-import java.lang.reflect.InvocationTargetException;
 import java.util.List;
 
 @CTransformer(ModDiscoverer.class)
@@ -25,12 +24,7 @@ public class ModDiscovererTransformer {
             target = "Lnet/neoforged/fml/loading/UniqueModListBuilder$UniqueModListData;modFiles()Ljava/util/List;"
         )
     )
-    private List<ModFile> preloading_tricks$onSetupMods(List<ModFile> mods) throws
-                                                                            ClassNotFoundException,
-                                                                            NoSuchFieldException,
-                                                                            IllegalAccessException,
-                                                                            NoSuchMethodException,
-                                                                            InvocationTargetException {
+    private List<ModFile> preloading_tricks$onSetupMods(List<ModFile> mods) throws ClassNotFoundException {
         LOGGER.info("PreloadingTricks calling PreloadingTricksCallback in `ModDiscoverer#discoverMods`");
         var currentClassLoader = FMLLoader.getCurrent().getCurrentClassLoader();
         var invokerClass = currentClassLoader.loadClass(

@@ -76,7 +76,7 @@ public class ModDiscovererTransformer {
 
             var serviceClassLoader = serviceLayer.modules().iterator().next().getClassLoader();
             var callbackClazz = RStream.of(Classes.byName(
-                "settingdust.preloading_tricks.neoforge.PreloadingTricksCallbacksInvoker",
+                "settingdust.preloading_tricks.neoforge.modlauncher.PreloadingTricksCallbacksInvoker",
                 serviceClassLoader
             ));
             additionalDependencySources = callbackClazz.methods().by("onCollectAdditionalDependencySources").invoke();

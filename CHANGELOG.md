@@ -1,5 +1,11 @@
 fix: `setAccessible` for `setMod`
 
+## [3.3.1] - 2025-12-04
+### :bug: Bug Fixes
+- [`d9bfd08`](https://github.com/SettingDust/preloading-tricks/commit/d9bfd0815ed09b3cc64992c3ce0034eff17db207) - **neoforge/modlauncher**: wrong class name of invoker *(commit by [@SettingDust](https://github.com/SettingDust))*
+- [`45a1852`](https://github.com/SettingDust/preloading-tricks/commit/45a185209aecef0fa65ae728f9c4cc3e88d7c541) - **neoforge/fancy_mod_loader**: load the classes in correct class loader *(commit by [@SettingDust](https://github.com/SettingDust))*
+
+
 ## [3.3.0] - 2025-12-03
 ### :sparkles: New Features
 - [`e9292ae`](https://github.com/SettingDust/preloading-tricks/commit/e9292aec0a8d8100dd0bbce1f492e44f1c1788e6) - the dependency source api actually work *(commit by [@SettingDust](https://github.com/SettingDust))*
@@ -324,3 +330,4 @@ fix: `setAccessible` for `setMod`
 [3.2.2]: https://github.com/SettingDust/preloading-tricks/compare/3.2.1...3.2.2
 [3.2.3]: https://github.com/SettingDust/preloading-tricks/compare/3.2.2...3.2.3
 [3.3.0]: https://github.com/SettingDust/preloading-tricks/compare/3.2.3...3.3.0
+[3.3.1]: https://github.com/SettingDust/preloading-tricks/compare/3.3.0...3.3.1

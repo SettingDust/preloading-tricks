@@ -1,11 +1,11 @@
-package settingdust.preloading_tricks.neoforge.modlauncher;
+package settingdust.preloading_tricks.neoforge.modlauncher.legacy;
 
 import net.neoforged.fml.loading.moddiscovery.ModFile;
 import net.neoforged.fml.loading.moddiscovery.ModFileInfo;
 import settingdust.preloading_tricks.api.ModManager;
-import settingdust.preloading_tricks.neoforge.modlauncher.accessor.ModFileInfoAccessor;
-import settingdust.preloading_tricks.neoforge.modlauncher.virtual_mod.VirtualJar;
-import settingdust.preloading_tricks.neoforge.modlauncher.virtual_mod.VirtualModFile;
+import settingdust.preloading_tricks.neoforge.modlauncher.legacy.accessor.ModFileInfoAccessor;
+import settingdust.preloading_tricks.neoforge.modlauncher.legacy.virtual_mod.VirtualJar;
+import settingdust.preloading_tricks.neoforge.modlauncher.legacy.virtual_mod.VirtualModFile;
 
 import java.nio.file.Path;
 import java.util.Collection;

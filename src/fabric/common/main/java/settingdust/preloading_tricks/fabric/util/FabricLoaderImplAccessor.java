@@ -8,7 +8,6 @@ import net.lenni0451.reflect.stream.RStream;
 import net.lenni0451.reflect.stream.field.FieldWrapper;
 import net.lenni0451.reflect.stream.method.MethodWrapper;
 
-import java.util.List;
 import java.util.Map;
 
 public class FabricLoaderImplAccessor {
@@ -18,15 +17,10 @@ public class FabricLoaderImplAccessor {
     private static final MethodWrapper addMod = stream.methods().by("addMod");
 
     private static final FieldWrapper modMap = stream.fields().by("modMap");
-    private static final FieldWrapper mods = stream.fields().by("mods");
     private static final FieldWrapper adapterMap = stream.fields().by("adapterMap");
 
     public static Map<String, ModContainerImpl> modMap() {
         return modMap.get(FabricLoaderImpl.INSTANCE);
-    }
-
-    public static List<ModContainerImpl> mods() {
-        return mods.get(FabricLoaderImpl.INSTANCE);
     }
 
     public static void addMod(ModCandidateImpl modCandidate) {

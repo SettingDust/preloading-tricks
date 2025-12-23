@@ -1,11 +1,14 @@
 package settingdust.preloading_tricks.fabric;
 
 import settingdust.preloading_tricks.api.PreloadingTricksCallbacks;
+import settingdust.preloading_tricks.fabric.mod_candidate.ExtraModsLoader;
 import settingdust.preloading_tricks.fabric.mod_candidate.FabricModCandidatesManager;
 
 public class PreloadingTricksCallbacksInvoker {
     public static void onSetupMods() {
-        PreloadingTricksCallbacks.SETUP_MODS.getInvoker().onSetupMods(new FabricModManager());
+        var manager = new FabricModManager();
+        ExtraModsLoader.onSetupMods(manager);
+        PreloadingTricksCallbacks.SETUP_MODS.getInvoker().onSetupMods(manager);
     }
 
     public static void onSetupLanguageAdapter() {

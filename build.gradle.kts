@@ -351,6 +351,39 @@ cloche {
     }
 
     run neoforge@{
+        val neoforgeModlauncherLegacy = neoforge("neoforge:modlauncher:legacy") {
+            dependsOn(common, commonForgeLike, commonModLauncher)
+
+            minecraftVersion = "1.20.6"
+            loaderVersion = "20.6.139"
+
+            dependencies {
+                catalog.reflect.let {
+                    implementation(it)
+                }
+                catalog.classTransform.let {
+                    implementation(it) {
+                        exclude(group = "org.ow2.asm")
+                    }
+                }
+                catalog.classTransform.additionalClassProvider.let {
+                    implementation(it) {
+                        exclude(group = "com.google.guava")
+                        exclude(group = "org.ow2.asm")
+                    }
+                }
+                catalog.bytebuddy.agent.let {
+                    implementation(it)
+                }
+            }
+
+            tasks {
+                named(generateModsTomlTaskName) {
+                    enabled = false
+                }
+            }
+        }
+
         val neoforgeModlauncher = neoforge("neoforge:modlauncher") {
             dependsOn(common, commonForgeLike, commonModLauncher, commonNeoForge)
 
@@ -448,6 +481,55 @@ cloche {
                 catalog.bytebuddy.agent.let {
                     implementation(it)
                     legacyClasspath(it)
+                }
+            }
+        }
+
+        neoforge("version:neoforge:1.20.6") {
+            minecraftVersion = "1.20.6"
+            loaderVersion = "20.6.139"
+
+            runs {
+                client {
+                    env("MOD_CLASSES", "")
+                }
+            }
+
+            dependencies {
+                legacyClasspath(project(":")) {
+                    capabilities {
+                        requireFeature(neoforgeModlauncherLegacy.capabilitySuffix!!)
+                    }
+
+                    attributes {
+                        attribute(ArtifactTypeDefinition.ARTIFACT_TYPE_ATTRIBUTE, ArtifactTypeDefinition.JAR_TYPE)
+                        attribute(REMAPPED_ATTRIBUTE, false)
+                        attribute(INCLUDE_TRANSFORMED_OUTPUT_ATTRIBUTE, true)
+                        attribute(
+                            IncludeTransformationStateAttribute.ATTRIBUTE,
+                            IncludeTransformationStateAttribute.None
+                        )
+                    }
+
+                    isTransitive = false
+                }
+            }
+
+            tasks {
+                named(generateModsTomlTaskName) {
+                    enabled = false
+                }
+
+                named(jarTaskName) {
+                    enabled = false
+                }
+
+                named(remapJarTaskName) {
+                    enabled = false
+                }
+
+                named(includeJarTaskName) {
+                    enabled = false
                 }
             }
         }
@@ -551,14 +633,16 @@ cloche {
         }
 
         mappings {
-            parchment(minecraftVersion.map {
+            minecraftVersion.map {
                 when (it) {
                     "1.20.1" -> "2023.09.03"
                     "1.21.1" -> "2024.11.17"
                     "1.21.10" -> "2025.10.12"
-                    else -> throw IllegalArgumentException("Unsupported minecraft version $it")
+                    else -> null
                 }
-            })
+            }.orNull?.let {
+                parchment(it)
+            }
         }
     }
 }

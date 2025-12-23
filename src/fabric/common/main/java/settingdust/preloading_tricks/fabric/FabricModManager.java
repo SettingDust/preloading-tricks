@@ -1,5 +1,6 @@
 package settingdust.preloading_tricks.fabric;
 
+import net.fabricmc.loader.impl.FabricLoaderImpl;
 import net.fabricmc.loader.impl.ModContainerImpl;
 import net.fabricmc.loader.impl.discovery.ModCandidateImpl;
 import settingdust.preloading_tricks.api.ModManager;
@@ -19,7 +20,7 @@ public class FabricModManager implements ModManager<ModContainerImpl> {
     private final Map<String, ModContainerImpl> modMap;
 
     public FabricModManager() {
-        mods = FabricLoaderImplAccessor.mods();
+        mods = FabricLoaderImpl.INSTANCE.getModsInternal();
         modMap = FabricLoaderImplAccessor.modMap();
     }
 

@@ -1,5 +1,10 @@
 fix: `setAccessible` for `setMod`
 
+## [3.3.3] - 2025-12-27
+### :sparkles: New Features
+- [`9bca6ba`](https://github.com/SettingDust/preloading-tricks/commit/9bca6ba0b5f8a7e68c2b79a733397c384715317a) - add sources jar to publishing *(commit by [@SettingDust](https://github.com/SettingDust))*
+
+
 ## [3.3.2] - 2025-12-23
 ### :bug: Bug Fixes
 - [`e63f68c`](https://github.com/SettingDust/preloading-tricks/commit/e63f68c55948c405a713a9853e7a5954d9b03f56) - **fabric**: avoid crash when removing mods *(commit by [@SettingDust](https://github.com/SettingDust))*
@@ -337,3 +342,4 @@ fix: `setAccessible` for `setMod`
 [3.3.0]: https://github.com/SettingDust/preloading-tricks/compare/3.2.3...3.3.0
 [3.3.1]: https://github.com/SettingDust/preloading-tricks/compare/3.3.0...3.3.1
 [3.3.2]: https://github.com/SettingDust/preloading-tricks/compare/3.3.1...3.3.2
+[3.3.3]: https://github.com/SettingDust/preloading-tricks/compare/3.3.2...3.3.3

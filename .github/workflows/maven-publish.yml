@@ -47,11 +47,21 @@ jobs:
       - name: Copy artifacts
         run: |
           GROUP_PATH="settingdust/preloading_tricks"
-          SOURCE="$HOME/.m2/repository/$GROUP_PATH"
-          TARGET="maven-repo/repository/$GROUP_PATH"
+          ARTIFACT_ID="PreloadingTricks"
+          VERSION="${{ steps.version.outputs.version }}"
+          
+          SOURCE="$HOME/.m2/repository/$GROUP_PATH/$ARTIFACT_ID"
+          TARGET="maven-repo/repository/$GROUP_PATH/$ARTIFACT_ID"
           
           mkdir -p "$TARGET"
-          cp -r "$SOURCE"/* "$TARGET/"
+          
+          # Copy version-specific files
+          cp -r "$SOURCE/$VERSION" "$TARGET/"
+          
+          # Copy or update maven-metadata files
+          if [ -f "$SOURCE/maven-metadata-local.xml" ]; then
+            cp "$SOURCE/maven-metadata-local.xml" "$TARGET/"
+          fi
 
       - name: Commit and push
         working-directory: maven-repo

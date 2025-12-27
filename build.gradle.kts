@@ -28,6 +28,7 @@ import kotlin.io.path.name
 plugins {
     java
     idea
+    `maven-publish`
 
     id("com.palantir.git-version") version "4.2.0"
 
@@ -696,6 +697,12 @@ tasks {
     val shadowContainersJar by registering(ShadowJar::class) {
         archiveClassifier = ""
 
+        duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+
+        filesMatching("META-INF/services/*") {
+            duplicatesStrategy = DuplicatesStrategy.INCLUDE
+        }
+
         val fabricJar = project.tasks.named<Jar>(cloche.targets.getByName("version:fabric:1.20.1").includeJarTaskName)
         from(fabricJar.map { zipTree(it.archiveFile) })
         manifest.from(fabricJar.get().manifest)
@@ -745,6 +752,17 @@ tasks {
         dependsOn(shadowContainersJar, shadowSourcesJar)
     }
 
+    jar {
+        finalizedBy(shadowContainersJar)
+        destinationDirectory = shadowContainersJar.flatMap { it.destinationDirectory }
+    }
+
+    afterEvaluate {
+        named("generateMetadataFileForMavenPublication") {
+            dependsOn(shadowContainersJar)
+        }
+    }
+
     for (target in cloche.targets.filterIsInstance<FabricTarget>()) {
         named(lowerCamelCaseGradleName("accessWiden", target.featureName, "commonMinecraft")) {
             dependsOn(
@@ -771,6 +789,36 @@ tasks {
                     MinecraftCodevFabricPlugin.INTERMEDIARY_MAPPINGS_NAMESPACE,
                 ), lowerCamelCaseGradleName("generate", target.featureName, "MappingsArtifact")
             )
+        }
+    }
+}
+
+publishing {
+    publications {
+        register<MavenPublication>("maven") {
+            from(components["java"])
+            artifact(tasks.named("shadowSourcesJar")) {
+                classifier = "sources"
+            }
+
+            pom {
+                name = cloche.metadata.modId
+                description = cloche.metadata.description
+                url = cloche.metadata.sources
+
+                licenses {
+                    license {
+                        name = cloche.metadata.license
+                    }
+                }
+
+                developers {
+                    developer {
+                        name = cloche.metadata.authors.get().first().name
+                        email = cloche.metadata.authors.get().first().contact
+                    }
+                }
+            }
         }
     }
 }

@@ -34,7 +34,7 @@ plugins {
 
     id("com.gradleup.shadow") version "9.2.2"
 
-    id("earth.terrarium.cloche") version "0.16.21-dust"
+    id("earth.terrarium.cloche") version "0.17.4-dust.0"
 }
 
 val archive_name: String by rootProject.properties
@@ -763,6 +763,22 @@ tasks {
         }
     }
 
+    afterEvaluate {
+        (components["java"] as AdhocComponentWithVariants).apply {
+            val testTargets = cloche.targets.filter { it.name.startsWith("version:") }
+            
+            testTargets.forEach { target ->
+                listOf("${target.featureName}ApiElements", "${target.featureName}RuntimeElements").forEach { variantName ->
+                    configurations.findByName(variantName)?.let { config ->
+                        withVariantsFromConfiguration(config) {
+                            skip()
+                        }
+                    }
+                }
+            }
+        }
+    }
+
     for (target in cloche.targets.filterIsInstance<FabricTarget>()) {
         named(lowerCamelCaseGradleName("accessWiden", target.featureName, "commonMinecraft")) {
             dependsOn(
@@ -797,6 +813,7 @@ publishing {
     publications {
         register<MavenPublication>("maven") {
             from(components["java"])
+            
             artifact(tasks.named("shadowSourcesJar")) {
                 classifier = "sources"
             }

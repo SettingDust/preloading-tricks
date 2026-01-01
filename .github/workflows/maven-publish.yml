@@ -8,6 +8,9 @@ on:
 jobs:
   publish:
     runs-on: ubuntu-latest
+    env:
+      GROUP_PATH: "settingdust/preloading_tricks"
+      ARTIFACT_ID: "PreloadingTricks"
 
     steps:
       - uses: actions/checkout@v6
@@ -46,8 +49,6 @@ jobs:
 
       - name: Copy artifacts
         run: |
-          GROUP_PATH="settingdust/preloading_tricks"
-          ARTIFACT_ID="PreloadingTricks"
           VERSION="${{ steps.version.outputs.version }}"
           
           SOURCE="$HOME/.m2/repository/$GROUP_PATH/$ARTIFACT_ID"
@@ -69,5 +70,5 @@ jobs:
           git config user.name "GitHub Actions"
           git config user.email "actions@github.com"
           git add repository/
-          git commit -m "chore(release): publish PreloadingTricks ${{ steps.version.outputs.version }}" || echo "No changes to commit"
+          git commit -m "chore(release): publish $ARTIFACT_ID ${{ steps.version.outputs.version }}" || echo "No changes to commit"
           git push

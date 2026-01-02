@@ -237,9 +237,9 @@ cloche {
             dependsOn(common, commonForgeLike, commonModLauncher)
 
             dependencies {
-                implementation(catalog.reflect)
+                api(catalog.reflect)
 
-                implementation(catalog.classTransform)
+                api(catalog.classTransform)
                 implementation(catalog.classTransform.additionalClassProvider)
 
                 implementation(catalog.bytebuddy.agent)
@@ -359,13 +359,9 @@ cloche {
             loaderVersion = "20.6.139"
 
             dependencies {
-                catalog.reflect.let {
-                    implementation(it)
-                }
-                catalog.classTransform.let {
-                    implementation(it) {
-                        exclude(group = "org.ow2.asm")
-                    }
+                api(catalog.reflect)
+                api(catalog.classTransform) {
+                    exclude(group = "org.ow2.asm")
                 }
                 catalog.classTransform.additionalClassProvider.let {
                     implementation(it) {
@@ -400,11 +396,11 @@ cloche {
 
             dependencies {
                 catalog.reflect.let {
-                    implementation(it)
+                    api(it)
                     legacyClasspath(it)
                 }
                 catalog.classTransform.let {
-                    implementation(it) {
+                    api(it) {
                         exclude(group = "org.ow2.asm")
                     }
                     legacyClasspath(it)

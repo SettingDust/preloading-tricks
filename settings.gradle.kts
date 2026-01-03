@@ -166,6 +166,11 @@ dependencyResolutionManagement.versionCatalogs.create("catalog") {
         "net.lenni0451.classtransform",
         "additionalclassprovider"
     ).version(classTransform)
+    library(
+        "classTransform-MixinsTranslator",
+        "net.lenni0451.classtransform",
+        "mixinstranslator"
+    ).version(classTransform)
 
     library("bytebuddy-agent", "net.bytebuddy", "byte-buddy-agent").version("1.18.2")
 }

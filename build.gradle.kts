@@ -241,6 +241,7 @@ cloche {
 
                 api(catalog.classTransform)
                 implementation(catalog.classTransform.additionalClassProvider)
+                implementation(catalog.classTransform.mixinsTranslator)
 
                 implementation(catalog.bytebuddy.agent)
             }
@@ -300,6 +301,7 @@ cloche {
 
                 embedBoot(catalog.reflect)
                 embedBoot(catalog.classTransform)
+                embedBoot(catalog.classTransform.mixinsTranslator)
                 embedBoot(catalog.classTransform.additionalClassProvider)
                 embedBoot(catalog.bytebuddy.agent)
             }
@@ -363,11 +365,13 @@ cloche {
                 api(catalog.classTransform) {
                     exclude(group = "org.ow2.asm")
                 }
-                catalog.classTransform.additionalClassProvider.let {
-                    implementation(it) {
-                        exclude(group = "com.google.guava")
-                        exclude(group = "org.ow2.asm")
-                    }
+                implementation(catalog.classTransform.additionalClassProvider) {
+                    exclude(group = "com.google.guava")
+                    exclude(group = "org.ow2.asm")
+                }
+                implementation(catalog.classTransform.mixinsTranslator) {
+                    exclude(group = "com.google.guava")
+                    exclude(group = "org.ow2.asm")
                 }
                 catalog.bytebuddy.agent.let {
                     implementation(it)
@@ -412,6 +416,13 @@ cloche {
                     }
                     legacyClasspath(it)
                 }
+                catalog.classTransform.mixinsTranslator.let {
+                    implementation(it) {
+                        exclude(group = "com.google.guava")
+                        exclude(group = "org.ow2.asm")
+                    }
+                    legacyClasspath(it)
+                }
                 catalog.bytebuddy.agent.let {
                     implementation(it)
                     legacyClasspath(it)
@@ -435,6 +446,7 @@ cloche {
                 embedBoot(catalog.reflect)
                 embedBoot(catalog.classTransform)
                 embedBoot(catalog.classTransform.additionalClassProvider)
+                embedBoot(catalog.classTransform.mixinsTranslator)
                 embedBoot(catalog.bytebuddy.agent)
             }
 
@@ -459,16 +471,23 @@ cloche {
 
             dependencies {
                 catalog.reflect.let {
-                    implementation(it)
+                    api(it)
                     legacyClasspath(it)
                 }
                 catalog.classTransform.let {
-                    implementation(it) {
+                    api(it) {
                         exclude(group = "org.ow2.asm")
                     }
                     legacyClasspath(it)
                 }
                 catalog.classTransform.additionalClassProvider.let {
+                    implementation(it) {
+                        exclude(group = "com.google.guava")
+                        exclude(group = "org.ow2.asm")
+                    }
+                    legacyClasspath(it)
+                }
+                catalog.classTransform.mixinsTranslator.let {
                     implementation(it) {
                         exclude(group = "com.google.guava")
                         exclude(group = "org.ow2.asm")

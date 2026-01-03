@@ -3,6 +3,7 @@ package settingdust.preloading_tricks.forgelike.class_transform;
 import com.google.gson.Gson;
 import net.lenni0451.classtransform.TransformerManager;
 import net.lenni0451.classtransform.additionalclassprovider.InstrumentationClassProvider;
+import net.lenni0451.classtransform.mixinstranslator.MixinsTranslator;
 import net.lenni0451.classtransform.utils.ASMUtils;
 
 import java.io.BufferedReader;
@@ -21,6 +22,7 @@ public final class ClassTransformBootstrap {
         if (INSTANCE != null) throw new IllegalStateException("ClassTransformBootstrap is already initialized");
         INSTANCE = this;
         transformerManager = new TransformerManager(new InstrumentationClassProvider(instrumentation));
+        transformerManager.addTransformerPreprocessor(new MixinsTranslator());
     }
 
     public TransformerManager getTransformerManager() {

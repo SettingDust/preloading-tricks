@@ -8,10 +8,10 @@ import settingdust.preloading_tricks.PreloadingTricks;
 import settingdust.preloading_tricks.api.PreloadingEntrypoint;
 import settingdust.preloading_tricks.api.PreloadingTricksCallbacks;
 import settingdust.preloading_tricks.forgelike.UcpClassLoaderInjector;
-import settingdust.preloading_tricks.forgelike.class_transform.ClassTransformBootstrap;
 import settingdust.preloading_tricks.forgelike.specified_forge_variant.ForgeVariants;
 import settingdust.preloading_tricks.util.LoaderPredicates;
 import settingdust.preloading_tricks.util.ServiceLoaderUtil;
+import settingdust.preloading_tricks.util.class_transform.ClassTransformBootstrap;
 
 import java.io.IOException;
 import java.net.URISyntaxException;

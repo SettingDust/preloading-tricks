@@ -4,8 +4,8 @@ import com.google.gson.Gson;
 import net.neoforged.fml.classloading.JarContentsModule;
 import net.neoforged.fml.jarcontents.JarContents;
 import settingdust.preloading_tricks.PreloadingTricks;
-import settingdust.preloading_tricks.forgelike.class_transform.ClassTransformBootstrap;
-import settingdust.preloading_tricks.forgelike.class_transform.ClassTransformConfig;
+import settingdust.preloading_tricks.util.class_transform.ClassTransformBootstrap;
+import settingdust.preloading_tricks.util.class_transform.ClassTransformConfig;
 
 import java.io.IOException;
 import java.util.List;

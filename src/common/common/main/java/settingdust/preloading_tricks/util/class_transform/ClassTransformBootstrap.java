@@ -1,4 +1,4 @@
-package settingdust.preloading_tricks.forgelike.class_transform;
+package settingdust.preloading_tricks.util.class_transform;
 
 import com.google.gson.Gson;
 import net.lenni0451.classtransform.TransformerManager;

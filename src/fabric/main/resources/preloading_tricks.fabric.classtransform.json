@@ -1,7 +1,6 @@
 {
   "package": "settingdust.preloading_tricks.fabric.transformer",
-  "java": [
+  "transformers": [
     "mod_setup_hook.FabricLoaderImplTransformer"
-  ],
-  "mixins": []
+  ]
 }

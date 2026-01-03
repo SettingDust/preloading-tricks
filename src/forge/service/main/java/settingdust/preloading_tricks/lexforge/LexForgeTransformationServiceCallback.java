@@ -3,11 +3,11 @@ package settingdust.preloading_tricks.lexforge;
 import cpw.mods.niofs.union.UnionPath;
 import settingdust.preloading_tricks.PreloadingTricks;
 import settingdust.preloading_tricks.api.PreloadingTricksCallbacks;
-import settingdust.preloading_tricks.forgelike.class_transform.ClassTransformBootstrap;
 import settingdust.preloading_tricks.forgelike.specified_forge_variant.ForgeVariants;
 import settingdust.preloading_tricks.modlauncher.PreloadingTricksTransformationService;
 import settingdust.preloading_tricks.modlauncher.TransformationServiceCallback;
 import settingdust.preloading_tricks.util.LoaderPredicates;
+import settingdust.preloading_tricks.util.class_transform.ClassTransformBootstrap;
 
 import java.net.URISyntaxException;
 import java.nio.file.Path;

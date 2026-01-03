@@ -2,8 +2,8 @@ package settingdust.preloading_tricks.modlauncher.class_transform;
 
 import com.google.gson.Gson;
 import cpw.mods.jarhandling.SecureJar;
-import settingdust.preloading_tricks.forgelike.class_transform.ClassTransformBootstrap;
-import settingdust.preloading_tricks.forgelike.class_transform.ClassTransformConfig;
+import settingdust.preloading_tricks.util.class_transform.ClassTransformBootstrap;
+import settingdust.preloading_tricks.util.class_transform.ClassTransformConfig;
 
 import java.io.IOException;
 import java.nio.file.Files;

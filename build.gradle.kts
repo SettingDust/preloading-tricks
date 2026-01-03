@@ -5,6 +5,7 @@ import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
 import earth.terrarium.cloche.INCLUDE_TRANSFORMED_OUTPUT_ATTRIBUTE
 import earth.terrarium.cloche.REMAPPED_ATTRIBUTE
 import earth.terrarium.cloche.api.attributes.IncludeTransformationStateAttribute
+import earth.terrarium.cloche.api.attributes.MinecraftModLoader
 import earth.terrarium.cloche.api.attributes.TargetAttributes
 import earth.terrarium.cloche.api.metadata.CommonMetadata
 import earth.terrarium.cloche.api.target.FabricTarget
@@ -98,10 +99,27 @@ class MinecraftVersionCompatibilityRule : AttributeCompatibilityRule<String> {
     }
 }
 
+class MinecraftModLoaderCompatibilityRule : AttributeCompatibilityRule<MinecraftModLoader> {
+    override fun execute(details: CompatibilityCheckDetails<MinecraftModLoader>) {
+        if (details.producerValue == MinecraftModLoader.common) {
+            details.compatible()
+        }
+    }
+}
+
 dependencies {
     attributesSchema {
         attribute(TargetAttributes.MINECRAFT_VERSION) {
             compatibilityRules.add(MinecraftVersionCompatibilityRule::class)
+        }
+        attribute(TargetAttributes.MOD_LOADER) {
+            compatibilityRules.add(MinecraftModLoaderCompatibilityRule::class)
+        }
+        attribute(TargetAttributes.CLOCHE_MINECRAFT_VERSION) {
+            compatibilityRules.add(MinecraftVersionCompatibilityRule::class)
+        }
+        attribute(TargetAttributes.CLOCHE_MOD_LOADER) {
+            compatibilityRules.add(MinecraftModLoaderCompatibilityRule::class)
         }
     }
 }
@@ -142,8 +160,50 @@ cloche {
     val common = common("common:common")
 
     run fabric@{
-        val fabricCommon = common("fabric:common") {
+        val fabric = fabric {
             dependsOn(common)
+
+            minecraftVersion = "1.20.1"
+
+            dependencies {
+                fabricApi("0.92.6")
+
+                catalog.reflect.let {
+                    implementation(it)
+                    include(it)
+                }
+
+                catalog.classTransform.let {
+                    implementation(it)
+                    include(it)
+                }
+
+                catalog.classTransform.additionalClassProvider.let {
+                    implementation(it)
+                    include(it)
+                }
+
+                catalog.classTransform.mixinsTranslator.let {
+                    implementation(it)
+                    include(it)
+                }
+
+                catalog.bytebuddy.agent.let {
+                    implementation(it)
+                    include(it)
+                }
+            }
+
+            metadata {
+                languageAdapters.put(id, "$group.fabric.PreloadingTricksLanguageAdapter")
+
+                dependency {
+                    modId = "fabricloader"
+                    version {
+                        start = "0.18"
+                    }
+                }
+            }
         }
 
         fabric("version:fabric:1.20.1") {
@@ -154,9 +214,24 @@ cloche {
             dependencies {
                 fabricApi("0.92.6")
 
-                catalog.asmFabricLoader.let {
-                    implementation(it)
-                    include(it)
+                implementation(project(":")) {
+                    capabilities {
+                        requireFeature(fabric.capabilitySuffix!!)
+                    }
+                }
+            }
+
+            tasks {
+                named(jarTaskName) {
+                    enabled = false
+                }
+
+                named(remapJarTaskName) {
+                    enabled = false
+                }
+
+                named(includeJarTaskName) {
+                    enabled = false
                 }
             }
         }
@@ -169,7 +244,11 @@ cloche {
             dependencies {
                 fabricApi("0.116.6")
 
-                implementation(catalog.asmFabricLoader)
+                implementation(project(":")) {
+                    capabilities {
+                        requireFeature(fabric.capabilitySuffix!!)
+                    }
+                }
             }
 
             tasks {
@@ -188,27 +267,9 @@ cloche {
         }
 
         targets.withType<FabricTarget> {
-            dependsOn(fabricCommon)
-
-            loaderVersion = "0.18.1"
+            loaderVersion = "0.18.4"
 
             includedClient()
-
-            metadata {
-                entrypoint("afl:prePrePreLaunch", "$group.fabric.PreloadingTricksLanguageAdapterEntrypoint")
-                custom("afl:classtransform", "$id.fabric.classtransform.json")
-
-                dependency {
-                    modId = "fabricloader"
-                    version {
-                        start = "0.18"
-                    }
-                }
-
-                dependency {
-                    modId = "asmfabricloader"
-                }
-            }
         }
     }
 
@@ -718,7 +779,7 @@ tasks {
             duplicatesStrategy = DuplicatesStrategy.INCLUDE
         }
 
-        val fabricJar = project.tasks.named<Jar>(cloche.targets.getByName("version:fabric:1.20.1").includeJarTaskName)
+        val fabricJar = project.tasks.named<Jar>(cloche.targets.getByName("fabric").includeJarTaskName)
         from(fabricJar.map { zipTree(it.archiveFile) })
         manifest.from(fabricJar.get().manifest)
 
@@ -781,9 +842,12 @@ tasks {
     afterEvaluate {
         (components["java"] as AdhocComponentWithVariants).apply {
             val testTargets = cloche.targets.filter { it.name.startsWith("version:") }
-            
+
             testTargets.forEach { target ->
-                listOf("${target.featureName}ApiElements", "${target.featureName}RuntimeElements").forEach { variantName ->
+                listOf(
+                    "${target.featureName}ApiElements",
+                    "${target.featureName}RuntimeElements"
+                ).forEach { variantName ->
                     configurations.findByName(variantName)?.let { config ->
                         withVariantsFromConfiguration(config) {
                             skip()
@@ -828,7 +892,7 @@ publishing {
     publications {
         register<MavenPublication>("maven") {
             from(components["java"])
-            
+
             artifact(tasks.named("shadowSourcesJar")) {
                 classifier = "sources"
             }

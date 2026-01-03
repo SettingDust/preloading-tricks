@@ -13,7 +13,6 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import settingdust.preloading_tricks.PreloadingTricks;
 import settingdust.preloading_tricks.api.PreloadingEntrypoint;
-import settingdust.preloading_tricks.forgelike.class_transform.ClassTransformBootstrap;
 import settingdust.preloading_tricks.forgelike.module_injector.accessor.ModuleAccessor;
 import settingdust.preloading_tricks.forgelike.module_injector.accessor.ModuleLayerAccessor;
 import settingdust.preloading_tricks.modlauncher.class_transform.ClassTransformLaunchPlugin;
@@ -23,6 +22,7 @@ import settingdust.preloading_tricks.modlauncher.module_injector.accessor.Launch
 import settingdust.preloading_tricks.modlauncher.module_injector.accessor.ModuleClassLoaderAccessor;
 import settingdust.preloading_tricks.modlauncher.module_injector.accessor.ModuleLayerHandlerAccessor;
 import settingdust.preloading_tricks.util.ServiceLoaderUtil;
+import settingdust.preloading_tricks.util.class_transform.ClassTransformBootstrap;
 
 import java.io.IOException;
 import java.net.URISyntaxException;

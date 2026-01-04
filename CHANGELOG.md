@@ -1,5 +1,10 @@
 fix: `setAccessible` for `setMod`
 
+## [3.4.2] - 2026-01-04
+### :sparkles: New Features
+- [`568203e`](https://github.com/SettingDust/preloading-tricks/commit/568203e875ae1c4da5bef60b78a0ee8c99e363d2) - **fabric**: support ClassTransformConfig *(commit by [@SettingDust](https://github.com/SettingDust))*
+
+
 ## [3.4.1] - 2026-01-03
 ### :sparkles: New Features
 - [`f5d9725`](https://github.com/SettingDust/preloading-tricks/commit/f5d9725d8bb384c2bd74a972fd9764db955231ab) - add MixinsTranslator for class transform for fabric *(commit by [@SettingDust](https://github.com/SettingDust))*
@@ -355,3 +360,4 @@ fix: `setAccessible` for `setMod`
 [3.3.3]: https://github.com/SettingDust/preloading-tricks/compare/3.3.2...3.3.3
 [3.4.0]: https://github.com/SettingDust/preloading-tricks/compare/3.3.5...3.4.0
 [3.4.1]: https://github.com/SettingDust/preloading-tricks/compare/3.4.0...3.4.1
+[3.4.2]: https://github.com/SettingDust/preloading-tricks/compare/3.4.1...3.4.2

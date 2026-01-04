@@ -13,7 +13,11 @@ import settingdust.preloading_tricks.util.ServiceLoaderUtil;
 import settingdust.preloading_tricks.util.class_transform.ClassTransformBootstrap;
 
 import java.io.IOException;
+import java.nio.file.Files;
+import java.util.Objects;
 import java.util.ServiceLoader;
+import java.util.jar.JarFile;
+import java.util.jar.Manifest;
 
 public class PreloadingTricksLanguageAdapter implements LanguageAdapter {
     static {
@@ -29,6 +33,21 @@ public class PreloadingTricksLanguageAdapter implements LanguageAdapter {
 
         PreloadingTricks.LOGGER.info("[{}] installed.", PreloadingTricks.NAME);
         ClassTransformBootstrap.INSTANCE.addConfig("preloading_tricks.fabric.classtransform.json");
+
+        FabricLoader.getInstance().getAllMods().parallelStream()
+                    .flatMap(it -> it.getOrigin().getPaths().stream())
+                    .map(it -> {
+                        try {
+                            return new Manifest(Files.newInputStream(it.resolve(JarFile.MANIFEST_NAME)));
+                        } catch (IOException e) {
+                            return null;
+                        }
+                    })
+                    .filter(Objects::nonNull)
+                    .map(it -> it.getMainAttributes().getValue(ClassTransformBootstrap.CLASS_TRANSFORM_CONFIG))
+                    .filter(Objects::nonNull)
+                    .forEach(ClassTransformBootstrap.INSTANCE::addConfig);
+
         ClassTransformBootstrap.INSTANCE
             .getTransformerManager()
             .hookInstrumentation(ByteBuddyAgent.getInstrumentation());

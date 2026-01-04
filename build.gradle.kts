@@ -2,6 +2,7 @@
 @file:OptIn(ExperimentalPathApi::class)
 
 import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
+import com.github.jengelman.gradle.plugins.shadow.transformers.DeduplicatingResourceTransformer
 import earth.terrarium.cloche.INCLUDE_TRANSFORMED_OUTPUT_ATTRIBUTE
 import earth.terrarium.cloche.REMAPPED_ATTRIBUTE
 import earth.terrarium.cloche.api.attributes.IncludeTransformationStateAttribute
@@ -33,7 +34,7 @@ plugins {
 
     id("com.palantir.git-version") version "4.2.0"
 
-    id("com.gradleup.shadow") version "9.2.2"
+    id("com.gradleup.shadow") version "9.3.0"
 
     id("earth.terrarium.cloche") version "0.17.4-dust.2"
 }
@@ -773,11 +774,7 @@ tasks {
     val shadowContainersJar by registering(ShadowJar::class) {
         archiveClassifier = ""
 
-        duplicatesStrategy = DuplicatesStrategy.EXCLUDE
-
-        filesMatching("META-INF/services/*") {
-            duplicatesStrategy = DuplicatesStrategy.INCLUDE
-        }
+        duplicatesStrategy = DuplicatesStrategy.INCLUDE
 
         val fabricJar = project.tasks.named<Jar>(cloche.targets.getByName("fabric").includeJarTaskName)
         from(fabricJar.map { zipTree(it.archiveFile) })
@@ -808,10 +805,14 @@ tasks {
         append("META-INF/accesstransformer.cfg")
 
         mergeServiceFiles()
+
+        transform<DeduplicatingResourceTransformer>()
     }
 
     val shadowSourcesJar by registering(ShadowJar::class) {
         dependsOn(cloche.targets.map { it.generateModsManifestTaskName })
+
+        duplicatesStrategy = DuplicatesStrategy.INCLUDE
 
         mergeServiceFiles()
         archiveClassifier.set("sources")
@@ -822,6 +823,8 @@ tasks {
                 from(source.filter { it.name.equals("MANIFEST.MF") }.toList())
             }
         }
+
+        transform<DeduplicatingResourceTransformer>()
     }
 
     build {

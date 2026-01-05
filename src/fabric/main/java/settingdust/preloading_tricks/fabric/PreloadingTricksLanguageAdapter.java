@@ -34,7 +34,7 @@ public class PreloadingTricksLanguageAdapter implements LanguageAdapter {
         PreloadingTricks.LOGGER.info("[{}] installed.", PreloadingTricks.NAME);
         ClassTransformBootstrap.INSTANCE.addConfig("preloading_tricks.fabric.classtransform.json");
 
-        FabricLoader.getInstance().getAllMods().parallelStream()
+        FabricLoader.getInstance().getAllMods().stream()
                     .flatMap(it -> it.getOrigin().getPaths().stream())
                     .map(it -> {
                         try {

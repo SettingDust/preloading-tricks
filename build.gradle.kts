@@ -21,11 +21,7 @@ import net.msrandom.minecraftcodev.fabric.MinecraftCodevFabricPlugin
 import net.msrandom.minecraftcodev.runs.MinecraftRunConfiguration
 import org.gradle.jvm.tasks.Jar
 import java.nio.file.StandardCopyOption
-import kotlin.io.path.ExperimentalPathApi
-import kotlin.io.path.copyTo
-import kotlin.io.path.deleteRecursively
-import kotlin.io.path.exists
-import kotlin.io.path.name
+import kotlin.io.path.*
 
 plugins {
     java
@@ -170,12 +166,12 @@ cloche {
                 fabricApi("0.92.6")
 
                 catalog.reflect.let {
-                    implementation(it)
+                    api(it)
                     include(it)
                 }
 
                 catalog.classTransform.let {
-                    implementation(it)
+                    api(it)
                     include(it)
                 }
 
@@ -190,7 +186,7 @@ cloche {
                 }
 
                 catalog.bytebuddy.agent.let {
-                    implementation(it)
+                    api(it)
                     include(it)
                 }
             }

@@ -1,5 +1,10 @@
 fix: `setAccessible` for `setMod`
 
+## [3.4.4] - 2026-01-05
+### :bug: Bug Fixes
+- [`b9f97e3`](https://github.com/SettingDust/preloading-tricks/commit/b9f97e33d95f002dda5e07ff3913ec87ce7510dc) - **fabric**: stuck when start up *(commit by [@SettingDust](https://github.com/SettingDust))*
+
+
 ## [3.4.2] - 2026-01-04
 ### :sparkles: New Features
 - [`568203e`](https://github.com/SettingDust/preloading-tricks/commit/568203e875ae1c4da5bef60b78a0ee8c99e363d2) - **fabric**: support ClassTransformConfig *(commit by [@SettingDust](https://github.com/SettingDust))*
@@ -361,3 +366,4 @@ fix: `setAccessible` for `setMod`
 [3.4.0]: https://github.com/SettingDust/preloading-tricks/compare/3.3.5...3.4.0
 [3.4.1]: https://github.com/SettingDust/preloading-tricks/compare/3.4.0...3.4.1
 [3.4.2]: https://github.com/SettingDust/preloading-tricks/compare/3.4.1...3.4.2
+[3.4.4]: https://github.com/SettingDust/preloading-tricks/compare/3.4.3...3.4.4

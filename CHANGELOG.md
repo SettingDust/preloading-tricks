@@ -1,5 +1,10 @@
 fix: `setAccessible` for `setMod`
 
+## [3.4.5] - 2026-01-05
+### :bug: Bug Fixes
+- [`128c7b9`](https://github.com/SettingDust/preloading-tricks/commit/128c7b9f8e848dde2d8b7982e3c3173dcc829105) - class transform isn't working for loaded classes without manually retransform *(commit by [@SettingDust](https://github.com/SettingDust))*
+
+
 ## [3.4.4] - 2026-01-05
 ### :bug: Bug Fixes
 - [`b9f97e3`](https://github.com/SettingDust/preloading-tricks/commit/b9f97e33d95f002dda5e07ff3913ec87ce7510dc) - **fabric**: stuck when start up *(commit by [@SettingDust](https://github.com/SettingDust))*
@@ -367,3 +372,4 @@ fix: `setAccessible` for `setMod`
 [3.4.1]: https://github.com/SettingDust/preloading-tricks/compare/3.4.0...3.4.1
 [3.4.2]: https://github.com/SettingDust/preloading-tricks/compare/3.4.1...3.4.2
 [3.4.4]: https://github.com/SettingDust/preloading-tricks/compare/3.4.3...3.4.4
+[3.4.5]: https://github.com/SettingDust/preloading-tricks/compare/3.4.4...3.4.5

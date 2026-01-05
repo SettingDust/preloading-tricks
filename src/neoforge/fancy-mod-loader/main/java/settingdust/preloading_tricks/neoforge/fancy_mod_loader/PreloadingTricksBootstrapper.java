@@ -53,15 +53,16 @@ public class PreloadingTricksBootstrapper implements GraphicsBootstrapper {
         new ClassTransformBootstrap(ByteBuddyAgent.getInstrumentation());
         PreloadingTricks.LOGGER.info("[{}] Installed", PreloadingTricks.NAME);
         ClassTransformBootstrap.INSTANCE.addConfig("preloading_tricks.neoforge.fml.classtransform.json");
+
+        ServiceLoaderUtil.loadServices(
+                PreloadingEntrypoint.class,
+                ServiceLoader.load(PreloadingEntrypoint.class, PreloadingEntrypoint.class.getClassLoader()),
+                false
+        );
+
         ClassTransformBootstrap.INSTANCE
             .getTransformerManager()
             .hookInstrumentation(ByteBuddyAgent.getInstrumentation());
-
-        ServiceLoaderUtil.loadServices(
-            PreloadingEntrypoint.class,
-            ServiceLoader.load(PreloadingEntrypoint.class, PreloadingEntrypoint.class.getClassLoader()),
-            false
-        );
 
         PreloadingTricksCallbacks.SETUP_MODS.register(_manager -> {
             if (!(_manager instanceof final NeoForgeModManager manager)) return;

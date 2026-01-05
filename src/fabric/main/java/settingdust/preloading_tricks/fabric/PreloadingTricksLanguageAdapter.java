@@ -48,15 +48,15 @@ public class PreloadingTricksLanguageAdapter implements LanguageAdapter {
                     .filter(Objects::nonNull)
                     .forEach(ClassTransformBootstrap.INSTANCE::addConfig);
 
+        ServiceLoaderUtil.loadServices(
+                PreloadingEntrypoint.class,
+                ServiceLoader.load(PreloadingEntrypoint.class, PreloadingEntrypoint.class.getClassLoader()),
+                false
+        );
+
         ClassTransformBootstrap.INSTANCE
             .getTransformerManager()
             .hookInstrumentation(ByteBuddyAgent.getInstrumentation());
-
-        ServiceLoaderUtil.loadServices(
-            PreloadingEntrypoint.class,
-            ServiceLoader.load(PreloadingEntrypoint.class, PreloadingEntrypoint.class.getClassLoader()),
-            false
-        );
 
         PreloadingTricksCallbacksInvoker.onSetupLanguageAdapter();
     }

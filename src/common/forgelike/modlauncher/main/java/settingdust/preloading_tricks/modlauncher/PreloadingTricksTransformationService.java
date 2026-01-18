@@ -90,9 +90,9 @@ public class PreloadingTricksTransformationService implements ITransformationSer
             .hookInstrumentation(ByteBuddyAgent.getInstrumentation());
 
         ServiceLoaderUtil.loadServices(
-            PreloadingEntrypoint.class,
-            ServiceLoader.load(PreloadingEntrypoint.class, PreloadingEntrypoint.class.getClassLoader()),
-            false
+                PreloadingEntrypoint.class,
+                ServiceLoader.load(PreloadingEntrypoint.class.getModule().getLayer(), PreloadingEntrypoint.class),
+                false
         );
     }
 

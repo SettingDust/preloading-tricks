@@ -30,22 +30,22 @@ public class PreloadingTricksBootstrapper implements GraphicsBootstrapper {
         var contents = JarContents.ofPath(rootPath);
         var prefix = "libs/boot";
         contents.visitContent(
-            prefix, (relativePath, resource) -> {
-                if (!relativePath.endsWith(".jar")) return;
-                UcpClassLoaderInjector.inject(
-                    contents.getPrimaryPath(),
-                    prefix,
-                    relativePath,
-                    () -> {
-                        try {
-                            return contents.openFile(relativePath);
-                        } catch (IOException e) {
-                            throw new RuntimeException(e);
-                        }
-                    },
-                    FMLLoader.class.getClassLoader()
-                );
-            }
+                prefix, (relativePath, resource) -> {
+                    if (!relativePath.endsWith(".jar")) return;
+                    UcpClassLoaderInjector.inject(
+                            contents.getPrimaryPath(),
+                            prefix,
+                            relativePath,
+                            () -> {
+                                try {
+                                    return contents.openFile(relativePath);
+                                } catch (IOException e) {
+                                    throw new RuntimeException(e);
+                                }
+                            },
+                            FMLLoader.class.getClassLoader()
+                    );
+                }
         );
 
         ByteBuddyAgent.install();
@@ -56,21 +56,21 @@ public class PreloadingTricksBootstrapper implements GraphicsBootstrapper {
 
         ServiceLoaderUtil.loadServices(
                 PreloadingEntrypoint.class,
-                ServiceLoader.load(PreloadingEntrypoint.class, PreloadingEntrypoint.class.getClassLoader()),
+                ServiceLoader.load(PreloadingEntrypoint.class.getModule().getLayer(), PreloadingEntrypoint.class),
                 false
         );
 
         ClassTransformBootstrap.INSTANCE
-            .getTransformerManager()
-            .hookInstrumentation(ByteBuddyAgent.getInstrumentation());
+                .getTransformerManager()
+                .hookInstrumentation(ByteBuddyAgent.getInstrumentation());
 
         PreloadingTricksCallbacks.SETUP_MODS.register(_manager -> {
             if (!(_manager instanceof final NeoForgeModManager manager)) return;
 
             try {
                 var mod = manager.createVirtualMod(
-                    PreloadingTricks.MOD_ID,
-                    Path.of(this.getClass().getProtectionDomain().getCodeSource().getLocation().toURI())
+                        PreloadingTricks.MOD_ID,
+                        Path.of(this.getClass().getProtectionDomain().getCodeSource().getLocation().toURI())
                 );
                 manager.add(mod);
             } catch (URISyntaxException e) {

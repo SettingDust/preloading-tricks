@@ -35,18 +35,19 @@ public class PreloadingTricksLanguageAdapter implements LanguageAdapter {
         ClassTransformBootstrap.INSTANCE.addConfig("preloading_tricks.fabric.classtransform.json");
 
         FabricLoader.getInstance().getAllMods().stream()
-                    .flatMap(it -> it.getOrigin().getPaths().stream())
-                    .map(it -> {
-                        try {
-                            return new Manifest(Files.newInputStream(it.resolve(JarFile.MANIFEST_NAME)));
-                        } catch (IOException e) {
-                            return null;
-                        }
-                    })
-                    .filter(Objects::nonNull)
-                    .map(it -> it.getMainAttributes().getValue(ClassTransformBootstrap.CLASS_TRANSFORM_CONFIG))
-                    .filter(Objects::nonNull)
-                    .forEach(ClassTransformBootstrap.INSTANCE::addConfig);
+                .map(it -> it.findPath(JarFile.MANIFEST_NAME).orElse(null))
+                .filter(Objects::nonNull)
+                .map(it -> {
+                    try {
+                        return new Manifest(Files.newInputStream(it));
+                    } catch (IOException e) {
+                        return null;
+                    }
+                })
+                .filter(Objects::nonNull)
+                .map(it -> it.getMainAttributes().getValue(ClassTransformBootstrap.CLASS_TRANSFORM_CONFIG))
+                .filter(Objects::nonNull)
+                .forEach(ClassTransformBootstrap.INSTANCE::addConfig);
 
         ServiceLoaderUtil.loadServices(
                 PreloadingEntrypoint.class,
@@ -55,8 +56,8 @@ public class PreloadingTricksLanguageAdapter implements LanguageAdapter {
         );
 
         ClassTransformBootstrap.INSTANCE
-            .getTransformerManager()
-            .hookInstrumentation(ByteBuddyAgent.getInstrumentation());
+                .getTransformerManager()
+                .hookInstrumentation(ByteBuddyAgent.getInstrumentation());
 
         PreloadingTricksCallbacksInvoker.onSetupLanguageAdapter();
     }

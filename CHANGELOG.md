@@ -1,5 +1,11 @@
 fix: `setAccessible` for `setMod`
 
+## [3.4.6] - 2026-01-19
+### :bug: Bug Fixes
+- [`6baae48`](https://github.com/SettingDust/preloading-tricks/commit/6baae4861cf69f6ce37db8da273f53c8f362c864) - allow load entrypoints on boot layer *(commit by [@SettingDust](https://github.com/SettingDust))*
+- [`2edd2ad`](https://github.com/SettingDust/preloading-tricks/commit/2edd2adad54c5ced0610b3d0b51ce83dc4b49839) - **fabric**: find the class transform from nest *(commit by [@SettingDust](https://github.com/SettingDust))*
+
+
 ## [3.4.5] - 2026-01-05
 ### :bug: Bug Fixes
 - [`128c7b9`](https://github.com/SettingDust/preloading-tricks/commit/128c7b9f8e848dde2d8b7982e3c3173dcc829105) - class transform isn't working for loaded classes without manually retransform *(commit by [@SettingDust](https://github.com/SettingDust))*
@@ -373,3 +379,4 @@ fix: `setAccessible` for `setMod`
 [3.4.2]: https://github.com/SettingDust/preloading-tricks/compare/3.4.1...3.4.2
 [3.4.4]: https://github.com/SettingDust/preloading-tricks/compare/3.4.3...3.4.4
 [3.4.5]: https://github.com/SettingDust/preloading-tricks/compare/3.4.4...3.4.5
+[3.4.6]: https://github.com/SettingDust/preloading-tricks/compare/3.4.5...3.4.6

@@ -1,5 +1,10 @@
 fix: `setAccessible` for `setMod`
 
+## [3.5.0] - 2026-01-26
+### :sparkles: New Features
+- [`a830830`](https://github.com/SettingDust/preloading-tricks/commit/a8308302ea89372b2d95176e86cfbcfef50a7014) - **forgelike**: log relate modules when resolve configuration failed *(commit by [@SettingDust](https://github.com/SettingDust))*
+
+
 ## [3.4.6] - 2026-01-19
 ### :bug: Bug Fixes
 - [`6baae48`](https://github.com/SettingDust/preloading-tricks/commit/6baae4861cf69f6ce37db8da273f53c8f362c864) - allow load entrypoints on boot layer *(commit by [@SettingDust](https://github.com/SettingDust))*
@@ -380,3 +385,4 @@ fix: `setAccessible` for `setMod`
 [3.4.4]: https://github.com/SettingDust/preloading-tricks/compare/3.4.3...3.4.4
 [3.4.5]: https://github.com/SettingDust/preloading-tricks/compare/3.4.4...3.4.5
 [3.4.6]: https://github.com/SettingDust/preloading-tricks/compare/3.4.5...3.4.6
+[3.5.0]: https://github.com/SettingDust/preloading-tricks/compare/3.4.6...3.5.0

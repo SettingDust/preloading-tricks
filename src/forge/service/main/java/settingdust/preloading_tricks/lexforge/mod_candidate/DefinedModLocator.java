@@ -1,7 +1,6 @@
 package settingdust.preloading_tricks.lexforge.mod_candidate;
 
 import net.minecraftforge.fml.loading.moddiscovery.AbstractJarFileModLocator;
-import net.minecraftforge.forgespi.locating.IModFile;
 import settingdust.preloading_tricks.PreloadingTricks;
 import settingdust.preloading_tricks.api.PreloadingTricksCallbacks;
 
@@ -18,11 +17,6 @@ public class DefinedModLocator extends AbstractJarFileModLocator {
 
     public DefinedModLocator() {
         INSTANCE = this;
-    }
-
-    @Override
-    protected String getDefaultJarModType() {
-        return IModFile.Type.GAMELIBRARY.name();
     }
 
     @Override

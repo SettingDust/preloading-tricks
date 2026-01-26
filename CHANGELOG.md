@@ -1,5 +1,10 @@
 fix: `setAccessible` for `setMod`
 
+## [3.5.1] - 2026-01-26
+### :bug: Bug Fixes
+- [`28bef8c`](https://github.com/SettingDust/preloading-tricks/commit/28bef8cde733be224e9a7d064d96bdcb55c39ae6) - **forgelike**: avoid loading mods with default type *(commit by [@SettingDust](https://github.com/SettingDust))*
+
+
 ## [3.5.0] - 2026-01-26
 ### :sparkles: New Features
 - [`a830830`](https://github.com/SettingDust/preloading-tricks/commit/a8308302ea89372b2d95176e86cfbcfef50a7014) - **forgelike**: log relate modules when resolve configuration failed *(commit by [@SettingDust](https://github.com/SettingDust))*
@@ -386,3 +391,4 @@ fix: `setAccessible` for `setMod`
 [3.4.5]: https://github.com/SettingDust/preloading-tricks/compare/3.4.4...3.4.5
 [3.4.6]: https://github.com/SettingDust/preloading-tricks/compare/3.4.5...3.4.6
 [3.5.0]: https://github.com/SettingDust/preloading-tricks/compare/3.4.6...3.5.0
+[3.5.1]: https://github.com/SettingDust/preloading-tricks/compare/3.5.0...3.5.1

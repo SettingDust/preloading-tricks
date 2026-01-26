@@ -295,6 +295,8 @@ cloche {
             dependsOn(common, commonForgeLike, commonModLauncher)
 
             dependencies {
+                implementation(catalog.mixinextras.common)
+
                 api(catalog.reflect)
 
                 api(catalog.classTransform)
@@ -340,7 +342,6 @@ cloche {
                     .attribute(REMAPPED_ATTRIBUTE, false)
                     .attribute(INCLUDE_TRANSFORMED_OUTPUT_ATTRIBUTE, true)
                     .attribute(IncludeTransformationStateAttribute.ATTRIBUTE, IncludeTransformationStateAttribute.None)
-                    .attribute(noNewerJavaAttribute, true)
             }
 
             project.dependencies {
@@ -357,7 +358,11 @@ cloche {
                     to.attribute(noNewerJavaAttribute, true)
                 }
 
-                embedBoot(catalog.reflect)
+                embedBoot(catalog.reflect) {
+                    attributes {
+                        attribute(noNewerJavaAttribute, true)
+                    }
+                }
                 embedBoot(catalog.classTransform)
                 embedBoot(catalog.classTransform.mixinsTranslator)
                 embedBoot(catalog.classTransform.additionalClassProvider)

@@ -33,7 +33,9 @@ public final class ClassTransformBootstrap {
         for (final var transformer : config.transformers()) {
             var transformerClassName = config.packageName() + "." + transformer;
             transformerManager.addTransformer(
-                ASMUtils.fromBytes(transformerManager.getClassProvider().getClass(transformerClassName)));
+                    ASMUtils.fromBytes(transformerManager.getClassProvider().getClass(transformerClassName)),
+                    true,
+                    true);
         }
     }
 

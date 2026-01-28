@@ -1,5 +1,13 @@
 fix: `setAccessible` for `setMod`
 
+## [3.5.2] - 2026-01-28
+### :sparkles: New Features
+- [`c6f51b0`](https://github.com/SettingDust/preloading-tricks/commit/c6f51b075578bbf5d338eb93098543f2b81222eb) - **forgelike**: full url for mod file string *(commit by [@SettingDust](https://github.com/SettingDust))*
+
+### :bug: Bug Fixes
+- [`481183b`](https://github.com/SettingDust/preloading-tricks/commit/481183bd8a9336282ae5843a0c06759c0eb537f0) - failing to add forgelike transformers *(commit by [@SettingDust](https://github.com/SettingDust))*
+
+
 ## [3.5.1] - 2026-01-26
 ### :bug: Bug Fixes
 - [`28bef8c`](https://github.com/SettingDust/preloading-tricks/commit/28bef8cde733be224e9a7d064d96bdcb55c39ae6) - **forgelike**: avoid loading mods with default type *(commit by [@SettingDust](https://github.com/SettingDust))*
@@ -392,3 +400,4 @@ fix: `setAccessible` for `setMod`
 [3.4.6]: https://github.com/SettingDust/preloading-tricks/compare/3.4.5...3.4.6
 [3.5.0]: https://github.com/SettingDust/preloading-tricks/compare/3.4.6...3.5.0
 [3.5.1]: https://github.com/SettingDust/preloading-tricks/compare/3.5.0...3.5.1
+[3.5.2]: https://github.com/SettingDust/preloading-tricks/compare/3.5.1...3.5.2

@@ -5,6 +5,8 @@ import settingdust.preloading_tricks.util.class_transform.ClassTransformBootstra
 
 public class ForgeLikePreloadingEntrypoint implements PreloadingEntrypoint {
     public ForgeLikePreloadingEntrypoint() {
-        ClassTransformBootstrap.INSTANCE.addConfig("preloading_tricks.forgelike.classtransform.json");
+        ClassTransformBootstrap.INSTANCE.addConfig(
+                "preloading_tricks.forgelike.classtransform.json",
+                getClass().getClassLoader());
     }
 }

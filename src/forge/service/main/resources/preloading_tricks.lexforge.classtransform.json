@@ -1,6 +1,7 @@
 {
   "package": "settingdust.preloading_tricks.lexforge.transformer",
   "transformers": [
+    "ModFileTransformer",
     "preloading_callback.ModDiscovererTransformer",
     "preloading_callback.LanguageLoadingProviderTransformer"
   ]

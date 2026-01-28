@@ -56,7 +56,6 @@ public class ResolverTransformer {
             @CLocalVariable(name = "e") Map.Entry<ResolvedModule, Set<ResolvedModule>> e,
             @CLocalVariable(name = "endpoint") ResolvedModule endpoint,
             @CLocalVariable(name = "supplier") ModuleDescriptor supplier) {
-        List<URI> relateModules = new ArrayList<>();
         ResolvedModule existing = null;
         for (var entry : graph.entrySet()) {
             if (entry.getKey().name().equals(supplier.name())) {

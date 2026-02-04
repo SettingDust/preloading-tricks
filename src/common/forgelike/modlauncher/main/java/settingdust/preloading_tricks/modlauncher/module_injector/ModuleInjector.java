@@ -32,14 +32,14 @@ public class ModuleInjector {
      * All injected modules will have mutual read relationships and can read existing modules.
      * All existing modules in the target layer will also be able to read the newly injected modules.
      *
-     * @param moduleConfig configuration containing modules to inject
+     * @param moduleConfig      configuration containing modules to inject
      * @param targetClassLoader target class loader
-     * @param targetLayer target module layer
+     * @param targetLayer       target module layer
      */
     public static void inject(
-        Configuration moduleConfig,
-        ModuleClassLoader targetClassLoader,
-        ModuleLayer targetLayer
+            Configuration moduleConfig,
+            ModuleClassLoader targetClassLoader,
+            ModuleLayer targetLayer
     ) {
         var targetConfiguration = ModuleClassLoaderAccessor.getConfiguration(targetClassLoader);
         ModuleOperationHelper.mergeConfigurations(targetConfiguration, moduleConfig);
@@ -52,12 +52,15 @@ public class ModuleInjector {
             var reads = resolvedModule.reads();
 
             // Create and register module
-            moduleToReads.put(ModuleOperationHelper.createAndRegisterModule(
-                resolvedModule,
-                targetLayer,
-                targetClassLoader,
-                targetConfiguration
-            ), reads);
+
+            moduleToReads.put(
+                    targetLayer.findModule(resolvedModule.name())
+                            .orElseGet(() -> ModuleOperationHelper.createAndRegisterModule(
+                                    resolvedModule,
+                                    targetLayer,
+                                    targetClassLoader,
+                                    targetConfiguration
+                            )), reads);
         }
 
         for (final var module : moduleToReads.entrySet()) {
@@ -74,9 +77,9 @@ public class ModuleInjector {
     /**
      * Injects a single module from JAR into target class loader and layer.
      *
-     * @param jar SecureJar containing the module
+     * @param jar               SecureJar containing the module
      * @param targetClassLoader target class loader
-     * @param targetLayer target module layer
+     * @param targetLayer       target module layer
      */
     public static void inject(SecureJar jar, ModuleClassLoader targetClassLoader, ModuleLayer targetLayer) {
         var moduleConfiguration = ModuleClassLoaderAccessor.getConfiguration(targetClassLoader);
@@ -88,14 +91,14 @@ public class ModuleInjector {
      * Injects modules from JAR paths into target class loader and layer.
      *
      * @param targetClassLoader target class loader
-     * @param targetLayer target module layer
-     * @param jarPaths JAR file paths (varargs)
+     * @param targetLayer       target module layer
+     * @param jarPaths          JAR file paths (varargs)
      * @throws IllegalArgumentException if any path doesn't end with .jar
      */
     public static void inject(ModuleClassLoader targetClassLoader, ModuleLayer targetLayer, Path... jarPaths) {
         var jars = Arrays.stream(jarPaths)
-                         .map(SecureJar::from)
-                         .toArray(SecureJar[]::new);
+                .map(SecureJar::from)
+                .toArray(SecureJar[]::new);
         var moduleConfiguration = ModuleClassLoaderAccessor.getConfiguration(targetClassLoader);
         var jarConfiguration = ModuleConfigurationCreator.createConfiguration(moduleConfiguration, jars);
         inject(jarConfiguration, targetClassLoader, targetLayer);
@@ -105,8 +108,8 @@ public class ModuleInjector {
      * Injects modules from JARs into target class loader and layer.
      *
      * @param targetClassLoader target class loader
-     * @param targetLayer target module layer
-     * @param jars SecureJars (varargs)
+     * @param targetLayer       target module layer
+     * @param jars              SecureJars (varargs)
      */
     public static void inject(ModuleClassLoader targetClassLoader, ModuleLayer targetLayer, SecureJar... jars) {
         var moduleConfiguration = ModuleClassLoaderAccessor.getConfiguration(targetClassLoader);
@@ -118,13 +121,13 @@ public class ModuleInjector {
      * Injects modules from JAR paths into a layer.
      *
      * @param targetLayer target layer
-     * @param jarPaths JAR file paths (varargs)
+     * @param jarPaths    JAR file paths (varargs)
      */
     public static void inject(IModuleLayerManager.Layer targetLayer, Path... jarPaths) {
         inject(
-            ModuleLayerHandlerAccessor.getModuleClassLoader(targetLayer),
-            LauncherAccessor.getModuleLayer(targetLayer),
-            jarPaths
+                ModuleLayerHandlerAccessor.getModuleClassLoader(targetLayer),
+                LauncherAccessor.getModuleLayer(targetLayer),
+                jarPaths
         );
     }
 
@@ -132,13 +135,13 @@ public class ModuleInjector {
      * Injects modules from JARs into a layer.
      *
      * @param targetLayer target layer
-     * @param jars SecureJars (varargs)
+     * @param jars        SecureJars (varargs)
      */
     public static void inject(IModuleLayerManager.Layer targetLayer, SecureJar... jars) {
         inject(
-            ModuleLayerHandlerAccessor.getModuleClassLoader(targetLayer),
-            LauncherAccessor.getModuleLayer(targetLayer),
-            jars
+                ModuleLayerHandlerAccessor.getModuleClassLoader(targetLayer),
+                LauncherAccessor.getModuleLayer(targetLayer),
+                jars
         );
     }
 
@@ -146,13 +149,13 @@ public class ModuleInjector {
      * Injects modules from JAR paths into the same layer as the target class.
      *
      * @param targetClass class whose layer will receive the modules
-     * @param jarPaths JAR file paths (varargs)
+     * @param jarPaths    JAR file paths (varargs)
      */
     public static void inject(Class<?> targetClass, Path... jarPaths) {
         inject(
-            (ModuleClassLoader) targetClass.getClassLoader(),
-            targetClass.getModule().getLayer(),
-            jarPaths
+                (ModuleClassLoader) targetClass.getClassLoader(),
+                targetClass.getModule().getLayer(),
+                jarPaths
         );
     }
 
@@ -160,13 +163,13 @@ public class ModuleInjector {
      * Injects modules from JARs into the same layer as the target class.
      *
      * @param targetClass class whose layer will receive the modules
-     * @param jars SecureJars (varargs)
+     * @param jars        SecureJars (varargs)
      */
     public static void inject(Class<?> targetClass, SecureJar... jars) {
         inject(
-            (ModuleClassLoader) targetClass.getClassLoader(),
-            targetClass.getModule().getLayer(),
-            jars
+                (ModuleClassLoader) targetClass.getClassLoader(),
+                targetClass.getModule().getLayer(),
+                jars
         );
     }
 }

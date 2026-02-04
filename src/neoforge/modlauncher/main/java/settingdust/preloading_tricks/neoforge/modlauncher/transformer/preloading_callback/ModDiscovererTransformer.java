@@ -16,7 +16,6 @@ import net.neoforged.fml.loading.moddiscovery.ModFile;
 import org.apache.commons.compress.utils.Lists;
 import org.slf4j.Logger;
 import settingdust.preloading_tricks.neoforge.modlauncher.PreloadingTricksCallbacksInvoker;
-import settingdust.preloading_tricks.neoforge.modlauncher.mod_candidate.NeoForgeAdditionalDependencySourceManager;
 
 import java.util.List;
 
@@ -66,7 +65,7 @@ public class ModDiscovererTransformer {
         @CShared("additionalDependencySources") List<ModFile> additionalDependencySources
     ) {
         try {
-            additionalDependencySources = NeoForgeAdditionalDependencySourceManager.additionalDependencySources;
+            additionalDependencySources = PreloadingTricksCallbacksInvoker.onCollectAdditionalDependencySources();
         } catch (NoClassDefFoundError e) {
             var serviceLayer =
                 Launcher.INSTANCE.findLayerManager()

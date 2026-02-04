@@ -1,5 +1,10 @@
 fix: `setAccessible` for `setMod`
 
+## [3.5.5] - 2026-02-04
+### :bug: Bug Fixes
+- [`07d49a8`](https://github.com/SettingDust/preloading-tricks/commit/07d49a8b5b9999f7a0209fc54bcc4dd5ff5887ea) - find the module from layer first *(commit by [@SettingDust](https://github.com/SettingDust))*
+
+
 ## [3.5.3] - 2026-02-04
 ### :bug: Bug Fixes
 - [`8fc2bea`](https://github.com/SettingDust/preloading-tricks/commit/8fc2bea0902de1a5ba7b3c502af158dd70a6a087) - concurrent modification exception when modifying graph *(commit by [@SettingDust](https://github.com/SettingDust))*
@@ -407,3 +412,4 @@ fix: `setAccessible` for `setMod`
 [3.5.1]: https://github.com/SettingDust/preloading-tricks/compare/3.5.0...3.5.1
 [3.5.2]: https://github.com/SettingDust/preloading-tricks/compare/3.5.1...3.5.2
 [3.5.3]: https://github.com/SettingDust/preloading-tricks/compare/3.5.2...3.5.3
+[3.5.5]: https://github.com/SettingDust/preloading-tricks/compare/3.5.3...3.5.5

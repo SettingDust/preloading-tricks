@@ -219,6 +219,9 @@ cloche {
             }
 
             tasks {
+                named(generateModsManifestTaskName) {
+                    enabled = false
+                }
                 named(jarTaskName) {
                     enabled = false
                 }
@@ -249,6 +252,9 @@ cloche {
             }
 
             tasks {
+                named(generateModsManifestTaskName) {
+                    enabled = false
+                }
                 named(jarTaskName) {
                     enabled = false
                 }

@@ -171,7 +171,9 @@ public class ModuleOperationHelper {
      * @param sourceConfig configuration to merge from
      */
     public static void mergeConfigurations(final Configuration targetConfig, final Configuration sourceConfig) {
-        ConfigurationAccessor.getGraph(targetConfig).putAll(ConfigurationAccessor.getGraph(sourceConfig));
+        var graph = new HashMap<>(ConfigurationAccessor.getGraph(targetConfig));
+        graph.putAll(ConfigurationAccessor.getGraph(sourceConfig));
+        ConfigurationAccessor.setGraph(targetConfig, graph);
 
         var modules = new HashSet<>(ConfigurationAccessor.getModules(targetConfig));
         modules.addAll(ConfigurationAccessor.getModules(sourceConfig));

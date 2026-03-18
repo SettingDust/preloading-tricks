@@ -1,5 +1,10 @@
 fix: `setAccessible` for `setMod`
 
+## [3.5.8] - 2026-03-18
+### :bug: Bug Fixes
+- [`2091c14`](https://github.com/SettingDust/preloading-tricks/commit/2091c14f8716a1f5ebfb20cf138b88ba882cc94b) - avoid exit directly when failing to transform *(commit by [@SettingDust](https://github.com/SettingDust))*
+
+
 ## [3.5.7] - 2026-03-18
 ### :bug: Bug Fixes
 - [`94d0850`](https://github.com/SettingDust/preloading-tricks/commit/94d0850e155820b2dfa107e4d6a6a8f1dd4c584b) - try to fix failing to transform resolver & bump class transform *(commit by [@SettingDust](https://github.com/SettingDust))*
@@ -425,3 +430,4 @@ fix: `setAccessible` for `setMod`
 [3.5.5]: https://github.com/SettingDust/preloading-tricks/compare/3.5.3...3.5.5
 [3.5.6]: https://github.com/SettingDust/preloading-tricks/compare/3.5.5...3.5.6
 [3.5.7]: https://github.com/SettingDust/preloading-tricks/compare/3.5.6...3.5.7
+[3.5.8]: https://github.com/SettingDust/preloading-tricks/compare/3.5.7...3.5.8

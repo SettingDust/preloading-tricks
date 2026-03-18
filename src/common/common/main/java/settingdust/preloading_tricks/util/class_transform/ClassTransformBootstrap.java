@@ -32,10 +32,14 @@ public final class ClassTransformBootstrap {
     public void addConfig(ClassTransformConfig config) throws ClassNotFoundException {
         for (final var transformer : config.transformers()) {
             var transformerClassName = config.packageName() + "." + transformer;
-            transformerManager.addTransformer(
-                    ASMUtils.fromBytes(transformerManager.getClassProvider().getClass(transformerClassName)),
-                    true,
-                    true);
+            try {
+                transformerManager.addTransformer(
+                        ASMUtils.fromBytes(transformerManager.getClassProvider().getClass(transformerClassName)),
+                        true,
+                        true);
+            } catch (Throwable ex) {
+                throw new IllegalStateException("Failing to add transformer " + transformerClassName, ex);
+            }
         }
     }
 
@@ -46,7 +50,7 @@ public final class ClassTransformBootstrap {
             addConfig(config);
             reader.close();
         } catch (Throwable e) {
-            throw new RuntimeException("Failed to read config " + configName, e);
+            throw new IllegalStateException("Failed to read config " + configName, e);
         }
     }
 

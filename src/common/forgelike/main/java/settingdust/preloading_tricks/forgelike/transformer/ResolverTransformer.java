@@ -30,8 +30,8 @@ public class ResolverTransformer {
             target = "Ljava/lang/module/Resolver;resolveFail(Ljava/lang/String;[Ljava/lang/Object;)V")
     private void preloading_tricks$logMref0(
             ResolutionException exception,
-            @CLocalVariable(name = "graph") Map<ResolvedModule, Set<ResolvedModule>> graph,
-            @CLocalVariable(name = "endpoint") ResolvedModule endpoint) {
+            @CLocalVariable(index = 0) Map<ResolvedModule, Set<ResolvedModule>> graph,
+            @CLocalVariable ResolvedModule endpoint) {
         List<URI> relateModules = new ArrayList<>();
         for (var entry : graph.entrySet()) {
             if (entry.getKey().name().equals(endpoint.name())) {
@@ -52,10 +52,9 @@ public class ResolverTransformer {
             target = "Ljava/lang/module/Resolver;failTwoSuppliers(Ljava/lang/module/ModuleDescriptor;Ljava/lang/String;Ljava/lang/module/ModuleDescriptor;Ljava/lang/module/ModuleDescriptor;)V")
     private void preloading_tricks$logMref1(
             ResolutionException exception,
-            @CLocalVariable(name = "graph") Map<ResolvedModule, Set<ResolvedModule>> graph,
-            @CLocalVariable(name = "e") Map.Entry<ResolvedModule, Set<ResolvedModule>> e,
-            @CLocalVariable(name = "endpoint") ResolvedModule endpoint,
-            @CLocalVariable(name = "supplier") ModuleDescriptor supplier) {
+            @CLocalVariable Map<ResolvedModule, Set<ResolvedModule>> graph,
+            @CLocalVariable ResolvedModule endpoint,
+            @CLocalVariable ModuleDescriptor supplier) {
         ResolvedModule existing = null;
         for (var entry : graph.entrySet()) {
             if (entry.getKey().name().equals(supplier.name())) {

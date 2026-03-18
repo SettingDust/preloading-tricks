@@ -5,6 +5,7 @@ import net.lenni0451.classtransform.TransformerManager;
 import net.lenni0451.classtransform.additionalclassprovider.InstrumentationClassProvider;
 import net.lenni0451.classtransform.mixinstranslator.MixinsTranslator;
 import net.lenni0451.classtransform.utils.ASMUtils;
+import net.lenni0451.classtransform.utils.FailStrategy;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -23,6 +24,7 @@ public final class ClassTransformBootstrap {
         INSTANCE = this;
         transformerManager = new TransformerManager(new InstrumentationClassProvider(instrumentation));
         transformerManager.addTransformerPreprocessor(new MixinsTranslator());
+        transformerManager.setFailStrategy(FailStrategy.THROW);
     }
 
     public TransformerManager getTransformerManager() {

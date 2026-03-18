@@ -1,5 +1,10 @@
 fix: `setAccessible` for `setMod`
 
+## [3.5.7] - 2026-03-18
+### :bug: Bug Fixes
+- [`94d0850`](https://github.com/SettingDust/preloading-tricks/commit/94d0850e155820b2dfa107e4d6a6a8f1dd4c584b) - try to fix failing to transform resolver & bump class transform *(commit by [@SettingDust](https://github.com/SettingDust))*
+
+
 ## [3.5.6] - 2026-02-04
 ### :bug: Bug Fixes
 - [`b3e9059`](https://github.com/SettingDust/preloading-tricks/commit/b3e9059f0e9a8c42e3de697edc6c5d726ce2a43f) - **neoforge/modlauncher**: additionalDependencySources isn't working *(commit by [@SettingDust](https://github.com/SettingDust))*
@@ -419,3 +424,4 @@ fix: `setAccessible` for `setMod`
 [3.5.3]: https://github.com/SettingDust/preloading-tricks/compare/3.5.2...3.5.3
 [3.5.5]: https://github.com/SettingDust/preloading-tricks/compare/3.5.3...3.5.5
 [3.5.6]: https://github.com/SettingDust/preloading-tricks/compare/3.5.5...3.5.6
+[3.5.7]: https://github.com/SettingDust/preloading-tricks/compare/3.5.6...3.5.7

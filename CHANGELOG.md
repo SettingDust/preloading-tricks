@@ -1,5 +1,10 @@
 fix: `setAccessible` for `setMod`
 
+## [3.5.9] - 2026-04-01
+### :bug: Bug Fixes
+- [`9bcfc60`](https://github.com/SettingDust/preloading-tricks/commit/9bcfc60111fe943bf4cd461bf7eb57e1b4dbdc14) - **fabric**: dump duplicate jar info *(commit by [@SettingDust](https://github.com/SettingDust))*
+
+
 ## [3.5.8] - 2026-03-18
 ### :bug: Bug Fixes
 - [`2091c14`](https://github.com/SettingDust/preloading-tricks/commit/2091c14f8716a1f5ebfb20cf138b88ba882cc94b) - avoid exit directly when failing to transform *(commit by [@SettingDust](https://github.com/SettingDust))*
@@ -431,3 +436,4 @@ fix: `setAccessible` for `setMod`
 [3.5.6]: https://github.com/SettingDust/preloading-tricks/compare/3.5.5...3.5.6
 [3.5.7]: https://github.com/SettingDust/preloading-tricks/compare/3.5.6...3.5.7
 [3.5.8]: https://github.com/SettingDust/preloading-tricks/compare/3.5.7...3.5.8
+[3.5.9]: https://github.com/SettingDust/preloading-tricks/compare/3.5.8...3.5.9

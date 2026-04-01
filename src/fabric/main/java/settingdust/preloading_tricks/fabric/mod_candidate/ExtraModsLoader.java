@@ -76,7 +76,7 @@ public class ExtraModsLoader {
                 }
             }
 
-            dumpModList(idToCandidates.values());
+            dumpModList(Set.copyOf(idToCandidates.values()));
             FabricLoaderImpl.INSTANCE.dumpNonFabricMods(discoverer.getNonFabricMods());
 
             var cacheDir = FabricLoader.getInstance().getGameDir().resolve(FabricLoaderImpl.CACHE_DIR_NAME);

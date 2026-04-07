@@ -5,10 +5,11 @@ It provides early hooks, Java Instrumentation-based class transformation, and SP
 
 Supported environments:
 
-* **1.20.1** – Forge & Fabric
-* **1.21.x** – NeoForge & Fabric
+* **Fabric** – 1.20.1, 1.21.x
+* **Forge (LexForge)** – 1.20.1
+* **NeoForge** – 1.20.6, 1.21.1, 1.21.10+
 
-You can test on more version since it depends on the loader version instead of Minecraft version
+You can test on more versions since it depends on the loader version instead of the Minecraft version.
 
 ---
 
@@ -22,20 +23,56 @@ You can test on more version since it depends on the loader version instead of M
         * `SETUP_MODS` – modify mod list (add/remove/query via `ModManager` API)
 * **Instrumentation-powered `ClassTransform`**
   Can transform already-loaded classes, including Java core and classloader classes.
-  * **Forge-like (Forge/NeoForge)**: Configure via `MANIFEST.MF` (see below)
-  * **Fabric**: Use [AsmFabricLoader](https://github.com/FlorianMichael/AsmFabricLoader) entrypoint
+  Configure via `MANIFEST.MF` on all platforms (see below).
 
 * **Forge variant detection** (Forge-like only)
   * Access `ForgeVariants` to detect specific Forge/NeoForge versions at runtime
 
 ---
 
-### ClassTransform Configuration (Forge-like only)
+### Usage (Gradle)
 
-For **Forge/NeoForge**, add the following attribute to your `MANIFEST.MF`:
+Add the Maven repository and dependency to your build:
+
+**Kotlin DSL:**
+
+```kotlin
+repositories {
+    maven("https://raw.githubusercontent.com/settingdust/maven/main/repository/")
+}
+
+dependencies {
+  // Recommended: use the base artifact (no classifier).
+  // Gradle variant matching / cloche will resolve the correct platform artifact automatically.
+  implementation("settingdust.preloading_tricks:PreloadingTricks:VERSION")
+
+  // Optional: pin to a specific classifier when you want to avoid accidentally using APIs
+  // from other platforms.
+  // implementation("settingdust.preloading_tricks:PreloadingTricks:VERSION:fabric")
+  // implementation("settingdust.preloading_tricks:PreloadingTricks:VERSION:forge-service")
+  // implementation("settingdust.preloading_tricks:PreloadingTricks:VERSION:neoforge-modlauncher")
+  // implementation("settingdust.preloading_tricks:PreloadingTricks:VERSION:neoforge-fancy-mod-loader")
+}
+```
+
+Replace `VERSION` with the latest release (e.g. `3.5.9`).
+
+If you are using [cloche](https://github.com/terrarium-earth/cloche), the corresponding variant is selected automatically based on loader/minecraft attributes.
+
+---
+
+### ClassTransform Configuration
+
+For all platforms, add the following attribute to your `MANIFEST.MF`:
 
 ```
 ClassTransformConfig: xxxx.classtransform.json
+```
+
+Multiple configs can be specified as comma-separated values:
+
+```
+ClassTransformConfig: first.classtransform.json,second.classtransform.json
 ```
 
 Example config (`xxxx.classtransform.json`):
@@ -48,8 +85,6 @@ Example config (`xxxx.classtransform.json`):
   ]
 }
 ```
-
-For **Fabric**, use [AsmFabricLoader](https://github.com/FlorianMichael/AsmFabricLoader#class-transform-requires-java-9) entrypoint instead.
 
 ---
 

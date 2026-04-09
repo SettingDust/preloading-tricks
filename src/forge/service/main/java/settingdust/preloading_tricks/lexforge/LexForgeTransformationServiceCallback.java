@@ -23,7 +23,7 @@ public class LexForgeTransformationServiceCallback implements TransformationServ
         PreloadingTricksTransformationService.init();
 
         ClassTransformBootstrap.INSTANCE.addConfig(
-            PreloadingTricks.MOD_ID + ".lexforge.classtransform.json",
+            PreloadingTricks.ID + ".lexforge.classtransform.json",
             PreloadingTricksTransformationService.class.getClassLoader()
         );
 
@@ -32,7 +32,7 @@ public class LexForgeTransformationServiceCallback implements TransformationServ
 
             try {
                 var mod = manager.createVirtualMod(
-                    PreloadingTricks.MOD_ID,
+                    PreloadingTricks.ID,
                     ((UnionPath) Path.of(
                         LexForgeTransformationServiceCallback.class
                             .getProtectionDomain()

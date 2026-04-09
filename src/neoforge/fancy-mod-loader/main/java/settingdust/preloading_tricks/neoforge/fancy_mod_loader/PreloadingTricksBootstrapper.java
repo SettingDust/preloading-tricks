@@ -16,7 +16,6 @@ import settingdust.preloading_tricks.util.class_transform.ClassTransformBootstra
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.nio.file.Path;
-import java.util.ServiceLoader;
 
 public class PreloadingTricksBootstrapper implements GraphicsBootstrapper {
     public PreloadingTricksBootstrapper() throws URISyntaxException, IOException {
@@ -54,11 +53,7 @@ public class PreloadingTricksBootstrapper implements GraphicsBootstrapper {
         PreloadingTricks.LOGGER.info("[{}] Installed", PreloadingTricks.NAME);
         ClassTransformBootstrap.INSTANCE.addConfig("preloading_tricks.neoforge.fml.classtransform.json");
 
-        ServiceLoaderUtil.loadServices(
-                PreloadingEntrypoint.class,
-                ServiceLoader.load(PreloadingEntrypoint.class.getModule().getLayer(), PreloadingEntrypoint.class),
-                false
-        );
+        ServiceLoaderUtil.loadServices(PreloadingEntrypoint.class, false);
 
         ClassTransformBootstrap.INSTANCE
                 .getTransformerManager()
@@ -69,7 +64,7 @@ public class PreloadingTricksBootstrapper implements GraphicsBootstrapper {
 
             try {
                 var mod = manager.createVirtualMod(
-                        PreloadingTricks.MOD_ID,
+                        PreloadingTricks.ID,
                         Path.of(this.getClass().getProtectionDomain().getCodeSource().getLocation().toURI())
                 );
                 manager.add(mod);

@@ -22,7 +22,7 @@ public class TransformationServiceCallback implements
         PreloadingTricksTransformationService.init();
 
         ClassTransformBootstrap.INSTANCE.addConfig(
-            PreloadingTricks.MOD_ID + ".neoforge.modlauncher.classtransform.json",
+            PreloadingTricks.ID + ".neoforge.modlauncher.classtransform.json",
             PreloadingTricksTransformationService.class.getClassLoader()
         );
 
@@ -31,7 +31,7 @@ public class TransformationServiceCallback implements
 
             try {
                 var mod = manager.createVirtualMod(
-                    PreloadingTricks.MOD_ID,
+                    PreloadingTricks.ID,
                     Path.of(this.getClass().getProtectionDomain().getCodeSource().getLocation().toURI())
                 );
                 manager.add(mod);

@@ -9,15 +9,13 @@ import earth.terrarium.cloche.api.attributes.IncludeTransformationStateAttribute
 import earth.terrarium.cloche.api.attributes.MinecraftModLoader
 import earth.terrarium.cloche.api.attributes.TargetAttributes
 import earth.terrarium.cloche.api.metadata.CommonMetadata
-import earth.terrarium.cloche.api.target.FabricTarget
-import earth.terrarium.cloche.api.target.ForgeLikeTarget
-import earth.terrarium.cloche.api.target.MinecraftTarget
+import earth.terrarium.cloche.api.target.*
 import earth.terrarium.cloche.target.LazyConfigurableInternal
+import earth.terrarium.cloche.util.target
 import groovy.lang.Closure
 import net.msrandom.minecraftcodev.core.utils.lowerCamelCaseGradleName
 import net.msrandom.minecraftcodev.core.utils.toPath
 import net.msrandom.minecraftcodev.core.utils.zipFileSystem
-import net.msrandom.minecraftcodev.fabric.MinecraftCodevFabricPlugin
 import net.msrandom.minecraftcodev.runs.MinecraftRunConfiguration
 import org.gradle.jvm.tasks.Jar
 import java.nio.file.StandardCopyOption
@@ -29,11 +27,11 @@ plugins {
     `maven-publish`
 
     id("com.palantir.git-version") version "5.0.0"
-
-    id("com.gradleup.shadow") version "9.4.0"
-
-    id("earth.terrarium.cloche") version "0.17.7-dust.0"
+    id("com.gradleup.shadow") version "9.4.1"
+    id("earth.terrarium.cloche") version "0.18.11-dust.3"
 }
+
+// region Project Properties
 
 val archive_name: String by rootProject.properties
 val id: String by rootProject.properties
@@ -45,10 +43,8 @@ val gitVersion: Closure<String> by extra
 version = gitVersion()
 
 base { archivesName = archive_name }
-java {
-    sourceCompatibility = JavaVersion.VERSION_17
-    targetCompatibility = JavaVersion.VERSION_17
-}
+
+// endregion
 
 repositories {
     exclusiveContent {
@@ -60,12 +56,9 @@ repositories {
         }
     }
 
-    exclusiveContent {
-        forRepository {
-            maven("https://mvn.devos.one/snapshots")
-        }
-        filter {
-            includeGroup("xyz.bluspring")
+    maven("https://repo.nyon.dev/releases") {
+        content {
+            includeGroup("dev.nyon")
         }
     }
 
@@ -73,6 +66,23 @@ repositories {
         content {
             includeGroupAndSubgroups("net.lenni0451")
         }
+    }
+
+    maven("https://maven.su5ed.dev/releases") {
+        content {
+            includeGroupAndSubgroups("dev.su5ed.sinytra")
+            includeGroupAndSubgroups("org.sinytra")
+        }
+    }
+
+    maven("https://maven.sinytra.org/") {
+        content {
+            includeGroupAndSubgroups("org.sinytra")
+        }
+    }
+
+    maven("https://raw.githubusercontent.com/settingdust/maven/main/repository/") {
+        name = "SettingDust's Maven"
     }
 
     mavenCentral()
@@ -89,6 +99,8 @@ repositories {
 
     mavenLocal()
 }
+
+// region Attribute Compatibility Rules
 
 class MinecraftVersionCompatibilityRule : AttributeCompatibilityRule<String> {
     override fun execute(details: CompatibilityCheckDetails<String>) {
@@ -121,7 +133,11 @@ dependencies {
     }
 }
 
+// endregion
+
 cloche {
+    // region Metadata & Mappings
+
     metadata {
         modId = id
         name = rootProject.property("name").toString()
@@ -145,568 +161,78 @@ cloche {
         official()
     }
 
-    common {
-        // mixins.from(file("src/common/main/resources/$id.mixins.json"))
-        // accessWideners.from(file("src/common/main/resources/$id.accessWidener"))
+    // endregion
+
+    // region Common Targets
+
+    common()
+
+    val commonMain = common("common:common") {
+        // mixins.from(file("src/common/common/main/resources/$id.mixins.json"))
+        // accessWideners.from(file("src/common/common/main/resources/$id.accessWidener"))
 
         dependencies {
             compileOnly("org.spongepowered:mixin:0.8.7")
         }
     }
 
-    val common = common("common:common")
+    // endregion
 
-    run fabric@{
-        val fabric = fabric {
-            dependsOn(common)
-
-            minecraftVersion = "1.20.1"
-
-            dependencies {
-                fabricApi("0.92.6")
-
-                catalog.reflect.let {
-                    api(it)
-                    include(it)
-                }
-
-                catalog.classTransform.let {
-                    api(it)
-                    include(it)
-                }
-
-                catalog.classTransform.additionalClassProvider.let {
-                    implementation(it)
-                    include(it)
-                }
-
-                catalog.classTransform.mixinsTranslator.let {
-                    implementation(it)
-                    include(it)
-                }
-
-                catalog.bytebuddy.agent.let {
-                    api(it)
-                    include(it)
-                }
-            }
-
-            metadata {
-                languageAdapters.put(id, "$group.fabric.PreloadingTricksLanguageAdapter")
-
-                dependency {
-                    modId = "fabricloader"
-                    version {
-                        start = "0.18"
-                    }
-                }
-            }
-        }
-
-        fabric("version:fabric:1.20.1") {
-            minecraftVersion = "1.20.1"
-
-            runs { client() }
-
-            dependencies {
-                fabricApi("0.92.6")
-
-                implementation(project(":")) {
-                    capabilities {
-                        requireFeature(fabric.capabilitySuffix!!)
-                    }
-                }
-            }
-
-            tasks {
-                named(generateModsManifestTaskName) {
-                    enabled = false
-                }
-                named(jarTaskName) {
-                    enabled = false
-                }
-
-                named(remapJarTaskName) {
-                    enabled = false
-                }
-
-                named(includeJarTaskName) {
-                    enabled = false
-                }
-            }
-        }
-
-        fabric("version:fabric:1.21") {
-            minecraftVersion = "1.21.1"
-
-            runs { client() }
-
-            dependencies {
-                fabricApi("0.116.6")
-
-                implementation(project(":")) {
-                    capabilities {
-                        requireFeature(fabric.capabilitySuffix!!)
-                    }
-                }
-            }
-
-            tasks {
-                named(generateModsManifestTaskName) {
-                    enabled = false
-                }
-                named(jarTaskName) {
-                    enabled = false
-                }
-
-                named(remapJarTaskName) {
-                    enabled = false
-                }
-
-                named(includeJarTaskName) {
-                    enabled = false
-                }
-            }
-        }
-
-        targets.withType<FabricTarget> {
-            loaderVersion = "0.18.4"
-
-            includedClient()
-        }
-    }
-
+    // region ForgeLike Common Targets
     val commonForgeLike = common("common:forgelike") {
-        dependsOn(common)
+        dependsOn(commonMain)
     }
-    val commonModLauncher = common("common:forgelike:modlauncher") {
-        dependsOn(common, commonForgeLike)
+    val commonModLauncher = common("common:modlauncher") {
+        dependsOn(commonMain, commonForgeLike)
     }
-    val commonNeoForge = common("common:forgelike:neoforge") {
-        dependsOn(common, commonForgeLike)
+    val commonNeoForge = common("common:neoforge") {
+        dependsOn(commonMain, commonForgeLike)
     }
+    // endregion
 
-    run forge@{
-        val forge = forge("forge:service") {
-            minecraftVersion = "1.20.1"
-            loaderVersion = "47.4.4"
+    // region Shared Target Defaults
 
-            metadata {
-                modLoader = "lowcodefml"
-                loaderVersion {
-                    start = "0"
-                }
+    targets.withType<FabricTarget> {
+        loaderVersion = "0.18.6"
+
+        includedClient()
+
+        metadata {
+
+            entrypoint("main") {
+                value = "$group.fabric.PreloadingTricksFabric"
             }
 
-            dependsOn(common, commonForgeLike, commonModLauncher)
-
-            dependencies {
-                implementation(catalog.mixinextras.common)
-
-                api(catalog.reflect)
-
-                api(catalog.classTransform)
-                implementation(catalog.classTransform.additionalClassProvider)
-                implementation(catalog.classTransform.mixinsTranslator)
-
-                implementation(catalog.bytebuddy.agent)
+            entrypoint("client") {
+                value = "$group.fabric.PreloadingTricksFabricClient"
             }
 
-            val noNewerJavaAttribute = Attribute.of("noNewerJava", Boolean::class.javaObjectType)
 
-            abstract class RemoveNewerJavaTransform : TransformAction<TransformParameters.None> {
-                @get:InputArtifact
-                abstract val inputArtifact: Provider<FileSystemLocation>
-
-                override fun transform(outputs: TransformOutputs) {
-                    val input = inputArtifact.get().toPath()
-
-                    val newerJavaClasses = zipFileSystem(input).use {
-                        it.getPath("META-INF/versions/24").exists()
-                    }
-
-                    if (!newerJavaClasses) {
-                        outputs.file(input)
-                        return
-                    }
-
-                    val output = outputs.file(input.name.replace(".jar", "-noNewerJava.jar")).toPath()
-
-                    input.copyTo(output, StandardCopyOption.COPY_ATTRIBUTES)
-
-                    zipFileSystem(output).use { fs ->
-                        fs.getPath("META-INF/versions/24").deleteRecursively()
-                    }
-                }
+            dependency {
+                modId = "fabric-api"
+                type = CommonMetadata.Dependency.Type.Required
             }
 
-            val embedBoot by configurations.register(lowerCamelCaseGradleName(featureName, "embedBoot")) {
-                isTransitive = false
-
-                attributes
-                    .attribute(ArtifactTypeDefinition.ARTIFACT_TYPE_ATTRIBUTE, ArtifactTypeDefinition.JAR_TYPE)
-                    .attribute(REMAPPED_ATTRIBUTE, false)
-                    .attribute(INCLUDE_TRANSFORMED_OUTPUT_ATTRIBUTE, true)
-                    .attribute(IncludeTransformationStateAttribute.ATTRIBUTE, IncludeTransformationStateAttribute.None)
-            }
-
-            project.dependencies {
-                attributesSchema {
-                    attribute(noNewerJavaAttribute)
-                }
-
-                artifactTypes.named(ArtifactTypeDefinition.JAR_TYPE) {
-                    attributes.attribute(noNewerJavaAttribute, false)
-                }
-
-                registerTransform(RemoveNewerJavaTransform::class) {
-                    from.attribute(noNewerJavaAttribute, false)
-                    to.attribute(noNewerJavaAttribute, true)
-                }
-
-                embedBoot(catalog.reflect) {
-                    attributes {
-                        attribute(noNewerJavaAttribute, true)
-                    }
-                }
-                embedBoot(catalog.classTransform)
-                embedBoot(catalog.classTransform.mixinsTranslator)
-                embedBoot(catalog.classTransform.additionalClassProvider)
-                embedBoot(catalog.bytebuddy.agent)
-            }
-
-            tasks {
-                named(generateModsTomlTaskName) {
-                    enabled = false
-                }
-
-                named<Jar>(jarTaskName) {
-                    from(embedBoot) {
-                        into("libs/boot")
-                    }
-                }
-            }
         }
 
-        forge("version:forge:1.20.1") {
-            minecraftVersion = "1.20.1"
-            loaderVersion = "47.4.4"
-
-            runs {
-                client {
-                    env("MOD_CLASSES", "")
-                }
-            }
-
-            dependencies {
-                implementation(project(":")) {
-                    capabilities {
-                        requireFeature(forge.capabilitySuffix!!)
-                    }
-                }
-            }
-
-            tasks {
-                named(jarTaskName) {
-                    enabled = false
-                }
-
-                named(remapJarTaskName) {
-                    enabled = false
-                }
-
-                named(includeJarTaskName) {
-                    enabled = false
-                }
-            }
+        dependencies {
+            fabricApi(minecraftVersion.map(String::fabricApiVersion))
         }
     }
 
-    run neoforge@{
-        val neoforgeModlauncherLegacy = neoforge("neoforge:modlauncher:legacy") {
-            dependsOn(common, commonForgeLike, commonModLauncher)
+    targets.withType<ForgeTarget> {
+        loaderVersion.set(minecraftVersion.map(String::forgeLoaderVersion))
+    }
 
-            minecraftVersion = "1.20.6"
-            loaderVersion = "20.6.139"
-
-            dependencies {
-                api(catalog.reflect)
-                api(catalog.classTransform) {
-                    exclude(group = "org.ow2.asm")
-                }
-                implementation(catalog.classTransform.additionalClassProvider) {
-                    exclude(group = "com.google.guava")
-                    exclude(group = "org.ow2.asm")
-                }
-                implementation(catalog.classTransform.mixinsTranslator) {
-                    exclude(group = "com.google.guava")
-                    exclude(group = "org.ow2.asm")
-                }
-                catalog.bytebuddy.agent.let {
-                    implementation(it)
-                }
-            }
-
-            tasks {
-                named(generateModsTomlTaskName) {
-                    enabled = false
-                }
-            }
-        }
-
-        val neoforgeModlauncher = neoforge("neoforge:modlauncher") {
-            dependsOn(common, commonForgeLike, commonModLauncher, commonNeoForge)
-
-            minecraftVersion = "1.21.1"
-            loaderVersion = "21.1.213"
-
-            metadata {
-                modLoader = "lowcodefml"
-                loaderVersion {
-                    start = "0"
-                }
-            }
-
-            dependencies {
-                catalog.reflect.let {
-                    api(it)
-                    legacyClasspath(it)
-                }
-                catalog.classTransform.let {
-                    api(it) {
-                        exclude(group = "org.ow2.asm")
-                    }
-                    legacyClasspath(it)
-                }
-                catalog.classTransform.additionalClassProvider.let {
-                    implementation(it) {
-                        exclude(group = "com.google.guava")
-                        exclude(group = "org.ow2.asm")
-                    }
-                    legacyClasspath(it)
-                }
-                catalog.classTransform.mixinsTranslator.let {
-                    implementation(it) {
-                        exclude(group = "com.google.guava")
-                        exclude(group = "org.ow2.asm")
-                    }
-                    legacyClasspath(it)
-                }
-                catalog.bytebuddy.agent.let {
-                    implementation(it)
-                    legacyClasspath(it)
-                }
-            }
-
-            val embedBoot by configurations.register(lowerCamelCaseGradleName(featureName, "embedBoot")) {
-                isTransitive = false
-
-                attributes
-                    .attribute(ArtifactTypeDefinition.ARTIFACT_TYPE_ATTRIBUTE, ArtifactTypeDefinition.JAR_TYPE)
-                    .attribute(REMAPPED_ATTRIBUTE, false)
-                    .attribute(INCLUDE_TRANSFORMED_OUTPUT_ATTRIBUTE, true)
-                    .attribute(
-                        IncludeTransformationStateAttribute.ATTRIBUTE,
-                        IncludeTransformationStateAttribute.None
-                    )
-            }
-
-            project.dependencies {
-                embedBoot(catalog.reflect)
-                embedBoot(catalog.classTransform)
-                embedBoot(catalog.classTransform.additionalClassProvider)
-                embedBoot(catalog.classTransform.mixinsTranslator)
-                embedBoot(catalog.bytebuddy.agent)
-            }
-
-            tasks {
-                named(generateModsTomlTaskName) {
-                    enabled = false
-                }
-
-                named<Jar>(jarTaskName) {
-                    from(embedBoot) {
-                        into("libs/boot")
-                    }
-                }
-            }
-        }
-
-        val neoforgeFancyModLoader = neoforge("neoforge:fancy-mod-loader") {
-            dependsOn(common, commonForgeLike, commonNeoForge)
-
-            minecraftVersion = "1.21.10"
-            loaderVersion = "21.10.64"
-
-            dependencies {
-                catalog.reflect.let {
-                    api(it)
-                    legacyClasspath(it)
-                }
-                catalog.classTransform.let {
-                    api(it) {
-                        exclude(group = "org.ow2.asm")
-                    }
-                    legacyClasspath(it)
-                }
-                catalog.classTransform.additionalClassProvider.let {
-                    implementation(it) {
-                        exclude(group = "com.google.guava")
-                        exclude(group = "org.ow2.asm")
-                    }
-                    legacyClasspath(it)
-                }
-                catalog.classTransform.mixinsTranslator.let {
-                    implementation(it) {
-                        exclude(group = "com.google.guava")
-                        exclude(group = "org.ow2.asm")
-                    }
-                    legacyClasspath(it)
-                }
-                catalog.bytebuddy.agent.let {
-                    implementation(it)
-                    legacyClasspath(it)
-                }
-            }
-        }
-
-        neoforge("version:neoforge:1.20.6") {
-            minecraftVersion = "1.20.6"
-            loaderVersion = "20.6.139"
-
-            runs {
-                client {
-                    env("MOD_CLASSES", "")
-                }
-            }
-
-            dependencies {
-                legacyClasspath(project(":")) {
-                    capabilities {
-                        requireFeature(neoforgeModlauncherLegacy.capabilitySuffix!!)
-                    }
-
-                    attributes {
-                        attribute(ArtifactTypeDefinition.ARTIFACT_TYPE_ATTRIBUTE, ArtifactTypeDefinition.JAR_TYPE)
-                        attribute(REMAPPED_ATTRIBUTE, false)
-                        attribute(INCLUDE_TRANSFORMED_OUTPUT_ATTRIBUTE, true)
-                        attribute(
-                            IncludeTransformationStateAttribute.ATTRIBUTE,
-                            IncludeTransformationStateAttribute.None
-                        )
-                    }
-
-                    isTransitive = false
-                }
-            }
-
-            tasks {
-                named(generateModsTomlTaskName) {
-                    enabled = false
-                }
-
-                named(jarTaskName) {
-                    enabled = false
-                }
-
-                named(remapJarTaskName) {
-                    enabled = false
-                }
-
-                named(includeJarTaskName) {
-                    enabled = false
-                }
-            }
-        }
-
-        neoforge("version:neoforge:1.21.1") {
-            minecraftVersion = "1.21.1"
-            loaderVersion = "21.1.213"
-
-            runs {
-                client {
-                    env("MOD_CLASSES", "")
-                }
-            }
-
-            dependencies {
-                legacyClasspath(project(":")) {
-                    capabilities {
-                        requireFeature(neoforgeModlauncher.capabilitySuffix!!)
-                    }
-
-                    attributes {
-                        attribute(ArtifactTypeDefinition.ARTIFACT_TYPE_ATTRIBUTE, ArtifactTypeDefinition.JAR_TYPE)
-                        attribute(REMAPPED_ATTRIBUTE, false)
-                        attribute(INCLUDE_TRANSFORMED_OUTPUT_ATTRIBUTE, true)
-                        attribute(
-                            IncludeTransformationStateAttribute.ATTRIBUTE,
-                            IncludeTransformationStateAttribute.None
-                        )
-                    }
-
-                    isTransitive = false
-                }
-            }
-
-            tasks {
-                named(generateModsTomlTaskName) {
-                    enabled = false
-                }
-
-                named(jarTaskName) {
-                    enabled = false
-                }
-
-                named(remapJarTaskName) {
-                    enabled = false
-                }
-
-                named(includeJarTaskName) {
-                    enabled = false
-                }
-            }
-        }
-
-        neoforge("version:neoforge:1.21.10") {
-            minecraftVersion = "1.21.10"
-            loaderVersion = "21.10.38-beta"
-
-            runs {
-                client {
-                    env("MOD_CLASSES", "")
-                }
-            }
-
-            dependencies {
-                implementation(project(":")) {
-                    capabilities {
-                        requireFeature(neoforgeFancyModLoader.capabilitySuffix!!)
-                    }
-                }
-            }
-
-            tasks {
-                named(generateModsTomlTaskName) {
-                    enabled = false
-                }
-
-                named(jarTaskName) {
-                    enabled = false
-                }
-
-                named(remapJarTaskName) {
-                    enabled = false
-                }
-
-                named(includeJarTaskName) {
-                    enabled = false
-                }
-            }
-        }
+    targets.withType<NeoforgeTarget> {
+        loaderVersion.set(minecraftVersion.map(String::neoForgeLoaderVersion))
     }
 
     targets.all {
+        if (name.startsWith("version:")) {
+            disableVersionTemplateTasks()
+        }
+
         runs {
             (client as LazyConfigurableInternal<MinecraftRunConfiguration>).onConfigured {
                 it.jvmArguments(
@@ -718,17 +244,397 @@ cloche {
         }
 
         mappings {
-            minecraftVersion.map {
-                when (it) {
-                    "1.20.1" -> "2023.09.03"
-                    "1.21.1" -> "2024.11.17"
-                    "1.21.10" -> "2025.10.12"
-                    else -> null
-                }
-            }.orNull?.let {
-                parchment(it)
+            minecraftVersion.orNull
+                ?.let(String::parchmentVersion)
+                ?.let(::parchment)
+        }
+    }
+    // endregion
+
+    // region Main Targets - Fabric
+
+    val fabric = fabric {
+        dependsOn(commonMain)
+
+        minecraftVersion = "1.20.1"
+
+        dependencies {
+            fabricApi("0.92.6")
+
+            catalog.reflect.let {
+                api(it)
+                include(it)
+            }
+
+            catalog.classTransform.let {
+                api(it)
+                include(it)
+            }
+
+            catalog.classTransform.additionalClassProvider.let {
+                implementation(it)
+                include(it)
+            }
+
+            catalog.classTransform.mixinsTranslator.let {
+                implementation(it)
+                include(it)
+            }
+
+            catalog.bytebuddy.agent.let {
+                api(it)
+                include(it)
             }
         }
+
+        metadata {
+            languageAdapters.put(id, "$group.fabric.PreloadingTricksLanguageAdapter")
+
+            dependency {
+                modId = "fabricloader"
+                version {
+                    start = "0.18"
+                }
+            }
+        }
+    }
+
+    // endregion
+
+    // region Main Targets - Forge
+
+    val forgeService = forge("forge:service") {
+        dependsOn(commonMain, commonModLauncher)
+
+        minecraftVersion = "1.20.1"
+
+        dependencies {
+            implementation(catalog.mixinextras.common)
+
+            api(catalog.reflect)
+
+            api(catalog.classTransform)
+            implementation(catalog.classTransform.additionalClassProvider)
+            implementation(catalog.classTransform.mixinsTranslator)
+
+            implementation(catalog.bytebuddy.agent)
+        }
+
+        val noNewerJavaAttribute = Attribute.of("noNewerJava", Boolean::class.javaObjectType)
+
+        abstract class RemoveNewerJavaTransform : TransformAction<TransformParameters.None> {
+            @get:InputArtifact
+            abstract val inputArtifact: Provider<FileSystemLocation>
+
+            override fun transform(outputs: TransformOutputs) {
+                val input = inputArtifact.get().toPath()
+
+                val newerJavaClasses = zipFileSystem(input).use {
+                    it.getPath("META-INF/versions/24").exists()
+                }
+
+                if (!newerJavaClasses) {
+                    outputs.file(input)
+                    return
+                }
+
+                val output = outputs.file(input.name.replace(".jar", "-noNewerJava.jar")).toPath()
+
+                input.copyTo(output, StandardCopyOption.COPY_ATTRIBUTES)
+
+                zipFileSystem(output).use { fs ->
+                    fs.getPath("META-INF/versions/24").deleteRecursively()
+                }
+            }
+        }
+
+        val embedBoot by configurations.register(lowerCamelCaseGradleName(featureName, "embedBoot")) {
+            isTransitive = false
+
+            attributes
+                .attribute(ArtifactTypeDefinition.ARTIFACT_TYPE_ATTRIBUTE, ArtifactTypeDefinition.JAR_TYPE)
+                .attribute(REMAPPED_ATTRIBUTE, false)
+                .attribute(INCLUDE_TRANSFORMED_OUTPUT_ATTRIBUTE, true)
+                .attribute(IncludeTransformationStateAttribute.ATTRIBUTE, IncludeTransformationStateAttribute.None)
+        }
+
+        project.dependencies {
+            attributesSchema {
+                attribute(noNewerJavaAttribute)
+            }
+
+            artifactTypes.named(ArtifactTypeDefinition.JAR_TYPE) {
+                attributes.attribute(noNewerJavaAttribute, false)
+            }
+
+            registerTransform(RemoveNewerJavaTransform::class) {
+                from.attribute(noNewerJavaAttribute, false)
+                to.attribute(noNewerJavaAttribute, true)
+            }
+
+            embedBoot(catalog.lenni0451.commons.unchecked)
+            embedBoot(catalog.reflect)
+            embedBoot(catalog.classTransform)
+            embedBoot(catalog.classTransform.mixinsTranslator)
+            embedBoot(catalog.classTransform.additionalClassProvider)
+            embedBoot(catalog.bytebuddy.agent)
+        }
+
+        tasks {
+            named(generateModsTomlTaskName) {
+                enabled = false
+            }
+
+            named<Jar>(jarTaskName) {
+                from(embedBoot) {
+                    into("libs/boot")
+                }
+            }
+        }
+    }
+
+    // endregion
+
+    // region Main Targets - NeoForge
+
+    val neoforgeModlauncher = neoforge("neoforge:modlauncher") {
+        dependsOn(commonMain, commonForgeLike, commonModLauncher, commonNeoForge)
+
+        minecraftVersion = "1.21.1"
+
+        metadata {
+            modLoader = "lowcodefml"
+            loaderVersion {
+                start = "0"
+            }
+        }
+
+        dependencies {
+            catalog.reflect.let {
+                api(it)
+                legacyClasspath(it)
+            }
+            catalog.classTransform.let {
+                api(it) {
+                    exclude(group = "org.ow2.asm")
+                }
+                legacyClasspath(it)
+            }
+            catalog.classTransform.additionalClassProvider.let {
+                implementation(it) {
+                    exclude(group = "com.google.guava")
+                    exclude(group = "org.ow2.asm")
+                }
+                legacyClasspath(it)
+            }
+            catalog.classTransform.mixinsTranslator.let {
+                implementation(it) {
+                    exclude(group = "com.google.guava")
+                    exclude(group = "org.ow2.asm")
+                }
+                legacyClasspath(it)
+            }
+            catalog.bytebuddy.agent.let {
+                implementation(it)
+                legacyClasspath(it)
+            }
+        }
+
+        val embedBoot by configurations.register(lowerCamelCaseGradleName(featureName, "embedBoot")) {
+            isTransitive = false
+
+            attributes
+                .attribute(ArtifactTypeDefinition.ARTIFACT_TYPE_ATTRIBUTE, ArtifactTypeDefinition.JAR_TYPE)
+                .attribute(REMAPPED_ATTRIBUTE, false)
+                .attribute(INCLUDE_TRANSFORMED_OUTPUT_ATTRIBUTE, true)
+                .attribute(
+                    IncludeTransformationStateAttribute.ATTRIBUTE,
+                    IncludeTransformationStateAttribute.None
+                )
+        }
+
+        project.dependencies {
+            embedBoot(catalog.lenni0451.commons.unchecked)
+            embedBoot(catalog.reflect)
+            embedBoot(catalog.classTransform)
+            embedBoot(catalog.classTransform.additionalClassProvider)
+            embedBoot(catalog.classTransform.mixinsTranslator)
+            embedBoot(catalog.bytebuddy.agent)
+        }
+
+        tasks {
+            named(generateModsTomlTaskName) {
+                enabled = false
+            }
+
+            named<Jar>(jarTaskName) {
+                from(embedBoot) {
+                    into("libs/boot")
+                }
+            }
+        }
+    }
+
+    val neoforgeFancyModLoader = neoforge("neoforge:fancy-mod-loader") {
+        dependsOn(commonMain, commonForgeLike, commonNeoForge)
+
+        minecraftVersion = "1.21.10"
+        loaderVersion = "21.10.64"
+
+        dependencies {
+            catalog.reflect.let {
+                api(it)
+                legacyClasspath(it)
+            }
+            catalog.classTransform.let {
+                api(it) {
+                    exclude(group = "org.ow2.asm")
+                }
+                legacyClasspath(it)
+            }
+            catalog.classTransform.additionalClassProvider.let {
+                implementation(it) {
+                    exclude(group = "com.google.guava")
+                    exclude(group = "org.ow2.asm")
+                }
+                legacyClasspath(it)
+            }
+            catalog.classTransform.mixinsTranslator.let {
+                implementation(it) {
+                    exclude(group = "com.google.guava")
+                    exclude(group = "org.ow2.asm")
+                }
+                legacyClasspath(it)
+            }
+            catalog.bytebuddy.agent.let {
+                implementation(it)
+                legacyClasspath(it)
+            }
+        }
+    }
+
+    // endregion
+
+    // region Version Targets
+
+    // region Fabric Version Targets
+
+    fabric("version:fabric:20.1") {
+        minecraftVersion = "1.20.1"
+
+        runs { client() }
+
+        dependencies {
+            modRuntimeOnly(target(fabric))
+        }
+    }
+
+    fabric("version:fabric:21.1") {
+        minecraftVersion = "1.21.1"
+
+        runs { client() }
+
+        dependencies {
+            modRuntimeOnly(target(fabric))
+        }
+    }
+
+    // endregion
+
+    // region Forge Version Targets
+
+    forge("version:forge:20.1") {
+        minecraftVersion = "1.20.1"
+
+        runs {
+            client {
+                env("MOD_CLASSES", "")
+            }
+        }
+
+        dependencies {
+            modRuntimeOnly(target(forgeService))
+        }
+    }
+
+    // endregion
+
+    // region NeoForge Version Targets
+
+    neoforge("version:neoforge:21.1") {
+        minecraftVersion = "1.21.1"
+
+        runs {
+            client {
+                env("MOD_CLASSES", "")
+            }
+        }
+
+        dependencies {
+            legacyClasspath(target(neoforgeModlauncher)) {
+                attributes {
+                    attribute(ArtifactTypeDefinition.ARTIFACT_TYPE_ATTRIBUTE, ArtifactTypeDefinition.JAR_TYPE)
+                    attribute(REMAPPED_ATTRIBUTE, false)
+                    attribute(INCLUDE_TRANSFORMED_OUTPUT_ATTRIBUTE, true)
+                    attribute(
+                        IncludeTransformationStateAttribute.ATTRIBUTE,
+                        IncludeTransformationStateAttribute.None
+                    )
+                }
+
+                isTransitive = false
+            }
+        }
+    }
+
+    neoforge("version:neoforge:21.10") {
+        minecraftVersion = "1.21.10"
+
+        runs {
+            client {
+                env("MOD_CLASSES", "")
+            }
+        }
+
+        dependencies {
+            runtimeOnly(target(neoforgeFancyModLoader))
+        }
+    }
+
+    // endregion
+}
+
+// region Extension Properties
+
+fun String.fabricApiVersion(): String? = when (this) {
+    "1.20.1" -> "0.92.7"
+    "1.21.1" -> "0.116.10"
+    else -> null
+}
+
+fun String.parchmentVersion(): String? = when (this) {
+    "1.20.1" -> "2023.09.03"
+    "1.21.1" -> "2024.11.17"
+    else -> null
+}
+
+fun String.forgeLoaderVersion(): String? = when (this) {
+    "1.20.1" -> "47.4.4"
+    else -> null
+}
+
+fun String.neoForgeLoaderVersion(): String? = when (this) {
+    "1.21.1" -> "21.1.213"
+    "1.21.10" -> "21.10.64"
+    else -> null
+}
+
+fun MinecraftTarget.disableVersionTemplateTasks() {
+    tasks {
+        named(generateModsManifestTaskName) { enabled = false }
+        named(jarTaskName) { enabled = false }
+        named(remapJarTaskName) { enabled = false }
+        named(includeJarTaskName) { enabled = false }
     }
 }
 
@@ -761,6 +667,16 @@ val MinecraftTarget.jarTaskName: String
 val MinecraftTarget.remapJarTaskName: String
     get() = lowerCamelCaseGradleName(featureName, "remapJar")
 
+val MinecraftTarget.accessWidenTaskName: String
+    get() = lowerCamelCaseGradleName("accessWiden", featureName, "minecraft")
+
+val MinecraftTarget.decompileMinecraftTaskName: String
+    get() = lowerCamelCaseGradleName("decompile", featureName, "minecraft")
+
+// endregion
+
+// region Tasks
+
 tasks {
     withType<ProcessResources> {
         duplicatesStrategy = DuplicatesStrategy.WARN
@@ -768,10 +684,6 @@ tasks {
 
     withType<Jar> {
         duplicatesStrategy = DuplicatesStrategy.WARN
-
-        manifest {
-            attributes("Implementation-Version" to project.version)
-        }
     }
 
     shadowJar {
@@ -816,10 +728,9 @@ tasks {
         transform<DeduplicatingResourceTransformer>()
     }
 
+
     val shadowSourcesJar by registering(ShadowJar::class) {
         dependsOn(cloche.targets.map { it.generateModsManifestTaskName })
-
-        duplicatesStrategy = DuplicatesStrategy.INCLUDE
 
         mergeServiceFiles()
         archiveClassifier.set("sources")
@@ -836,17 +747,6 @@ tasks {
 
     build {
         dependsOn(shadowContainersJar, shadowSourcesJar)
-    }
-
-    jar {
-        finalizedBy(shadowContainersJar)
-        destinationDirectory = shadowContainersJar.flatMap { it.destinationDirectory }
-    }
-
-    afterEvaluate {
-        named("generateMetadataFileForMavenPublication") {
-            dependsOn(shadowContainersJar)
-        }
     }
 
     afterEvaluate {
@@ -867,36 +767,9 @@ tasks {
             }
         }
     }
-
-    for (target in cloche.targets.filterIsInstance<FabricTarget>()) {
-        named(lowerCamelCaseGradleName("accessWiden", target.featureName, "commonMinecraft")) {
-            dependsOn(
-                lowerCamelCaseGradleName(
-                    "remap",
-                    target.featureName,
-                    "commonMinecraft",
-                    MinecraftCodevFabricPlugin.INTERMEDIARY_MAPPINGS_NAMESPACE,
-                ), lowerCamelCaseGradleName(
-                    "remap",
-                    target.featureName,
-                    "clientMinecraft",
-                    MinecraftCodevFabricPlugin.INTERMEDIARY_MAPPINGS_NAMESPACE,
-                ), lowerCamelCaseGradleName("generate", target.featureName, "MappingsArtifact")
-            )
-        }
-
-        named(lowerCamelCaseGradleName("accessWiden", target.featureName, "Minecraft")) {
-            dependsOn(
-                lowerCamelCaseGradleName(
-                    "remap",
-                    target.featureName,
-                    "clientMinecraft",
-                    MinecraftCodevFabricPlugin.INTERMEDIARY_MAPPINGS_NAMESPACE,
-                ), lowerCamelCaseGradleName("generate", target.featureName, "MappingsArtifact")
-            )
-        }
-    }
 }
+
+// endregion
 
 publishing {
     publications {

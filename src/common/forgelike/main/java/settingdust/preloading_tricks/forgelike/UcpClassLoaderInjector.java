@@ -26,7 +26,7 @@ public class UcpClassLoaderInjector {
         Supplier<InputStream> fileSupplier,
         ClassLoader classLoader
     ) {
-        var cachePath = Path.of(".cache", PreloadingTricks.MOD_ID);
+        var cachePath = Path.of(".cache", PreloadingTricks.ID);
         try {Files.createDirectories(cachePath);} catch (IOException ignored) {}
         Path tempFile;
         try {

@@ -7,7 +7,7 @@ jobs:
     permissions:
       contents: write
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v5
       - uses: actions/setup-java@v5
         with:
           distribution: temurin
@@ -26,18 +26,14 @@ jobs:
 
       - name: Get CHANGELOG
         id: changelog
-        uses: requarks/changelog-action@v1
-        with:
-          writeToFile: false
-          token: ${{ github.token }}
-          tag: ${{ github.ref_name }}
+        uses: mikepenz/release-changelog-builder-action@v6
 
       - name: Git Status
         run: |
           git status --porcelain
           ./gradlew printVersion
 
-      - name: Upload jar
+      - name: Upload bundled jar
         uses: Kir-Antipov/mc-publish@v3.3.0
         with:
           changelog: ${{ steps.changelog.outputs.changes }}
@@ -48,7 +44,7 @@ jobs:
 
           # Only include this section if you wish to publish
           # your assets on CurseForge.
-          curseforge-id: 1372086
+          curseforge-id: 000000
           curseforge-token: ${{ secrets.CURSEFORGE_TOKEN }}
 
           files: |
@@ -58,9 +54,9 @@ jobs:
           version: ${{ github.ref_name }}
 
           loaders: |
+            forge
             neoforge
             fabric
-            forge
 
           game-versions: |
             1.20.1
@@ -68,15 +64,19 @@ jobs:
 
           game-version-filter: releases
 
+          dependencies: |
+            fabric-language-kotlin
+            kotlin-for-forge
+            preloading-tricks
+
           java: |
             17
             21
 
       - name: Update CHANGELOG
-        uses: requarks/changelog-action@v1
+        uses: mikepenz/release-changelog-builder-action@v6
         with:
-          token: ${{ github.token }}
-          tag: ${{ github.ref_name }}
+          outputFile: CHANGELOG.MD
 
       - name: Commit CHANGELOG.md
         uses: stefanzweifel/git-auto-commit-action@v7

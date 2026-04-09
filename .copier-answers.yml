@@ -1,10 +1,12 @@
 # Changes here will be overwritten by Copier
-_commit: 0.1.8-4-ga753eac
+_commit: 0.1.8-48-g9016eed
 _src_path: https://github.com/SettingDust/cloche-template
 author: SettingDust
 description: PreloadingTricks
 group: settingdust.preloading_tricks
+has_service: true
 id: preloading_tricks
+language: java
 license: Apache License 2.0
 name: PreloadingTricks
 slug: preloading-tricks

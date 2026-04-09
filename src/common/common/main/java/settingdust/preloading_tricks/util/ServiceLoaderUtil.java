@@ -6,126 +6,89 @@ import settingdust.preloading_tricks.PreloadingTricks;
 import java.util.*;
 
 public final class ServiceLoaderUtil {
-    public static Logger defaultLogger = PreloadingTricks.LOGGER;
+    public static final Logger DEFAULT_LOGGER = PreloadingTricks.LOGGER;
 
     private ServiceLoaderUtil() {
     }
 
-    public static <T> ServiceLoader<T> load(Class<T> clazz, ModuleLayer layer) {
-        return ServiceLoader.load(layer, clazz);
-    }
-
-    public static <T> ServiceLoader<T> load(Class<T> clazz) {
-        return ServiceLoader.load(clazz);
-    }
-
-    public static <T> ServiceLoader<T> load(Class<T> clazz, ClassLoader cl) {
-        return ServiceLoader.load(clazz, cl);
-    }
-
-    public static <T> T findService(Class<T> clazz, ServiceLoader<T> serviceLoader) {
-        return findService(clazz, serviceLoader, defaultLogger);
+    public static <T> T findService(Class<T> clazz) {
+        return findService(clazz, ServiceLoader.load(clazz), DEFAULT_LOGGER);
     }
 
     public static <T> T findService(Class<T> clazz, ServiceLoader<T> serviceLoader, Logger logger) {
-        Iterator<T> it = findServices(clazz, serviceLoader, logger, true).iterator();
-        if (it.hasNext()) {
-            return it.next();
-        }
-        throw new NoSuchElementException("No service found for " + clazz);
+        List<T> services = findServices(clazz, serviceLoader, logger, true);
+        return services.get(0);
     }
 
     public static <T> Iterable<T> findServices(Class<T> clazz, ModuleLayer layer) {
-        return findServices(clazz, load(clazz, layer), defaultLogger, true);
+        return findServices(clazz, ServiceLoader.load(layer, clazz), DEFAULT_LOGGER, true);
     }
 
-    public static <T> Iterable<T> findServices(Class<T> clazz, ServiceLoader<T> serviceLoader, boolean required) {
-        return findServices(clazz, serviceLoader, defaultLogger, required);
+    public static <T> List<T> findServices(Class<T> clazz, boolean required) {
+        return findServices(clazz, ServiceLoader.load(clazz), DEFAULT_LOGGER, required);
     }
 
-    public static <T> Iterable<T> findServices(
-        Class<T> clazz,
-        ServiceLoader<T> serviceLoader,
-        Logger logger,
-        boolean required
-    ) {
-        List<T> results = new ArrayList<>();
-        String prefix = "[" + logger.getName() + "] ";
+    public static <T> List<T> findServices(
+            Class<T> clazz,
+            ServiceLoader<T> serviceLoader,
+            Logger logger,
+            boolean required) {
+        String prefix = String.format("[%s] ", logger.getName());
         Iterator<ServiceLoader.Provider<T>> iterator = serviceLoader.stream().iterator();
         List<Throwable> errors = new ArrayList<>();
-        Optional<ServiceLoader.Provider<T>> current = findNext(iterator, errors);
-        boolean found = false;
+        List<T> result = new ArrayList<>();
 
-        while (current.isPresent()) {
-            ServiceLoader.Provider<T> provider = current.get();
-            String providerName = provider.type().getName();
-
+        ServiceLoader.Provider<T> current = findNext(iterator, errors);
+        while (current != null) {
+            String providerName = current.type().getName();
             logger.debug("{}Loading {}", prefix, providerName);
+
             try {
-                results.add(provider.get());
-                found = true;
+                result.add(current.get());
             } catch (Throwable t) {
                 IllegalStateException e = new IllegalStateException(prefix + "Loading " + providerName + " failed", t);
                 errors.add(e);
-                logger.debug(e.getMessage(), t);
+                logger.debug("{}", e.getMessage(), e);
             }
 
             current = findNext(iterator, errors);
         }
 
-        if (!found && required) {
-            IllegalStateException exception = new IllegalStateException("Load service of " + clazz + " failed");
-            if (errors.isEmpty()) {
-                exception.addSuppressed(new NoSuchElementException("Can't find service for " + clazz));
-            }
-            for (Throwable t : errors) {
-                exception.addSuppressed(t);
-            }
-            throw exception;
+        if (!result.isEmpty() || !required) {
+            return result;
         }
 
-        return results;
+        IllegalStateException exception = new IllegalStateException("Load service of " + clazz + " failed");
+        if (errors.isEmpty()) {
+            exception.addSuppressed(new NoSuchElementException("Can't find service for " + clazz));
+        }
+        for (Throwable error : errors) {
+            exception.addSuppressed(error);
+        }
+        throw exception;
     }
 
-    private static <T> Optional<ServiceLoader.Provider<T>> findNext(
-        Iterator<ServiceLoader.Provider<T>> iterator,
-        List<Throwable> errors
-    ) {
+    private static <T> ServiceLoader.Provider<T> findNext(
+            Iterator<ServiceLoader.Provider<T>> iterator,
+            List<Throwable> errors) {
         ServiceLoader.Provider<T> current = null;
-        while (true) {
+        do {
             try {
-                if (!iterator.hasNext()) {
-                    return Optional.empty();
-                }
                 current = iterator.next();
-                break;
             } catch (NoSuchElementException e) {
-                return Optional.empty();
+                return null;
             } catch (Throwable t) {
                 errors.add(t);
             }
-        }
-        return Optional.ofNullable(current);
-    }
-
-    // Convenience overloads
-    public static <T> T findService(Class<T> clazz) {
-        return findService(clazz, load(clazz), defaultLogger);
-    }
-
-    public static <T> Iterable<T> findServices(Class<T> clazz) {
-        return findServices(clazz, load(clazz), defaultLogger, true);
-    }
-
-    public static <T> Iterable<T> findServices(Class<T> clazz, boolean required) {
-        return findServices(clazz, load(clazz), defaultLogger, required);
+        } while (current == null);
+        return current;
     }
 
     public static <T> int loadServices(
-        Class<T> clazz,
-        ServiceLoader<T> serviceLoader,
-        Logger logger,
-        boolean required
+            Class<T> clazz,
+            ServiceLoader<T> serviceLoader,
+            Logger logger,
+            boolean required
     ) {
         int count = 0;
         for (T ignored : findServices(clazz, serviceLoader, logger, required)) {
@@ -135,14 +98,14 @@ public final class ServiceLoaderUtil {
     }
 
     public static <T> int loadServices(Class<T> clazz) {
-        return loadServices(clazz, load(clazz), defaultLogger, true);
+        return loadServices(clazz, ServiceLoader.load(clazz), DEFAULT_LOGGER, true);
     }
 
     public static <T> int loadServices(Class<T> clazz, boolean required) {
-        return loadServices(clazz, load(clazz), defaultLogger, required);
+        return loadServices(clazz, ServiceLoader.load(clazz), DEFAULT_LOGGER, required);
     }
 
     public static <T> int loadServices(Class<T> clazz, ServiceLoader<T> serviceLoader, boolean required) {
-        return loadServices(clazz, serviceLoader, defaultLogger, required);
+        return loadServices(clazz, serviceLoader, DEFAULT_LOGGER, required);
     }
 }

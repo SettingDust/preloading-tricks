@@ -192,8 +192,6 @@ cloche {
 
     // region Shared Target Defaults
 
-    fun MinecraftTarget.isVersionTarget(): Boolean = name.startsWith("version:")
-
     targets.withType<FabricTarget> {
         loaderVersion = "0.18.6"
 
@@ -641,6 +639,8 @@ fun String.neoForgeLoaderVersion(): String? = when (this) {
     else -> null
 }
 
+fun MinecraftTarget.isVersionTarget(): Boolean = name.startsWith("version:")
+
 fun MinecraftTarget.disableVersionTemplateTasks() {
     tasks {
         named(generateModsManifestTaskName) { enabled = false }
@@ -771,7 +771,18 @@ tasks {
         }
 
         (components["java"] as AdhocComponentWithVariants).apply {
-            val testTargets = cloche.targets.filter { it.name.startsWith("version:") }
+            // Cloche skips common runtimeElements by default for common compilations.
+            // Re-add it so apiElements has a corresponding runtime variant for the final single jar.
+            configurations.findByName("runtimeElements")?.let { config ->
+                addVariantsFromConfiguration(config) {
+                    if (configurationVariant.name in listOf("classes", "resources")) {
+                        skip()
+                    }
+                    mapToMavenScope("runtime")
+                }
+            }
+
+            val testTargets = cloche.targets.filter { it.isVersionTarget() }
 
             testTargets.forEach { target ->
                 listOf(
@@ -784,6 +795,12 @@ tasks {
                         }
                     }
                 }
+            }
+
+            // Shadow plugin registers an extra shadowRuntimeElements variant.
+            // Keep it out of published metadata to avoid a duplicate runtime slot.
+            configurations.findByName("shadowRuntimeElements")?.let { config ->
+                withVariantsFromConfiguration(config) { skip() }
             }
         }
     }

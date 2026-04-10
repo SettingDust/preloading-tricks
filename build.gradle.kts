@@ -738,7 +738,6 @@ tasks {
         transform<DeduplicatingResourceTransformer>()
     }
 
-
     val shadowSourcesJar by registering(ShadowJar::class) {
         dependsOn(cloche.targets.map { it.generateModsManifestTaskName })
 
@@ -759,7 +758,16 @@ tasks {
         dependsOn(shadowContainersJar, shadowSourcesJar)
     }
 
+    jar {
+        finalizedBy(shadowContainersJar)
+        destinationDirectory = shadowContainersJar.flatMap { it.destinationDirectory }
+    }
+
     afterEvaluate {
+        named("generateMetadataFileForMavenPublication") {
+            dependsOn(shadowContainersJar)
+        }
+
         (components["java"] as AdhocComponentWithVariants).apply {
             val testTargets = cloche.targets.filter { it.name.startsWith("version:") }
 

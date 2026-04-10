@@ -146,7 +146,7 @@ dependencyResolutionManagement.versionCatalogs.create("catalog") {
         artifact = "mixinextras"
 
         version("*") {
-            modVersion = "0.5.0"
+            modVersion = "0.5.3"
             loader("forge") { artifact(ArtifactFormatter.dashLoader) }
             loader("fabric") { artifact(ArtifactFormatter.dashLoader) }
             loader("common") { artifact(ArtifactFormatter.dashLoader) }
@@ -170,7 +170,7 @@ dependencyResolutionManagement.versionCatalogs.create("catalog") {
         "mixinstranslator"
     ).version(classTransform)
 
-    library("bytebuddy-agent", "net.bytebuddy", "byte-buddy-agent").version("1.18.2")
+    library("bytebuddy-agent", "net.bytebuddy", "byte-buddy-agent").version("1.18.8")
 }
 
 // #endregion

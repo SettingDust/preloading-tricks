@@ -192,32 +192,16 @@ cloche {
 
     // region Shared Target Defaults
 
+    fun MinecraftTarget.isVersionTarget(): Boolean = name.startsWith("version:")
+
     targets.withType<FabricTarget> {
         loaderVersion = "0.18.6"
 
+        if (isVersionTarget()) {
+            runs { client() }
+        }
+
         includedClient()
-
-        metadata {
-
-            entrypoint("main") {
-                value = "$group.fabric.PreloadingTricksFabric"
-            }
-
-            entrypoint("client") {
-                value = "$group.fabric.PreloadingTricksFabricClient"
-            }
-
-
-            dependency {
-                modId = "fabric-api"
-                type = CommonMetadata.Dependency.Type.Required
-            }
-
-        }
-
-        dependencies {
-            fabricApi(minecraftVersion.map(String::fabricApiVersion))
-        }
     }
 
     targets.withType<ForgeTarget> {
@@ -229,7 +213,7 @@ cloche {
     }
 
     targets.all {
-        if (name.startsWith("version:")) {
+        if (isVersionTarget()) {
             disableVersionTemplateTasks()
         }
 
@@ -259,8 +243,6 @@ cloche {
         minecraftVersion = "1.20.1"
 
         dependencies {
-            fabricApi("0.92.6")
-
             catalog.reflect.let {
                 api(it)
                 include(it)
@@ -522,8 +504,6 @@ cloche {
     fabric("version:fabric:20.1") {
         minecraftVersion = "1.20.1"
 
-        runs { client() }
-
         dependencies {
             modRuntimeOnly(target(fabric))
         }
@@ -532,12 +512,24 @@ cloche {
     fabric("version:fabric:21.1") {
         minecraftVersion = "1.21.1"
 
-        runs { client() }
-
         dependencies {
             modRuntimeOnly(target(fabric))
         }
     }
+
+    fabric("version:fabric:26.1") {
+        minecraftVersion = "26.1.1"
+
+        dependencies {
+            modRuntimeOnly(target(fabric)) {
+                attributes {
+                    attribute(REMAPPED_ATTRIBUTE, true)
+                }
+            }
+        }
+    }
+
+    // https://fabricmc.net/develop/
 
     // endregion
 
@@ -601,6 +593,22 @@ cloche {
         }
     }
 
+    neoforge("version:neoforge:26.1") {
+        minecraftVersion = "26.1.1"
+
+        runs {
+            client {
+                env("MOD_CLASSES", "")
+            }
+        }
+
+        dependencies {
+            runtimeOnly(target(neoforgeFancyModLoader))
+        }
+    }
+
+    // Version https://projects.neoforged.net/neoforged/neoforge
+
     // endregion
 }
 
@@ -609,6 +617,7 @@ cloche {
 fun String.fabricApiVersion(): String? = when (this) {
     "1.20.1" -> "0.92.7"
     "1.21.1" -> "0.116.10"
+    "26.1.1" -> "0.145.4"
     else -> null
 }
 
@@ -619,13 +628,14 @@ fun String.parchmentVersion(): String? = when (this) {
 }
 
 fun String.forgeLoaderVersion(): String? = when (this) {
-    "1.20.1" -> "47.4.4"
+    "1.20.1" -> "47.4.18"
     else -> null
 }
 
 fun String.neoForgeLoaderVersion(): String? = when (this) {
-    "1.21.1" -> "21.1.213"
+    "1.21.1" -> "21.1.224"
     "1.21.10" -> "21.10.64"
+    "26.1.1" -> "26.1.1.15-beta"
     else -> null
 }
 

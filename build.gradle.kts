@@ -248,6 +248,8 @@ cloche {
                 include(it)
             }
 
+            include(catalog.lenni0451.commons.unchecked)
+
             catalog.classTransform.let {
                 api(it)
                 include(it)

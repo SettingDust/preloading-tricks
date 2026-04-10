@@ -8,10 +8,7 @@ import settingdust.preloading_tricks.fabric.util.FabricLoaderImplAccessor;
 import settingdust.preloading_tricks.fabric.virtual_mod.VirtualModContainer;
 
 import java.nio.file.Path;
-import java.util.Collection;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
@@ -54,15 +51,28 @@ public class FabricModManager implements ModManager<ModContainerImpl> {
         return modMap.get(id);
     }
 
+    private void removeMappings(final ModContainerImpl modContainer) {
+        if (modContainer == null) return;
+
+        var metadata = modContainer.getMetadata();
+
+        if (Objects.equals(modMap.get(metadata.getId()), modContainer)) {
+            modMap.remove(metadata.getId());
+        }
+
+        for (String provide : metadata.getProvides()) {
+            if (Objects.equals(modMap.get(provide), modContainer)) {
+                modMap.remove(provide);
+            }
+        }
+    }
+
     @Override
     public boolean remove(ModContainerImpl modContainer) {
+        if (modContainer == null) return false;
+
         var removed = mods.remove(modContainer);
-        var metadata = modContainer.getMetadata();
-        modMap.remove(metadata.getId());
-        for (String provide : metadata.getProvides()) {
-            if (modMap.get(provide).equals(modContainer))
-                modMap.remove(provide);
-        }
+        removeMappings(modContainer);
         return removed;
     }
 
@@ -78,31 +88,25 @@ public class FabricModManager implements ModManager<ModContainerImpl> {
     public boolean removeAll(Collection<ModContainerImpl> modContainers) {
         if (modContainers.isEmpty()) return true;
 
-        var removed = mods.removeAll(modContainers);
-
-        var keysToRemove = modContainers.stream()
-                                        .flatMap(container -> container.getMetadata().getProvides().stream())
-                                        .collect(Collectors.toSet());
-
-        keysToRemove.forEach(modMap::remove);
+        var uniqueContainers = new LinkedHashSet<>(modContainers);
+        var removed = mods.removeAll(uniqueContainers);
+        uniqueContainers.forEach(this::removeMappings);
         return removed;
     }
 
     @Override
     public boolean removeById(final String id) {
-        var modContainer = modMap.remove(id);
-        var metadata = modContainer.getMetadata();
-        var removed = mods.remove(modContainer);
-        for (String provide : metadata.getProvides()) {
-            if (modMap.get(provide).equals(modContainer))
-                modMap.remove(provide);
-        }
-        return removed;
+        return remove(modMap.get(id));
     }
 
     @Override
     public boolean removeByIds(final Set<String> ids) {
-        return mods.removeAll(ids.stream().map(modMap::remove).toList());
+        return removeAll(
+            ids.stream()
+               .map(modMap::get)
+               .filter(Objects::nonNull)
+               .collect(Collectors.toCollection(LinkedHashSet::new))
+        );
     }
 
     @Override

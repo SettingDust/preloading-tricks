@@ -42,7 +42,7 @@ public class ExtraModsLoader {
                 envDisabledMods
             );
 
-            var idToCandidates = new HashMap<String, ModCandidateImpl>();
+            var idToCandidates = new LinkedHashMap<String, ModCandidateImpl>();
             for (final var candidate : modCandidates) {
                 idToCandidates.put(candidate.getId(), candidate);
                 for (final var provide : candidate.getProvides()) {
@@ -50,13 +50,23 @@ public class ExtraModsLoader {
                 }
             }
 
-            var iterator = FabricLoaderImplAccessor.modMap().entrySet().iterator();
-            while (iterator.hasNext()) {
-                var entry = iterator.next();
-                var id = entry.getKey();
-                var modContainer = entry.getValue();
+            for (final var modContainer : new LinkedHashSet<>(service.all())) {
+                var metadata = modContainer.getMetadata();
+
+                ModCandidateImpl candidate = idToCandidates.get(metadata.getId());
+                if (candidate == null) {
+                    for (final var provide : metadata.getProvides()) {
+                        candidate = idToCandidates.get(provide);
+                        if (candidate != null) break;
+                    }
+                }
+
+                if (candidate == null) {
+                    service.remove(modContainer);
+                    continue;
+                }
+
                 var origin = modContainer.getOrigin();
-                var candidate = idToCandidates.get(id);
                 var exists = origin.getKind() == ModOrigin.Kind.PATH
                              && Objects.equals(origin.getPaths(), candidate.getOriginPaths());
                 if (!exists) {
@@ -69,14 +79,16 @@ public class ExtraModsLoader {
                     }
                 }
                 if (exists) {
-                    idToCandidates.remove(id);
+                    final var matchedCandidate = candidate;
+                    idToCandidates.values().removeIf(existingCandidate -> existingCandidate == matchedCandidate);
                 } else {
-                    iterator.remove();
                     service.remove(modContainer);
                 }
             }
 
-            dumpModList(Set.copyOf(idToCandidates.values()));
+            var remainingCandidates = new LinkedHashSet<>(idToCandidates.values());
+
+            dumpModList(remainingCandidates);
             FabricLoaderImpl.INSTANCE.dumpNonFabricMods(discoverer.getNonFabricMods());
 
             var cacheDir = FabricLoader.getInstance().getGameDir().resolve(FabricLoaderImpl.CACHE_DIR_NAME);
@@ -87,11 +99,11 @@ public class ExtraModsLoader {
                     PreloadingTricks.LOGGER.warn(
                         "Runtime mod remapping disabled due to no fabric.remapClasspathFile being specified. You may need to update loom.");
                 } else {
-                    RuntimeModRemapper.remap(idToCandidates.values(), cacheDir.resolve("tmp"), outputDir);
+                    RuntimeModRemapper.remap(remainingCandidates, cacheDir.resolve("tmp"), outputDir);
                 }
             }
 
-            for (final var mod : idToCandidates.values()) {
+            for (final var mod : remainingCandidates) {
                 if (!mod.hasPath() && !mod.isBuiltin()) {
                     try {
                         mod.setPaths(Collections.singletonList(mod.copyToDir(outputDir, false)));

@@ -3,6 +3,7 @@
 
 import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
 import com.github.jengelman.gradle.plugins.shadow.transformers.DeduplicatingResourceTransformer
+import com.github.jengelman.gradle.plugins.shadow.transformers.PreserveFirstFoundResourceTransformer
 import earth.terrarium.cloche.INCLUDE_TRANSFORMED_OUTPUT_ATTRIBUTE
 import earth.terrarium.cloche.REMAPPED_ATTRIBUTE
 import earth.terrarium.cloche.api.attributes.IncludeTransformationStateAttribute
@@ -28,7 +29,7 @@ plugins {
 
     id("com.palantir.git-version") version "5.0.0"
     id("com.gradleup.shadow") version "9.4.1"
-    id("earth.terrarium.cloche") version "0.18.11-dust.3"
+    id("earth.terrarium.cloche") version "0.18.11-dust.7"
 }
 
 // region Project Properties
@@ -610,6 +611,73 @@ cloche {
     // Version https://projects.neoforged.net/neoforged/neoforge
 
     // endregion
+
+    // region Shadow
+
+    project.tasks {
+        val shadowContainersJar by registering(ShadowJar::class) {
+            archiveClassifier = ""
+
+            duplicatesStrategy = DuplicatesStrategy.INCLUDE
+
+            val fabricJar = project.tasks.named<Jar>(fabric.includeJarTaskName)
+            from(fabricJar.map { zipTree(it.archiveFile) })
+            manifest.from(fabricJar.get().manifest)
+
+            val forgeServiceJar = project.tasks.named<Jar>(forgeService.includeJarTaskName)
+            from(forgeServiceJar.map { zipTree(it.archiveFile) })
+            manifest.from(forgeServiceJar.get().manifest)
+
+            val neoforgeModlauncherJar =
+                project.tasks.named<Jar>(neoforgeModlauncher.includeJarTaskName)
+            from(neoforgeModlauncherJar.map { zipTree(it.archiveFile) })
+            manifest.from(neoforgeModlauncherJar.get().manifest)
+
+            val neoforgeFancyModLoaderJar =
+                project.tasks.named<Jar>(neoforgeFancyModLoader.includeJarTaskName)
+            from(neoforgeFancyModLoaderJar.map { zipTree(it.archiveFile) })
+            manifest.from(neoforgeFancyModLoaderJar.get().manifest)
+
+            append("META-INF/accesstransformer.cfg")
+
+            mergeServiceFiles()
+
+            transform<PreserveFirstFoundResourceTransformer>()
+        }
+
+        val shadowSourcesJar by registering(ShadowJar::class) {
+            dependsOn(cloche.targets.map { it.generateModsManifestTaskName })
+
+            mergeServiceFiles()
+            archiveClassifier.set("sources")
+            from(sourceSets.map { it.allSource })
+
+            doFirst {
+                manifest {
+                    from(source.filter { it.name.equals("MANIFEST.MF") }.toList())
+                }
+            }
+
+            transform<DeduplicatingResourceTransformer>()
+        }
+
+        build {
+            dependsOn(shadowContainersJar, shadowSourcesJar)
+        }
+
+        jar {
+            finalizedBy(shadowContainersJar)
+            destinationDirectory = shadowContainersJar.flatMap { it.destinationDirectory }
+        }
+
+        afterEvaluate {
+            named("generateMetadataFileForMavenPublication") {
+                dependsOn(shadowContainersJar)
+            }
+        }
+    }
+
+    // endregion
 }
 
 // region Extension Properties
@@ -702,105 +770,42 @@ tasks {
         enabled = false
     }
 
-    val shadowContainersJar by registering(ShadowJar::class) {
-        archiveClassifier = ""
-
-        duplicatesStrategy = DuplicatesStrategy.INCLUDE
-
-        val fabricJar = project.tasks.named<Jar>(cloche.targets.getByName("fabric").includeJarTaskName)
-        from(fabricJar.map { zipTree(it.archiveFile) })
-        manifest.from(fabricJar.get().manifest)
-
-        val forgeServiceJar = project.tasks.named<Jar>(cloche.targets.getByName("forge:service").includeJarTaskName)
-        from(forgeServiceJar.map { zipTree(it.archiveFile) })
-        manifest.from(forgeServiceJar.get().manifest)
-
-        val neoforgeModlauncherJar =
-            project.tasks.named<Jar>(cloche.targets.getByName("neoforge:modlauncher").includeJarTaskName)
-        from(neoforgeModlauncherJar.map { zipTree(it.archiveFile) }) {
-            include("settingdust/preloading_tricks/forgelike/neoforge/**/*")
-            include("settingdust/preloading_tricks/neoforge/**/*")
-            include("META-INF/services/*")
-            include("$id.neoforge.modlauncher.classtransform.json")
-        }
-
-        val neoforgeFancyModLoaderJar =
-            project.tasks.named<Jar>(cloche.targets.getByName("neoforge:fancy-mod-loader").includeJarTaskName)
-        from(neoforgeFancyModLoaderJar.map { zipTree(it.archiveFile) }) {
-            include("settingdust/preloading_tricks/forgelike/neoforge/**/*")
-            include("settingdust/preloading_tricks/neoforge/**/*")
-            include("META-INF/services/*")
-            include("$id.neoforge.fml.classtransform.json")
-        }
-
-        append("META-INF/accesstransformer.cfg")
-
-        mergeServiceFiles()
-
-        transform<DeduplicatingResourceTransformer>()
-    }
-
-    val shadowSourcesJar by registering(ShadowJar::class) {
-        dependsOn(cloche.targets.map { it.generateModsManifestTaskName })
-
-        mergeServiceFiles()
-        archiveClassifier.set("sources")
-        from(sourceSets.map { it.allSource })
-
-        doFirst {
-            manifest {
-                from(source.filter { it.name.equals("MANIFEST.MF") }.toList())
-            }
-        }
-
-        transform<DeduplicatingResourceTransformer>()
-    }
-
-    build {
-        dependsOn(shadowContainersJar, shadowSourcesJar)
-    }
-
-    jar {
-        finalizedBy(shadowContainersJar)
-        destinationDirectory = shadowContainersJar.flatMap { it.destinationDirectory }
-    }
-
     afterEvaluate {
-        named("generateMetadataFileForMavenPublication") {
-            dependsOn(shadowContainersJar)
-        }
-
         (components["java"] as AdhocComponentWithVariants).apply {
-            // Cloche skips common runtimeElements by default for common compilations.
-            // Re-add it so apiElements has a corresponding runtime variant for the final single jar.
-            configurations.findByName("runtimeElements")?.let { config ->
-                addVariantsFromConfiguration(config) {
-                    if (configurationVariant.name in listOf("classes", "resources")) {
+            configurations {
+                shadowRuntimeElements {
+                    // Shadow plugin registers an extra shadowRuntimeElements variant.
+                    // Keep it out of published metadata to avoid a duplicate runtime slot.
+                    withVariantsFromConfiguration(this) {
                         skip()
                     }
-                    mapToMavenScope("runtime")
+                }
+
+                runtimeElements {
+                    // Cloche skips common runtimeElements by default for common compilations.
+                    // Re-add it so apiElements has a corresponding runtime variant for the final single jar.
+                    addVariantsFromConfiguration(this) {
+                        if (configurationVariant.name in listOf("classes", "resources")) {
+                            skip()
+                        }
+                        mapToMavenScope("runtime")
+                    }
                 }
             }
 
             val testTargets = cloche.targets.filter { it.isVersionTarget() }
 
             testTargets.forEach { target ->
-                listOf(
+                for (variant in listOf(
                     "${target.featureName}ApiElements",
                     "${target.featureName}RuntimeElements"
-                ).forEach { variantName ->
-                    configurations.findByName(variantName)?.let { config ->
-                        withVariantsFromConfiguration(config) {
+                )) {
+                    configurations.named(variant) {
+                        withVariantsFromConfiguration(this) {
                             skip()
                         }
                     }
                 }
-            }
-
-            // Shadow plugin registers an extra shadowRuntimeElements variant.
-            // Keep it out of published metadata to avoid a duplicate runtime slot.
-            configurations.findByName("shadowRuntimeElements")?.let { config ->
-                withVariantsFromConfiguration(config) { skip() }
             }
         }
     }

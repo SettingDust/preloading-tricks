@@ -1,7 +1,9 @@
 package settingdust.preloading_tricks.neoforge.modlauncher.transformer.preloading_callback;
 
 import com.google.common.collect.Iterables;
+import cpw.mods.cl.ModuleClassLoader;
 import cpw.mods.modlauncher.Launcher;
+import cpw.mods.modlauncher.ModuleLayerHandler;
 import cpw.mods.modlauncher.api.IModuleLayerManager;
 import net.lenni0451.classtransform.annotations.CShadow;
 import net.lenni0451.classtransform.annotations.CShared;
@@ -17,6 +19,7 @@ import org.apache.commons.compress.utils.Lists;
 import org.slf4j.Logger;
 import settingdust.preloading_tricks.neoforge.modlauncher.PreloadingTricksCallbacksInvoker;
 
+import java.util.EnumMap;
 import java.util.List;
 
 @CTransformer(ModDiscoverer.class)
@@ -37,13 +40,13 @@ public class ModDiscovererTransformer {
         try {
             PreloadingTricksCallbacksInvoker.onSetupMods(mods);
         } catch (NoClassDefFoundError e) {
-            var serviceLayer =
-                Launcher.INSTANCE.findLayerManager()
-                                 .orElseThrow()
-                                 .getLayer(IModuleLayerManager.Layer.SERVICE)
-                                 .orElseThrow();
-
-            var serviceClassLoader = serviceLayer.modules().iterator().next().getClassLoader();
+            var moduleLayerManager = (ModuleLayerHandler) Launcher.INSTANCE.findLayerManager().orElseThrow();
+            var completedLayers = RStream.of(moduleLayerManager)
+                    .fields()
+                    .by("completedLayers")
+                    .<EnumMap<IModuleLayerManager.Layer, Object>>get();
+            var info = completedLayers.get(IModuleLayerManager.Layer.SERVICE);
+            var serviceClassLoader = RStream.of(info).fields().by("cl").<ModuleClassLoader>get();
 
             var callbackClazz = RStream.of(Classes.byName(
                 "settingdust.preloading_tricks.neoforge.modlauncher.PreloadingTricksCallbacksInvoker",
@@ -67,13 +70,14 @@ public class ModDiscovererTransformer {
         try {
             additionalDependencySources = PreloadingTricksCallbacksInvoker.onCollectAdditionalDependencySources();
         } catch (NoClassDefFoundError e) {
-            var serviceLayer =
-                Launcher.INSTANCE.findLayerManager()
-                                 .orElseThrow()
-                                 .getLayer(IModuleLayerManager.Layer.SERVICE)
-                                 .orElseThrow();
+            var moduleLayerManager = (ModuleLayerHandler) Launcher.INSTANCE.findLayerManager().orElseThrow();
+            var completedLayers = RStream.of(moduleLayerManager)
+                    .fields()
+                    .by("completedLayers")
+                    .<EnumMap<IModuleLayerManager.Layer, Object>>get();
+            var info = completedLayers.get(IModuleLayerManager.Layer.SERVICE);
+            var serviceClassLoader = RStream.of(info).fields().by("cl").<ModuleClassLoader>get();
 
-            var serviceClassLoader = serviceLayer.modules().iterator().next().getClassLoader();
             var callbackClazz = RStream.of(Classes.byName(
                 "settingdust.preloading_tricks.neoforge.modlauncher.PreloadingTricksCallbacksInvoker",
                 serviceClassLoader

@@ -1,5 +1,10 @@
 fix: `setAccessible` for `setMod`
 
+## [3.5.11] - 2026-04-29
+### :bug: Bug Fixes
+- [`4c663c2`](https://github.com/SettingDust/preloading-tricks/commit/4c663c272f37935fa7083ca350eca83107e7c4fb) - **lexforge**: null element exception when finding service class loader *(commit by [@SettingDust](https://github.com/SettingDust))*
+
+
 ## [3.5.9] - 2026-04-01
 ### :bug: Bug Fixes
 - [`9bcfc60`](https://github.com/SettingDust/preloading-tricks/commit/9bcfc60111fe943bf4cd461bf7eb57e1b4dbdc14) - **fabric**: dump duplicate jar info *(commit by [@SettingDust](https://github.com/SettingDust))*
@@ -437,3 +442,4 @@ fix: `setAccessible` for `setMod`
 [3.5.7]: https://github.com/SettingDust/preloading-tricks/compare/3.5.6...3.5.7
 [3.5.8]: https://github.com/SettingDust/preloading-tricks/compare/3.5.7...3.5.8
 [3.5.9]: https://github.com/SettingDust/preloading-tricks/compare/3.5.8...3.5.9
+[3.5.11]: https://github.com/SettingDust/preloading-tricks/compare/3.5.10...3.5.11

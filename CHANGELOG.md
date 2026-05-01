@@ -1,5 +1,10 @@
 fix: `setAccessible` for `setMod`
 
+## [3.5.12] - 2026-05-01
+### :bug: Bug Fixes
+- [`00c4709`](https://github.com/SettingDust/preloading-tricks/commit/00c4709e0fa3b2b29d59f401a9d3275d849e50c0) - crash if missing module in configuration *(commit by [@SettingDust](https://github.com/SettingDust))*
+
+
 ## [3.5.11] - 2026-04-29
 ### :bug: Bug Fixes
 - [`4c663c2`](https://github.com/SettingDust/preloading-tricks/commit/4c663c272f37935fa7083ca350eca83107e7c4fb) - **lexforge**: null element exception when finding service class loader *(commit by [@SettingDust](https://github.com/SettingDust))*
@@ -443,3 +448,4 @@ fix: `setAccessible` for `setMod`
 [3.5.8]: https://github.com/SettingDust/preloading-tricks/compare/3.5.7...3.5.8
 [3.5.9]: https://github.com/SettingDust/preloading-tricks/compare/3.5.8...3.5.9
 [3.5.11]: https://github.com/SettingDust/preloading-tricks/compare/3.5.10...3.5.11
+[3.5.12]: https://github.com/SettingDust/preloading-tricks/compare/3.5.11...3.5.12

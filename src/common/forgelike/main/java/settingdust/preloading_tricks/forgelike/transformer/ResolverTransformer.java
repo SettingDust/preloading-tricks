@@ -10,9 +10,7 @@ import org.spongepowered.asm.mixin.Mixin;
 import java.lang.module.ModuleDescriptor;
 import java.lang.module.ResolutionException;
 import java.lang.module.ResolvedModule;
-import java.net.URI;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
@@ -32,16 +30,21 @@ public class ResolverTransformer {
             ResolutionException exception,
             @CLocalVariable(index = 0) Map<ResolvedModule, Set<ResolvedModule>> graph,
             @CLocalVariable ResolvedModule endpoint) {
-        List<URI> relateModules = new ArrayList<>();
+        Set<ResolvedModule> relateModules = new HashSet<>();
         for (var entry : graph.entrySet()) {
             if (entry.getKey().name().equals(endpoint.name())) {
-                relateModules.add(entry.getKey().reference().location().get());
+                relateModules.add(entry.getKey());
             }
         }
         var info = new StringBuilder();
         info.append("Relate modules path:").append('\n');
-        for (var modulePath : relateModules) {
-            info.append(" - ").append(modulePath).append('\n');
+        for (var module : relateModules) {
+            info.append(" - ")
+                    .append(module.name())
+                    .append('(')
+                    .append(module.reference().location().orElse(null))
+                    .append(')')
+                    .append('\n');
         }
         throw new IllegalStateException(info.toString(), exception);
     }
@@ -55,16 +58,23 @@ public class ResolverTransformer {
             @CLocalVariable Map<ResolvedModule, Set<ResolvedModule>> graph,
             @CLocalVariable ResolvedModule endpoint,
             @CLocalVariable ModuleDescriptor supplier) {
-        ResolvedModule existing = null;
+        Set<ResolvedModule> relateModules = new HashSet<>();
+        relateModules.add(endpoint);
         for (var entry : graph.entrySet()) {
             if (entry.getKey().name().equals(supplier.name())) {
-                existing = entry.getKey();
+                relateModules.add(entry.getKey());
             }
         }
         var info = new StringBuilder();
         info.append("Relate modules path:").append('\n');
-        info.append(" - ").append(existing.reference().location().orElse(null)).append('\n');
-        info.append(" - ").append(endpoint.reference().location().orElse(null));
+        for (var module : relateModules) {
+            info.append(" - ")
+                    .append(module.name())
+                    .append('(')
+                    .append(module.reference().location().orElse(null))
+                    .append(')')
+                    .append('\n');
+        }
         throw new IllegalStateException(info.toString(), exception);
     }
 }

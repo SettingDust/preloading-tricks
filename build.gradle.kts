@@ -43,6 +43,8 @@ group = "settingdust.preloading_tricks"
 val gitVersion: Closure<String> by extra
 version = gitVersion()
 
+println(version)
+
 base { archivesName = archive_name }
 
 // endregion

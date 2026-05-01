@@ -37,12 +37,12 @@ jobs:
           changelog: ${{ steps.changelog.outputs.changes }}
           # Only include this section if you wish to publish
           # your assets on Modrinth.
-          modrinth-id: more-enchantment-info
+          modrinth-id: preloading-tricks
           modrinth-token: ${{ secrets.MODRINTH_TOKEN }}
 
           # Only include this section if you wish to publish
           # your assets on CurseForge.
-          curseforge-id: 1166503
+          curseforge-id: 1372086
           curseforge-token: ${{ secrets.CURSEFORGE_TOKEN }}
 
           files: |

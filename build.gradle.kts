@@ -2,7 +2,6 @@
 @file:OptIn(ExperimentalPathApi::class)
 
 import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
-import com.github.jengelman.gradle.plugins.shadow.transformers.DeduplicatingResourceTransformer
 import com.github.jengelman.gradle.plugins.shadow.transformers.PreserveFirstFoundResourceTransformer
 import earth.terrarium.cloche.INCLUDE_TRANSFORMED_OUTPUT_ATTRIBUTE
 import earth.terrarium.cloche.REMAPPED_ATTRIBUTE
@@ -644,6 +643,8 @@ cloche {
 
             mergeServiceFiles()
 
+            filesMatching("**/*.class") { duplicatesStrategy = DuplicatesStrategy.EXCLUDE }
+
             transform<PreserveFirstFoundResourceTransformer>()
         }
 
@@ -660,7 +661,7 @@ cloche {
                 }
             }
 
-            transform<DeduplicatingResourceTransformer>()
+            transform<PreserveFirstFoundResourceTransformer>()
         }
 
         build {

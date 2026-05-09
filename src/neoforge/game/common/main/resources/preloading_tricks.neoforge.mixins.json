@@ -1,0 +1,8 @@
+{
+  "required": true,
+  "minVersion": "0.8",
+  "package": "settingdust.preloading_tricks.neoforge.mixin",
+  "compatibilityLevel": "JAVA_21",
+  "mixins": [],
+  "client": []
+}

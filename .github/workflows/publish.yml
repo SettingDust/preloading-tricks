@@ -42,12 +42,12 @@ jobs:
 
           # Only include this section if you wish to publish
           # your assets on CurseForge.
-          curseforge-id: 1372086
+          curseforge-id: 000000
           curseforge-token: ${{ secrets.CURSEFORGE_TOKEN }}
 
           files: |
-            build/libs/!(*-@(fabric*|neoforge*|forge*|sources)).jar
-            build/libs/*-@(fabric-*|neoforge-*|forge-*|sources).jar
+            build/libs/!(*-@(fabric*|neoforge*|forge*|sources|dev)).jar
+            build/libs/*-@(fabric-*|neoforge-*|forge-*|sources|dev).jar
 
           version: ${{ github.ref_name }}
 
@@ -58,9 +58,15 @@ jobs:
 
           game-versions: |
             1.20.1
-            [1.21,)
+            1.21.1
+            [26.1,26.2)
 
           game-version-filter: releases
+
+          dependencies: |
+            fabric-language-kotlin
+            kotlin-lang-forge{curseforge:1244682}
+            preloading-tricks
 
           java: |
             17

@@ -12,5 +12,7 @@ public interface LoaderAdapter {
 
     boolean isClient();
 
+    java.nio.file.Path gameDir();
+
     boolean isModLoaded(String modId);
 }

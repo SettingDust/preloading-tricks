@@ -1,9 +1,8 @@
 package settingdust.preloading_tricks;
 
-import net.minecraft.resources.ResourceLocation;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import settingdust.preloading_tricks.util.MinecraftAdapter;
+import settingdust.preloading_tricks.util.CommonIdentifier;
 
 public final class PreloadingTricks {
     public static final String ID = "preloading_tricks";
@@ -13,7 +12,7 @@ public final class PreloadingTricks {
 
     private PreloadingTricks() {}
 
-    public static ResourceLocation id(String path) {
-        return MinecraftAdapter.getInstance().id(ID, path);
+    public static CommonIdentifier id(String path) {
+        return CommonIdentifier.of(ID, path);
     }
 }

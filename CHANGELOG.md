@@ -1,5 +1,10 @@
 fix: `setAccessible` for `setMod`
 
+## [3.5.15] - 2026-05-09
+### :bug: Bug Fixes
+- [`af9ee68`](https://github.com/SettingDust/preloading-tricks/commit/af9ee68c1ef83621abf771a92a1281e3f87426ba) - build output duplicated classes *(commit by [@SettingDust](https://github.com/SettingDust))*
+
+
 ## [3.5.14] - 2026-05-08
 ### :bug: Bug Fixes
 - [`60cc575`](https://github.com/SettingDust/preloading-tricks/commit/60cc57538057e2f625702d022155a69a5900a8c9) - resolver transformer passing wrong arg *(commit by [@SettingDust](https://github.com/SettingDust))*
@@ -455,3 +460,4 @@ fix: `setAccessible` for `setMod`
 [3.5.11]: https://github.com/SettingDust/preloading-tricks/compare/3.5.10...3.5.11
 [3.5.12]: https://github.com/SettingDust/preloading-tricks/compare/3.5.11...3.5.12
 [3.5.14]: https://github.com/SettingDust/preloading-tricks/compare/3.5.13...3.5.14
+[3.5.15]: https://github.com/SettingDust/preloading-tricks/compare/3.5.14...3.5.15

@@ -29,7 +29,7 @@ public class LanguageProviderLoaderTransformer {
     )
     private void preloading_tricks$onSetupLanguageAdapter() {
         LOGGER.info(
-            "PreloadingTricks calling PreloadingTricksCallback#onSetupLanguageAdapter in `LanguageLoadingProvider#<init>`");
+            "PreloadingTricks calling PreloadingTricksCallbacks#SETUP_LANGUAGE_ADAPTER in `LanguageLoadingProvider#<init>`");
         try {
             PreloadingTricksCallbacksInvoker.onSetupLanguageAdapter();
         } catch (NoClassDefFoundError e) {

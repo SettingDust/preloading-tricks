@@ -35,7 +35,7 @@ public class ModDiscovererTransformer {
         )
     )
     private List<ModFile> preloading_tricks$onSetupMods(List<ModFile> mods) {
-        LOGGER.info("PreloadingTricks calling PreloadingTricksCallback in `ModDiscoverer#discoverMods`");
+        LOGGER.info("PreloadingTricks calling PreloadingTricksCallbacks#SETUP_MODS in `ModDiscoverer#discoverMods`");
 
         try {
             PreloadingTricksCallbacksInvoker.onSetupMods(mods);

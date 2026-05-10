@@ -25,7 +25,7 @@ public class ModDiscovererTransformer {
         )
     )
     private List<ModFile> preloading_tricks$onSetupMods(List<ModFile> mods) throws ClassNotFoundException {
-        LOGGER.info("PreloadingTricks calling PreloadingTricksCallback in `ModDiscoverer#discoverMods`");
+        LOGGER.info("PreloadingTricks calling PreloadingTricksCallbacks#SETUP_MODS in `ModDiscoverer#discoverMods`");
         var currentClassLoader = FMLLoader.getCurrent().getCurrentClassLoader();
         var invokerClass = currentClassLoader.loadClass(
             "settingdust.preloading_tricks.neoforge.fancy_mod_loader.PreloadingTricksCallbacksInvoker");

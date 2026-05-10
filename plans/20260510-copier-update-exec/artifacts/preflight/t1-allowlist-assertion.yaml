@@ -1,0 +1,14 @@
+plan_id: 20260510-copier-update-exec
+task_id: T1
+artifact_type: allowlist-assertion
+assertion_id: primary-dirty-state-accepted-under-isolation-policy
+subject: primary working tree dirty state
+policy: isolation-policy-allowlist
+accepted: true
+reason: Dirty state is permitted when tracked and untracked changes are isolated by stash and execution moves to a clean isolated lane.
+evidence:
+  isolation_strategy_artifact: isolation-strategy.yaml
+  isolated_lane_artifact: isolated-lane.yaml
+  stash_record_artifact: stash-record.yaml
+generated_from: preflight debugger fix backfill
+generated_at: "2026-05-10T08:15:46+08:00"

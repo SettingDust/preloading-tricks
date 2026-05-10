@@ -1,0 +1,10 @@
+plan_id: 20260510-copier-update-exec
+task_id: T1
+artifact_type: primary-dirty-state
+primary_branch: main
+primary_head: 760131e5ce150fa6419b4246f8dd48449f9fc31e
+primary_working_tree_dirty: true
+isolation_policy: stash-plus-isolated-lane
+accepted_for_wave: wave1
+generated_from: preflight debugger fix backfill
+generated_at: "2026-05-10T08:15:46+08:00"

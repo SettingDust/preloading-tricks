@@ -1,0 +1,15 @@
+plan_id: 20260510-copier-update-exec
+task_id: T2-prepare-rollback-anchor
+artifact_type: rollback-anchor
+rollback_branch:
+  name: rollback/20260510-copier-update-exec
+  existed_before: true
+  head_ref: refs/heads/rollback/20260510-copier-update-exec
+  points_to: 760131e5ce150fa6419b4246f8dd48449f9fc31e
+rollback_tag:
+  name: rollback-anchor/20260510-copier-update-exec
+  existed_before: true
+  tag_ref: refs/tags/rollback-anchor/20260510-copier-update-exec
+  points_to: 760131e5ce150fa6419b4246f8dd48449f9fc31e
+generated_at: "2026-05-10T08:15:46+08:00"
+source: git branch/tag

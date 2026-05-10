@@ -1,0 +1,54 @@
+plan_id: 20260510-copier-update-exec
+task_id: T5-verification
+artifact_type: high-risk-reconciliation
+status: completed
+sources:
+  source_of_truth: plans/20260510-copier-update-exec/artifacts/preflight/high-risk-source-of-truth.yaml
+  decision_log: plans/20260510-copier-update-exec/artifacts/merge/t4-merge-decision-log.yaml
+source_of_truth_hash_check:
+  status: pass
+  algorithm: sha256
+  expected: 489b256c0774a3c4524a7886103a491b6f74bff8d7b83c85305d408f9c0ea9af
+  actual: 489b256c0774a3c4524a7886103a491b6f74bff8d7b83c85305d408f9c0ea9af
+  input: newline-joined canonical_high_risk_targets in declared order
+reconciliation_summary:
+  canonical_target_count: 10
+  decision_entry_count: 10
+  missing_in_decision_log: none
+  extra_in_decision_log: none
+  decision_uniformity:
+    expected_decision: no_merge_required
+    all_match: true
+entries:
+  - target: build.gradle.kts
+    decision: no_merge_required
+    reconciled: true
+  - target: settings.gradle.kts
+    decision: no_merge_required
+    reconciled: true
+  - target: gradle.properties
+    decision: no_merge_required
+    reconciled: true
+  - target: gradle/wrapper/gradle-wrapper.properties
+    decision: no_merge_required
+    reconciled: true
+  - target: .github/workflows/build.yml
+    decision: no_merge_required
+    reconciled: true
+  - target: .github/workflows/release.yml
+    decision: no_merge_required
+    reconciled: true
+  - target: src/common/
+    decision: no_merge_required
+    reconciled: true
+  - target: src/fabric/
+    decision: no_merge_required
+    reconciled: true
+  - target: src/forge/
+    decision: no_merge_required
+    reconciled: true
+  - target: src/neoforge/
+    decision: no_merge_required
+    reconciled: true
+generated_at: "2026-05-10T08:37:51+08:00"
+source: automated reconciliation from source-of-truth and T4 decision log

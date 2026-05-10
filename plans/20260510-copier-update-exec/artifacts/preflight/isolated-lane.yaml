@@ -1,0 +1,10 @@
+plan_id: 20260510-copier-update-exec
+task_id: T2-prepare-rollback-anchor
+artifact_type: isolated-lane
+lane_branch: lane/20260510-copier-update-exec
+lane_path: .tmp-copier-lane/20260510-copier-update-exec
+lane_head: 760131e5ce150fa6419b4246f8dd48449f9fc31e
+lane_clean: true
+created_new_lane_branch: true
+summary: Clean isolated worktree lane created to run copier update without touching dirty primary workspace.
+source: git worktree add

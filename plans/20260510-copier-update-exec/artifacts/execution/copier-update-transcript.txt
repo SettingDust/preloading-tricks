@@ -1,0 +1,8 @@
+[2026-05-10T08:27:28+08:00] command: copier update --defaults --trust --skip-answered --vcs-ref=HEAD
+[2026-05-10T08:27:28+08:00] exit_code: 1
+--- output ---
+EXCEPTION: Keeping template version 0.1.8.post83.dev0+87fc224
+所在位置 行:1 字符: 815
++ ... { $result = & copier update --defaults --trust --skip-answered --vcs- ...
++                 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+在 <ScriptBlock>、<无文件> 中: 第 1 行

@@ -1,0 +1,15 @@
+plan_id: 20260510-copier-update-exec
+task_id: T1
+artifact_type: completeness-manifest
+wave: wave1
+required_artifacts:
+  - t1-isolation-baseline.yaml
+  - t1-allowlist-assertion.yaml
+  - t1-completeness-manifest.yaml
+completeness:
+  total_required: 3
+  present: 3
+  complete: true
+notes: T1 independent artifacts are decoupled from T2 task outputs and can be validated independently.
+generated_from: preflight debugger fix backfill
+generated_at: "2026-05-10T08:15:46+08:00"

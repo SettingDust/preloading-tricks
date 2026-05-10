@@ -44,6 +44,8 @@ group = "settingdust.preloading_tricks"
 val gitVersion: Closure<String> by extra
 version = gitVersion()
 
+println(version)
+
 base { archivesName = archive_name }
 
 // endregion
@@ -332,15 +334,7 @@ cloche {
             }
         }
 
-        val embedBoot by configurations.register(lowerCamelCaseGradleName(featureName, "embedBoot")) {
-            isTransitive = false
-
-            attributes
-                .attribute(ArtifactTypeDefinition.ARTIFACT_TYPE_ATTRIBUTE, ArtifactTypeDefinition.JAR_TYPE)
-                .attribute(REMAPPED_ATTRIBUTE, false)
-                .attribute(INCLUDE_TRANSFORMED_OUTPUT_ATTRIBUTE, true)
-                .attribute(IncludeTransformationStateAttribute.ATTRIBUTE, IncludeTransformationStateAttribute.None)
-        }
+        val embedBoot by registerEmbedBootConfiguration(featureName)
 
         project.dependencies {
             attributesSchema {
@@ -356,12 +350,7 @@ cloche {
                 to.attribute(noNewerJavaAttribute, true)
             }
 
-            embedBoot(catalog.lenni0451.commons.unchecked)
-            embedBoot(catalog.reflect)
-            embedBoot(catalog.classTransform)
-            embedBoot(catalog.classTransform.mixinsTranslator)
-            embedBoot(catalog.classTransform.additionalClassProvider)
-            embedBoot(catalog.bytebuddy.agent)
+            addBootDependencies(embedBoot.name)
         }
 
         tasks {
@@ -424,26 +413,10 @@ cloche {
             }
         }
 
-        val embedBoot by configurations.register(lowerCamelCaseGradleName(featureName, "embedBoot")) {
-            isTransitive = false
-
-            attributes
-                .attribute(ArtifactTypeDefinition.ARTIFACT_TYPE_ATTRIBUTE, ArtifactTypeDefinition.JAR_TYPE)
-                .attribute(REMAPPED_ATTRIBUTE, false)
-                .attribute(INCLUDE_TRANSFORMED_OUTPUT_ATTRIBUTE, true)
-                .attribute(
-                    IncludeTransformationStateAttribute.ATTRIBUTE,
-                    IncludeTransformationStateAttribute.None
-                )
-        }
+        val embedBoot by registerEmbedBootConfiguration(featureName)
 
         project.dependencies {
-            embedBoot(catalog.lenni0451.commons.unchecked)
-            embedBoot(catalog.reflect)
-            embedBoot(catalog.classTransform)
-            embedBoot(catalog.classTransform.additionalClassProvider)
-            embedBoot(catalog.classTransform.mixinsTranslator)
-            embedBoot(catalog.bytebuddy.agent)
+            addBootDependencies(embedBoot.name)
         }
 
         tasks {
@@ -492,6 +465,20 @@ cloche {
             catalog.bytebuddy.agent.let {
                 implementation(it)
                 legacyClasspath(it)
+            }
+        }
+
+        val embedBoot by registerEmbedBootConfiguration(featureName)
+
+        project.dependencies {
+            addBootDependencies(embedBoot.name)
+        }
+
+        tasks {
+            named<Jar>(jarTaskName) {
+                from(embedBoot) {
+                    into("libs/boot")
+                }
             }
         }
     }
@@ -703,6 +690,26 @@ fun MinecraftTarget.disableVersionTemplateTasks() {
         named(remapJarTaskName) { enabled = false }
         named(includeJarTaskName) { enabled = false }
     }
+}
+
+fun Project.registerEmbedBootConfiguration(featureName: String?): NamedDomainObjectProvider<Configuration> =
+    configurations.register(lowerCamelCaseGradleName(featureName, "embedBoot")) {
+        isTransitive = false
+
+        attributes
+            .attribute(ArtifactTypeDefinition.ARTIFACT_TYPE_ATTRIBUTE, ArtifactTypeDefinition.JAR_TYPE)
+            .attribute(REMAPPED_ATTRIBUTE, false)
+            .attribute(INCLUDE_TRANSFORMED_OUTPUT_ATTRIBUTE, true)
+            .attribute(IncludeTransformationStateAttribute.ATTRIBUTE, IncludeTransformationStateAttribute.None)
+    }
+
+fun DependencyHandlerScope.addBootDependencies(configurationName: String) {
+    add(configurationName, catalog.lenni0451.commons.unchecked)
+    add(configurationName, catalog.reflect)
+    add(configurationName, catalog.classTransform)
+    add(configurationName, catalog.classTransform.additionalClassProvider)
+    add(configurationName, catalog.classTransform.mixinsTranslator)
+    add(configurationName, catalog.bytebuddy.agent)
 }
 
 val SourceSet.includeJarTaskName: String

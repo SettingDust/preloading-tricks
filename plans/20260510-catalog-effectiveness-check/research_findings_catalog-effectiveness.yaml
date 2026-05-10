@@ -1,0 +1,181 @@
+plan_id: 20260510-catalog-effectiveness-check
+objective: Investigate whether previous build/catalog topology changes are effective
+focus_area: catalog-effectiveness
+created_at: "2026-05-10"
+created_by: GitHub Copilot
+status: completed
+tldr: |
+  - build.gradle.kts topology changes are present in the working tree but build.gradle.kts is unstaged and not committed at HEAD.
+  - settings.gradle.kts catalog only defines mixin-fabric, mixinextras variants, and preloadingTricks, while build.gradle.kts references additional catalog aliases.
+  - Missing catalog aliases likely make the catalog part ineffective even though target topology edits are visible.
+  - stash@{0} also contains build.gradle.kts changes from T2 isolation, indicating prior changes may have been stashed during cleanup.
+research_metadata:
+  methodology: read_file + grep_search + git status/log/stash inspection
+  scope: build.gradle.kts target topology, settings.gradle.kts catalog declarations, build.gradle.kts catalog references, git state
+  confidence: high
+  coverage: 90
+  decision_blockers: 0
+  research_blockers: 0
+files_analyzed:
+  - file: build.gradle.kts
+    path: build.gradle.kts
+    purpose: Current Gradle build script topology and catalog usage
+    key_elements:
+      - element: common:forgelike
+        type: pattern
+        location: build.gradle.kts:184
+        description: common Forge-like target exists and depends on commonMain
+        language: kotlin
+      - element: common:modlauncher
+        type: pattern
+        location: build.gradle.kts:187
+        description: common ModLauncher target exists and depends on commonMain and commonForgeLike
+        language: kotlin
+      - element: common:neoforge
+        type: pattern
+        location: build.gradle.kts:190
+        description: common NeoForge target exists and depends on commonMain and commonForgeLike
+        language: kotlin
+      - element: forge:service
+        type: pattern
+        location: build.gradle.kts:290
+        description: Forge service target exists and depends on commonMain and commonModLauncher
+        language: kotlin
+      - element: neoforge:modlauncher
+        type: pattern
+        location: build.gradle.kts:384
+        description: NeoForge ModLauncher target exists and depends on commonMain, commonForgeLike, commonModLauncher, commonNeoForge
+        language: kotlin
+      - element: neoforge:fancy-mod-loader
+        type: pattern
+        location: build.gradle.kts:462
+        description: NeoForge FancyModLoader target exists and depends on commonMain, commonForgeLike, commonNeoForge
+        language: kotlin
+      - element: catalog references
+        type: variable
+        location: build.gradle.kts:246-493
+        description: Build script references catalog.reflect, catalog.lenni0451.commons.unchecked, catalog.classTransform.*, catalog.bytebuddy.agent, catalog.mixinextras.common
+        language: kotlin
+    lines: 760
+  - file: settings.gradle.kts
+    path: settings.gradle.kts
+    purpose: Version catalog declarations
+    key_elements:
+      - element: catalog libraries
+        type: variable
+        location: settings.gradle.kts:145-160
+        description: Catalog currently declares mixin-fabric, mixinextras variants, and preloadingTricks only
+        language: kotlin
+    lines: 171
+patterns_found:
+  - category: structure
+    pattern: Cloche target names use colon-separated domains
+    description: Current build.gradle.kts uses target names such as common:forgelike, forge:service, neoforge:modlauncher, neoforge:fancy-mod-loader, and version:* targets.
+    examples:
+      - file: build.gradle.kts
+        location: build.gradle.kts:184
+        snippet: val commonForgeLike = common("common:forgelike")
+      - file: build.gradle.kts
+        location: build.gradle.kts:384
+        snippet: val neoforgeModlauncher = neoforge("neoforge:modlauncher")
+    prevalence: common
+  - category: structure
+    pattern: Version targets consume main targets via target(...)
+    description: Version-specific Fabric/Forge/NeoForge targets use modRuntimeOnly, legacyClasspath, or runtimeOnly around target(mainTarget).
+    examples:
+      - file: build.gradle.kts
+        location: build.gradle.kts:515
+        snippet: modRuntimeOnly(target(fabric))
+      - file: build.gradle.kts
+        location: build.gradle.kts:552
+        snippet: modRuntimeOnly(target(forgeService))
+      - file: build.gradle.kts
+        location: build.gradle.kts:566
+        snippet: legacyClasspath(target(neoforgeModlauncher))
+    prevalence: common
+  - category: architecture
+    pattern: Catalog-backed dependency declarations
+    description: Dependencies are expressed through the catalog accessor in build.gradle.kts, but settings.gradle.kts does not currently declare most referenced aliases.
+    examples:
+      - file: build.gradle.kts
+        location: build.gradle.kts:246
+        snippet: catalog.reflect.let {
+      - file: settings.gradle.kts
+        location: settings.gradle.kts:145
+        snippet: library("mixin-fabric", "net.fabricmc", "sponge-mixin")
+    prevalence: common
+related_architecture:
+  components_relevant_to_domain:
+    - component: Cloche target graph
+      responsibility: Defines common, loader, and version-specific Minecraft targets
+      location: build.gradle.kts:170-581
+      relationship_to_domain: Primary surface for checking whether topology changes are present
+    - component: Version catalog
+      responsibility: Defines generated type-safe catalog accessors used by build.gradle.kts
+      location: settings.gradle.kts:143-162
+      relationship_to_domain: Determines whether catalog.* references can resolve
+  interfaces_used_by_domain:
+    - interface: VersionCatalogBuilder
+      location: settings.gradle.kts:119
+      usage_pattern: Adds library aliases via library(...) and custom dependency(...)
+    - interface: Cloche target DSL
+      location: build.gradle.kts:153
+      usage_pattern: Adds targets with common(...), fabric(...), forge(...), neoforge(...)
+  data_flow_involving_domain: settings.gradle.kts catalog declarations generate catalog accessors used by build.gradle.kts dependencies; missing aliases cause build script compilation/accessor resolution failures.
+  key_relationships_to_domain:
+    - from: settings.gradle.kts catalog
+      to: build.gradle.kts dependencies
+      relationship: composes
+    - from: version targets
+      to: main targets
+      relationship: calls
+related_technology_stack:
+  languages_used_in_domain: [Kotlin DSL]
+  frameworks_used_in_domain:
+    - name: Gradle Kotlin DSL
+      usage_in_domain: Build and settings scripts
+    - name: Cloche
+      usage_in_domain: Minecraft multi-loader target DSL
+  libraries_used_in_domain:
+    - name: Gradle Version Catalog
+      purpose_in_domain: Type-safe dependency aliases through catalog.*
+  external_apis_used_in_domain: []
+related_conventions:
+  naming_patterns_in_domain: Colon-separated target names such as common:*, forge:*, neoforge:*, version:*; camelCase Kotlin variables mirror target names.
+  structure_of_domain: build.gradle.kts contains metadata, common targets, shared defaults, loader main targets, version targets, shadow packaging, and helper extensions.
+  error_handling_in_domain: No runtime error handling; Gradle configuration fails during script compilation if catalog accessors are missing.
+  testing_in_domain: Not examined beyond target wiring.
+  documentation_in_domain: Inline region comments partition build script sections.
+related_dependencies:
+  internal:
+    - component: settings.gradle.kts catalog declarations
+      relationship_to_domain: Provides aliases consumed by build.gradle.kts
+      direction: outbound
+    - component: build.gradle.kts target declarations
+      relationship_to_domain: Defines topology being checked for effectiveness
+      direction: inbound
+  external:
+    - name: Gradle
+      purpose_for_domain: Build system and version catalog accessors
+    - name: Cloche
+      purpose_for_domain: Minecraft target model
+domain_security_considerations:
+  sensitive_areas: []
+  authentication_patterns_in_domain: None observed.
+  authorization_patterns_in_domain: None observed.
+  data_validation_in_domain: Dependency alias validation happens through Gradle Kotlin DSL compilation/accessor generation.
+testing_patterns:
+  framework: Gradle tasks not executed for this read-only check
+  coverage_areas: [git state, target topology, catalog declaration/reference comparison, stash list]
+  test_organization: Not applicable for read-only investigation
+  mock_patterns: []
+open_questions:
+  - question: Which stash, if any, contains the intended catalog declarations?
+    context: stash@{0} contains build.gradle.kts changes, but this investigation did not inspect stash diffs beyond file membership.
+    type: research
+    affects: [catalog restoration]
+gaps:
+  - area: Exact intended catalog versions
+    description: Current settings.gradle.kts lacks aliases referenced by build.gradle.kts; this read-only check identifies missing aliases but not their intended module coordinates or versions.
+    impact: research_blocker
+    affects: [catalog repair]

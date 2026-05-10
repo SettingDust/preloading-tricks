@@ -1,48 +1,33 @@
 @file:Suppress("UnstableApiUsage", "INVISIBLE_REFERENCE")
+@file:OptIn(ExperimentalPathApi::class)
 
 import com.github.jengelman.gradle.plugins.shadow.ShadowJavaPlugin.Companion.shadowRuntimeElements
 import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
 import com.github.jengelman.gradle.plugins.shadow.transformers.PreserveFirstFoundResourceTransformer
-import com.github.jengelman.gradle.plugins.shadow.transformers.ResourceTransformer
-import com.github.jengelman.gradle.plugins.shadow.transformers.TransformerContext
-import com.google.gson.GsonBuilder
-import com.google.gson.JsonArray
-import com.google.gson.JsonObject
-import earth.terrarium.cloche.ClocheExtension
 import earth.terrarium.cloche.INCLUDE_TRANSFORMED_OUTPUT_ATTRIBUTE
 import earth.terrarium.cloche.REMAPPED_ATTRIBUTE
 import earth.terrarium.cloche.api.attributes.IncludeTransformationStateAttribute
 import earth.terrarium.cloche.api.attributes.MinecraftModLoader
-import earth.terrarium.cloche.api.attributes.RemapNamespaceAttribute
 import earth.terrarium.cloche.api.attributes.TargetAttributes
 import earth.terrarium.cloche.api.metadata.CommonMetadata
-import earth.terrarium.cloche.api.metadata.FabricMetadata
-import earth.terrarium.cloche.api.target.FabricTarget
-import earth.terrarium.cloche.api.target.ForgeLikeTarget
-import earth.terrarium.cloche.api.target.ForgeTarget
-import earth.terrarium.cloche.api.target.MinecraftTarget
-import earth.terrarium.cloche.api.target.NeoforgeTarget
-import earth.terrarium.cloche.api.target.compilation.ClocheDependencyHandler
+import earth.terrarium.cloche.api.target.*
 import earth.terrarium.cloche.target.LazyConfigurableInternal
-import earth.terrarium.cloche.tasks.GenerateFabricModJson
-import earth.terrarium.cloche.util.fromJars
 import earth.terrarium.cloche.util.target
 import groovy.lang.Closure
 import net.msrandom.minecraftcodev.core.utils.lowerCamelCaseGradleName
-import net.msrandom.minecraftcodev.fabric.task.JarInJar
-import net.msrandom.minecraftcodev.forge.task.JarJar
-import net.msrandom.minecraftcodev.includes.IncludesJar
+import net.msrandom.minecraftcodev.core.utils.toPath
+import net.msrandom.minecraftcodev.core.utils.zipFileSystem
 import net.msrandom.minecraftcodev.runs.MinecraftRunConfiguration
-import org.apache.tools.zip.ZipEntry
-import org.apache.tools.zip.ZipOutputStream
 import org.gradle.api.component.AdhocComponentWithVariants
 import org.gradle.jvm.tasks.Jar
-import org.gradle.kotlin.dsl.support.serviceOf
-import java.nio.charset.StandardCharsets
+import java.nio.file.StandardCopyOption
+import kotlin.io.path.*
 
 plugins {
     java
     idea
+    `maven-publish`
+
     id("com.palantir.git-version") version "5.0.0"
     id("com.gradleup.shadow") version "9.4.1"
     id("earth.terrarium.cloche") version "0.18.11-dust.17"
@@ -62,8 +47,6 @@ version = gitVersion()
 base { archivesName = archive_name }
 
 // endregion
-
-// region Repositories
 
 repositories {
     exclusiveContent {
@@ -118,305 +101,6 @@ repositories {
 
     mavenLocal()
 }
-
-// endregion
-
-// region Container DSL
-
-private fun MinecraftModLoader.containerFeatureName(): String =
-    lowerCamelCaseGradleName("container", toString().lowercase())
-
-class ContainerScope(
-    private val project: Project,
-    val loader: MinecraftModLoader,
-) {
-    val featureName: String = loader.containerFeatureName()
-    val capabilitySuffix: String = loader.toString().lowercase()
-
-    val intermediateOutputsDirectory = project.layout.buildDirectory.dir("libs/intermediates")
-
-    private val includeConfigurationProvider =
-        project.configurations.register(lowerCamelCaseGradleName(featureName, "include")) {
-            isCanBeResolved = true
-            isCanBeConsumed = false
-            isTransitive = false
-
-            attributes {
-                attribute(ArtifactTypeDefinition.ARTIFACT_TYPE_ATTRIBUTE, ArtifactTypeDefinition.JAR_TYPE)
-                attribute(REMAPPED_ATTRIBUTE, false)
-                attribute(INCLUDE_TRANSFORMED_OUTPUT_ATTRIBUTE, false)
-                attribute(IncludeTransformationStateAttribute.ATTRIBUTE, IncludeTransformationStateAttribute.None)
-            }
-        }
-
-    private val includeDevConfigurationProvider =
-        project.configurations.register(lowerCamelCaseGradleName(featureName, "includeDev")) {
-            isCanBeResolved = true
-            isCanBeConsumed = false
-            isTransitive = false
-
-            attributes {
-                attribute(ArtifactTypeDefinition.ARTIFACT_TYPE_ATTRIBUTE, ArtifactTypeDefinition.JAR_TYPE)
-                attribute(REMAPPED_ATTRIBUTE, true)
-                attribute(INCLUDE_TRANSFORMED_OUTPUT_ATTRIBUTE, false)
-                attribute(IncludeTransformationStateAttribute.ATTRIBUTE, IncludeTransformationStateAttribute.None)
-                attribute(RemapNamespaceAttribute.ATTRIBUTE, RemapNamespaceAttribute.INITIAL)
-            }
-        }
-
-    private val embedConfigurations = mutableMapOf<String, NamedDomainObjectProvider<Configuration>>()
-
-    val jarTask = project.tasks.register<ShadowJar>(lowerCamelCaseGradleName(featureName, "jar")) {
-        group = "build"
-        archiveClassifier = loader.toString().lowercase()
-        destinationDirectory = intermediateOutputsDirectory
-    }
-
-    val includeJarTask: TaskProvider<out IncludesJar> =
-        createPackageTask("includeJar", includeConfigurationProvider)
-    val includeDevJarTask: TaskProvider<out IncludesJar> =
-        createPackageTask(
-            "includesDevJar",
-            includeDevConfigurationProvider,
-            archiveClassifier = "${loader.toString().lowercase()}-dev",
-            toIntermediateOutputs = true,
-        )
-
-    init {
-        project.tasks.build {
-            dependsOn(includeJarTask, includeDevJarTask)
-        }
-
-        val containerCapability = "${project.group}:${project.name}-$capabilitySuffix:${project.version}"
-
-        project.configurations.register(lowerCamelCaseGradleName(featureName, "runtimeElements")) {
-            isCanBeResolved = false
-            isCanBeConsumed = true
-            attributes {
-                applyRuntimeVariantAttributes(remapped = false)
-            }
-            outgoing.artifact(includeJarTask)
-            outgoing.capability(containerCapability)
-        }
-
-        project.configurations.register(lowerCamelCaseGradleName(featureName, "devRuntimeElements")) {
-            isCanBeResolved = false
-            isCanBeConsumed = true
-            attributes {
-                applyRuntimeVariantAttributes(remapped = true)
-            }
-            outgoing.artifact(includeDevJarTask)
-            outgoing.capability(containerCapability)
-        }
-    }
-
-    private fun AttributeContainer.applyRuntimeVariantAttributes(remapped: Boolean) {
-        attribute(Usage.USAGE_ATTRIBUTE, project.objects.named(Usage.JAVA_RUNTIME))
-        attribute(Category.CATEGORY_ATTRIBUTE, project.objects.named(Category.LIBRARY))
-        attribute(LibraryElements.LIBRARY_ELEMENTS_ATTRIBUTE, project.objects.named(LibraryElements.JAR))
-        attribute(TargetAttributes.MOD_LOADER, loader)
-        attribute(INCLUDE_TRANSFORMED_OUTPUT_ATTRIBUTE, false)
-        attribute(IncludeTransformationStateAttribute.ATTRIBUTE, IncludeTransformationStateAttribute.None)
-        attribute(REMAPPED_ATTRIBUTE, remapped)
-        if (remapped) {
-            attribute(RemapNamespaceAttribute.ATTRIBUTE, RemapNamespaceAttribute.INITIAL)
-        }
-    }
-
-    private fun createPackageTask(
-        name: String,
-        configuration: NamedDomainObjectProvider<Configuration>,
-        archiveClassifier: String = loader.toString().lowercase(),
-        toIntermediateOutputs: Boolean = false,
-    ): TaskProvider<out IncludesJar> = when (loader) {
-        MinecraftModLoader.fabric -> project.tasks.register<JarInJar>(lowerCamelCaseGradleName(featureName, name)) {
-            group = "build"
-            this.archiveClassifier = archiveClassifier
-            if (toIntermediateOutputs) {
-                destinationDirectory = intermediateOutputsDirectory
-            }
-            input = jarTask.flatMap { it.archiveFile }
-            manifest.fromJars(serviceOf(), input)
-            fromResolutionResults(configuration)
-        }
-
-        else -> project.tasks.register<JarJar>(lowerCamelCaseGradleName(featureName, name)) {
-            group = "build"
-            this.archiveClassifier = archiveClassifier
-            if (toIntermediateOutputs) {
-                destinationDirectory = intermediateOutputsDirectory
-            }
-            input = jarTask.flatMap { it.archiveFile }
-            manifest.fromJars(serviceOf(), input)
-            fromResolutionResults(configuration)
-        }
-    }
-
-    private fun ModuleDependency.withIncludeAttributes() {
-        attributes {
-            attribute(ArtifactTypeDefinition.ARTIFACT_TYPE_ATTRIBUTE, ArtifactTypeDefinition.JAR_TYPE)
-            attribute(REMAPPED_ATTRIBUTE, false)
-            attribute(INCLUDE_TRANSFORMED_OUTPUT_ATTRIBUTE, false)
-            attribute(IncludeTransformationStateAttribute.ATTRIBUTE, IncludeTransformationStateAttribute.None)
-        }
-    }
-
-    private fun ModuleDependency.withIncludeDevAttributes() {
-        attributes {
-            attribute(ArtifactTypeDefinition.ARTIFACT_TYPE_ATTRIBUTE, ArtifactTypeDefinition.JAR_TYPE)
-            attribute(REMAPPED_ATTRIBUTE, true)
-            attribute(INCLUDE_TRANSFORMED_OUTPUT_ATTRIBUTE, false)
-            attribute(IncludeTransformationStateAttribute.ATTRIBUTE, IncludeTransformationStateAttribute.None)
-            attribute(RemapNamespaceAttribute.ATTRIBUTE, RemapNamespaceAttribute.INITIAL)
-        }
-    }
-
-    private fun embedConfigurationName(name: String): String =
-        if (name.isBlank()) {
-            lowerCamelCaseGradleName(featureName, "embed")
-        } else {
-            lowerCamelCaseGradleName(featureName, "embed", name)
-        }
-
-    private fun Configuration.applyDefaultEmbedAttributes() {
-        attributes {
-            attribute(
-                LibraryElements.LIBRARY_ELEMENTS_ATTRIBUTE,
-                project.objects.named(LibraryElements.CLASSES_AND_RESOURCES)
-            )
-            attribute(INCLUDE_TRANSFORMED_OUTPUT_ATTRIBUTE, false)
-        }
-    }
-
-    private fun Configuration.applyTransformedJarAttributes() {
-        attributes {
-            attribute(ArtifactTypeDefinition.ARTIFACT_TYPE_ATTRIBUTE, ArtifactTypeDefinition.JAR_TYPE)
-            attribute(REMAPPED_ATTRIBUTE, false)
-            attribute(INCLUDE_TRANSFORMED_OUTPUT_ATTRIBUTE, true)
-            attribute(IncludeTransformationStateAttribute.ATTRIBUTE, IncludeTransformationStateAttribute.None)
-        }
-    }
-
-    inner class DependenciesScope(private val handler: DependencyHandler) : DependencyHandler by handler {
-        private fun addTo(
-            configuration: NamedDomainObjectProvider<Configuration>,
-            dependencyNotation: Any,
-            configure: ModuleDependency.() -> Unit = {},
-        ): Dependency? {
-            val dependency = handler.add(configuration.get().name, dependencyNotation)
-            if (dependency is ModuleDependency) {
-                dependency.configure()
-            }
-            return dependency
-        }
-
-        fun include(dependencyNotation: Any, configure: ModuleDependency.() -> Unit = {}): Dependency? =
-            addTo(includeConfigurationProvider, dependencyNotation, configure)
-
-        fun includeDev(dependencyNotation: Any, configure: ModuleDependency.() -> Unit = {}): Dependency? =
-            addTo(includeDevConfigurationProvider, dependencyNotation, configure)
-
-        fun embed(dependencyNotation: Any, configure: ModuleDependency.() -> Unit = {}): Dependency? =
-            embed("", dependencyNotation, configure)
-
-        fun embed(name: String, dependencyNotation: Any, configure: ModuleDependency.() -> Unit = {}): Dependency? {
-            val configuration = embedConfigurations[name]
-                ?: throw IllegalArgumentException("embed('$name') is not registered for $featureName")
-            return addTo(configuration, dependencyNotation, configure)
-        }
-
-        fun includeTarget(target: MinecraftTarget) {
-            includeJarTask.configure {
-                dependsOn(target.includeJarTaskName)
-            }
-            includeDevJarTask.configure {
-                dependsOn(target.jarTaskName)
-            }
-
-            include(target(target)) {
-                withIncludeAttributes()
-            }
-            includeDev(target(target)) {
-                withIncludeDevAttributes()
-            }
-        }
-
-        override fun variantOf(
-            dependencyProviderConvertible: ProviderConvertible<MinimalExternalModuleDependency>,
-            variantSpec: Action<in ExternalModuleDependencyVariantSpec>
-        ): Provider<MinimalExternalModuleDependency> {
-            return handler.variantOf(dependencyProviderConvertible, variantSpec)
-        }
-
-        override fun platform(dependencyProvider: Provider<MinimalExternalModuleDependency>): Provider<MinimalExternalModuleDependency> {
-            return handler.platform(dependencyProvider)
-        }
-
-        override fun platform(dependencyProviderConvertible: ProviderConvertible<MinimalExternalModuleDependency>): Provider<MinimalExternalModuleDependency> {
-            return handler.platform(dependencyProviderConvertible)
-        }
-
-        override fun enforcedPlatform(dependencyProviderConvertible: ProviderConvertible<MinimalExternalModuleDependency>): Provider<MinimalExternalModuleDependency> {
-            return handler.enforcedPlatform(dependencyProviderConvertible)
-        }
-
-        override fun testFixtures(dependencyProvider: Provider<MinimalExternalModuleDependency>): Provider<MinimalExternalModuleDependency> {
-            return handler.testFixtures(dependencyProvider)
-        }
-
-        override fun testFixtures(dependencyProviderConvertible: ProviderConvertible<MinimalExternalModuleDependency>): Provider<MinimalExternalModuleDependency> {
-            return handler.testFixtures(dependencyProviderConvertible)
-        }
-    }
-
-    fun embed(
-        name: String = "",
-        configureConfiguration: Configuration.() -> Unit = { applyDefaultEmbedAttributes() },
-        configure: CopySpec.() -> Unit = {},
-    ) {
-        require(name !in embedConfigurations) { "embed('$name') is already registered for $featureName" }
-
-        val configuration = project.configurations.register(embedConfigurationName(name)) {
-            isCanBeResolved = true
-            isTransitive = false
-            configureConfiguration()
-        }
-        embedConfigurations[name] = configuration
-
-        jarTask.configure {
-            from(configuration) {
-                configure()
-            }
-        }
-    }
-
-    fun dependencies(block: DependenciesScope.() -> Unit) {
-        DependenciesScope(project.dependencies).block()
-    }
-
-    fun jar(block: ShadowJar.() -> Unit) {
-        jarTask.configure(block)
-    }
-}
-
-fun ClocheExtension.container(
-    loader: MinecraftModLoader,
-    block: ContainerScope.() -> Unit,
-): ContainerScope = ContainerScope(project, loader).apply(block)
-
-fun ClocheDependencyHandler.container(container: ContainerScope): Dependency =
-    project.dependencies.project(":").apply {
-        capabilities {
-            requireFeature(container.capabilitySuffix)
-        }
-
-        attributes {
-            attribute(REMAPPED_ATTRIBUTE, true)
-            attribute(IncludeTransformationStateAttribute.ATTRIBUTE, IncludeTransformationStateAttribute.None)
-        }
-    }
-
-// endregion
 
 // region Attribute Compatibility Rules
 
@@ -494,41 +178,17 @@ cloche {
         }
     }
 
-    val common201 = common("common:20.1") {
-        dependsOn(commonMain)
-        // mixins.from("src/common/20.1/main/resources/$id.20_1.mixins.json")
-    }
-    val common211 = common("common:21.1") {
-        dependsOn(commonMain)
-        // mixins.from("src/common/21.1/main/resources/$id.21_1.mixins.json")
-    }
-    val common261 = common("common:26.1") {
-        dependsOn(commonMain)
-        // mixins.from("src/common/26.1/main/resources/$id.26_1.mixins.json")
-    }
-
     // endregion
 
-    // region Game Targets
-    val game = common("game") {
-        // mixins.from(files("src/game/main/resources/$id.game.mixins.json"))
-        // accessWideners.from(file("src/game/main/resources/$id.game.accessWidener"))
-
-        project.dependencies {
-            val implementation = lowerCamelCaseGradleName(name, JavaPlugin.IMPLEMENTATION_CONFIGURATION_NAME)
-
-            implementation(target(commonMain))
-        }
+    // region ForgeLike Common Targets
+    val commonForgeLike = common("common:forgelike") {
+        dependsOn(commonMain)
     }
-
-    val game201 = common("game:20.1") {
-        dependsOn(game)
+    val commonModLauncher = common("common:modlauncher") {
+        dependsOn(commonMain, commonForgeLike)
     }
-    val game211 = common("game:21.1") {
-        dependsOn(game)
-    }
-    val game261 = common("game:26.1") {
-        dependsOn(game)
+    val commonNeoForge = common("common:neoforge") {
+        dependsOn(commonMain, commonForgeLike)
     }
     // endregion
 
@@ -537,27 +197,11 @@ cloche {
     targets.withType<FabricTarget> {
         loaderVersion = "0.19.2"
 
+        if (isVersionTarget()) {
+            runs { client() }
+        }
+
         includedClient()
-
-        dependencies {
-            fabricApi(minecraftVersion.map(String::fabricApiVersion))
-        }
-
-        if (isVersionTarget()) return@withType
-
-        metadata {
-            entrypoint("main") {
-                value = "$group.fabric.PreloadingTricksFabric"
-            }
-
-            entrypoint("client") {
-                value = "$group.fabric.PreloadingTricksFabricClient"
-            }
-            dependency {
-                modId = "fabric-api"
-                type = CommonMetadata.Dependency.Type.Required
-            }
-        }
     }
 
     targets.withType<ForgeTarget> {
@@ -566,20 +210,6 @@ cloche {
 
     targets.withType<NeoforgeTarget> {
         loaderVersion.set(minecraftVersion.map(String::neoForgeLoaderVersion))
-
-        if (isVersionTarget()) return@withType
-
-        metadata {
-            modLoader = "javafml"
-            loaderVersion {
-                start = "4"
-            }
-
-            dependency {
-                modId = "preloading_tricks"
-                type = CommonMetadata.Dependency.Type.Recommended
-            }
-        }
     }
 
     targets.all {
@@ -607,54 +237,47 @@ cloche {
 
     // region Main Targets - Fabric
 
-    val fabricCommon = common("fabric:common") {
+    val fabric = fabric {
         dependsOn(commonMain)
-        // mixins.from(file("src/fabric/common/main/resources/$id.fabric.mixins.json"))
-    }
 
-    val fabric201 = fabric("fabric:20.1") {
-        dependsOn(common201, game201, fabricCommon)
         minecraftVersion = "1.20.1"
 
-        metadata {
-            dependency {
-                modId = "minecraft"
-                type = CommonMetadata.Dependency.Type.Required
-                version {
-                    start = "1.20.1"
-                    end = "1.21"
-                }
+        dependencies {
+            catalog.reflect.let {
+                api(it)
+                include(it)
+            }
+
+            include(catalog.lenni0451.commons.unchecked)
+
+            catalog.classTransform.let {
+                api(it)
+                include(it)
+            }
+
+            catalog.classTransform.additionalClassProvider.let {
+                implementation(it)
+                include(it)
+            }
+
+            catalog.classTransform.mixinsTranslator.let {
+                implementation(it)
+                include(it)
+            }
+
+            catalog.bytebuddy.agent.let {
+                api(it)
+                include(it)
             }
         }
 
-    }
-
-    val fabric211 = fabric("fabric:21.1") {
-        dependsOn(common211, game211, fabricCommon)
-        minecraftVersion = "1.21.1"
-
         metadata {
+            languageAdapters.put(id, "$group.fabric.PreloadingTricksLanguageAdapter")
+
             dependency {
-                modId = "minecraft"
-                type = CommonMetadata.Dependency.Type.Required
+                modId = "fabricloader"
                 version {
-                    start = "1.21"
-                }
-            }
-        }
-
-    }
-
-    val fabric261 = fabric("fabric:26.1") {
-        dependsOn(common261, game261, fabricCommon)
-        minecraftVersion = "26.1.2"
-
-        metadata {
-            dependency {
-                modId = "minecraft"
-                type = CommonMetadata.Dependency.Type.Required
-                version {
-                    start = "26.1"
+                    start = "0.18"
                 }
             }
         }
@@ -665,59 +288,90 @@ cloche {
     // region Main Targets - Forge
 
     val forgeService = forge("forge:service") {
-        dependsOn(common201)
+        dependsOn(commonMain, commonModLauncher)
 
         minecraftVersion = "1.20.1"
-
-        tasks {
-            named(generateModsTomlTaskName) { enabled = false }
-        }
-    }
-    val forgeGame = forge("forge:game") {
-        dependsOn(game201)
-        minecraftVersion = "1.20.1"
-
-        metadata {
-            modLoader = "javafml"
-            loaderVersion {
-                start = "47"
-            }
-            dependency {
-                modId = "minecraft"
-                type = CommonMetadata.Dependency.Type.Required
-                version {
-                    start = "1.20.1"
-                    end = "1.21"
-                }
-            }
-
-            dependency {
-                modId = "preloading_tricks"
-                type = CommonMetadata.Dependency.Type.Recommended
-            }
-        }
-
-        repositories {
-            maven("https://repo.spongepowered.org/maven") {
-                content {
-                    includeGroup("org.spongepowered")
-                }
-            }
-        }
 
         dependencies {
-            implementation("org.spongepowered:mixin:0.8.7")
-            compileOnly(catalog.mixinextras.common)
-            implementation(catalog.mixinextras.forge)
-            implementation(target(forgeService))
+            implementation(catalog.mixinextras.common)
+
+            api(catalog.reflect)
+
+            api(catalog.classTransform)
+            implementation(catalog.classTransform.additionalClassProvider)
+            implementation(catalog.classTransform.mixinsTranslator)
+
+            implementation(catalog.bytebuddy.agent)
+        }
+
+        val noNewerJavaAttribute = Attribute.of("noNewerJava", Boolean::class.javaObjectType)
+
+        abstract class RemoveNewerJavaTransform : TransformAction<TransformParameters.None> {
+            @get:InputArtifact
+            abstract val inputArtifact: Provider<FileSystemLocation>
+
+            override fun transform(outputs: TransformOutputs) {
+                val input = inputArtifact.get().toPath()
+
+                val newerJavaClasses = zipFileSystem(input).use {
+                    it.getPath("META-INF/versions/24").exists()
+                }
+
+                if (!newerJavaClasses) {
+                    outputs.file(input)
+                    return
+                }
+
+                val output = outputs.file(input.name.replace(".jar", "-noNewerJava.jar")).toPath()
+
+                input.copyTo(output, StandardCopyOption.COPY_ATTRIBUTES)
+
+                zipFileSystem(output).use { fs ->
+                    fs.getPath("META-INF/versions/24").deleteRecursively()
+                }
+            }
+        }
+
+        val embedBoot by configurations.register(lowerCamelCaseGradleName(featureName, "embedBoot")) {
+            isTransitive = false
+
+            attributes
+                .attribute(ArtifactTypeDefinition.ARTIFACT_TYPE_ATTRIBUTE, ArtifactTypeDefinition.JAR_TYPE)
+                .attribute(REMAPPED_ATTRIBUTE, false)
+                .attribute(INCLUDE_TRANSFORMED_OUTPUT_ATTRIBUTE, true)
+                .attribute(IncludeTransformationStateAttribute.ATTRIBUTE, IncludeTransformationStateAttribute.None)
+        }
+
+        project.dependencies {
+            attributesSchema {
+                attribute(noNewerJavaAttribute)
+            }
+
+            artifactTypes.named(ArtifactTypeDefinition.JAR_TYPE) {
+                attributes.attribute(noNewerJavaAttribute, false)
+            }
+
+            registerTransform(RemoveNewerJavaTransform::class) {
+                from.attribute(noNewerJavaAttribute, false)
+                to.attribute(noNewerJavaAttribute, true)
+            }
+
+            embedBoot(catalog.lenni0451.commons.unchecked)
+            embedBoot(catalog.reflect)
+            embedBoot(catalog.classTransform)
+            embedBoot(catalog.classTransform.mixinsTranslator)
+            embedBoot(catalog.classTransform.additionalClassProvider)
+            embedBoot(catalog.bytebuddy.agent)
         }
 
         tasks {
-            named<Jar>(lowerCamelCaseGradleName(featureName, "jar")) {
-                manifest {
-                    attributes(
-                        "ForgeVariant" to "LexForge"
-                    )
+            named(generateModsTomlTaskName) {
+                enabled = false
+            }
+
+            named<Jar>(jarTaskName) {
+                from(embedBoot) {
+                    into("libs/boot")
                 }
             }
         }
@@ -727,241 +381,121 @@ cloche {
 
     // region Main Targets - NeoForge
 
-    val neoforgeService = neoforge("neoforge:service") {
-        dependsOn(common211)
+    val neoforgeModlauncher = neoforge("neoforge:modlauncher") {
+        dependsOn(commonMain, commonForgeLike, commonModLauncher, commonNeoForge)
 
         minecraftVersion = "1.21.1"
 
-        tasks {
-            named(generateModsTomlTaskName) { enabled = false }
-        }
-    }
-
-    val neoforgeService261 = neoforge("neoforge:service:26.1") {
-        dependsOn(common261)
-
-        minecraftVersion = "26.1.2"
-
-        tasks {
-            named(generateModsTomlTaskName) { enabled = false }
-        }
-    }
-
-    val neoforgeGameCommon = common("neoforge:game:common") {
-        dependsOn(commonMain)
-
-        mixins.from(file("src/neoforge/game/common/main/resources/$id.neoforge.mixins.json"))
-    }
-
-    val neoforgeGame211 = neoforge("neoforge:game:21.1") {
-        dependsOn(game211, neoforgeGameCommon)
-        minecraftVersion = "1.21.1"
-
         metadata {
-            dependency {
-                modId = "minecraft"
-                type = CommonMetadata.Dependency.Type.Required
-                version {
-                    start = "1.21"
-                }
+            modLoader = "lowcodefml"
+            loaderVersion {
+                start = "0"
             }
         }
 
         dependencies {
-            implementation(target(neoforgeService))
+            catalog.reflect.let {
+                api(it)
+                legacyClasspath(it)
+            }
+            catalog.classTransform.let {
+                api(it) {
+                    exclude(group = "org.ow2.asm")
+                }
+                legacyClasspath(it)
+            }
+            catalog.classTransform.additionalClassProvider.let {
+                implementation(it) {
+                    exclude(group = "com.google.guava")
+                    exclude(group = "org.ow2.asm")
+                }
+                legacyClasspath(it)
+            }
+            catalog.classTransform.mixinsTranslator.let {
+                implementation(it) {
+                    exclude(group = "com.google.guava")
+                    exclude(group = "org.ow2.asm")
+                }
+                legacyClasspath(it)
+            }
+            catalog.bytebuddy.agent.let {
+                implementation(it)
+                legacyClasspath(it)
+            }
+        }
+
+        val embedBoot by configurations.register(lowerCamelCaseGradleName(featureName, "embedBoot")) {
+            isTransitive = false
+
+            attributes
+                .attribute(ArtifactTypeDefinition.ARTIFACT_TYPE_ATTRIBUTE, ArtifactTypeDefinition.JAR_TYPE)
+                .attribute(REMAPPED_ATTRIBUTE, false)
+                .attribute(INCLUDE_TRANSFORMED_OUTPUT_ATTRIBUTE, true)
+                .attribute(
+                    IncludeTransformationStateAttribute.ATTRIBUTE,
+                    IncludeTransformationStateAttribute.None
+                )
+        }
+
+        project.dependencies {
+            embedBoot(catalog.lenni0451.commons.unchecked)
+            embedBoot(catalog.reflect)
+            embedBoot(catalog.classTransform)
+            embedBoot(catalog.classTransform.additionalClassProvider)
+            embedBoot(catalog.classTransform.mixinsTranslator)
+            embedBoot(catalog.bytebuddy.agent)
         }
 
         tasks {
-            named<Jar>(lowerCamelCaseGradleName(featureName, "jar")) {
-                manifest {
-                    attributes(
-                        "ForgeVariant" to "NeoForge"
-                    )
+            named(generateModsTomlTaskName) {
+                enabled = false
+            }
+
+            named<Jar>(jarTaskName) {
+                from(embedBoot) {
+                    into("libs/boot")
                 }
             }
         }
     }
 
-    val neoforgeGame261 = neoforge("neoforge:game:26.1") {
-        dependsOn(game261, neoforgeGameCommon)
-        minecraftVersion = "26.1.2"
+    val neoforgeFancyModLoader = neoforge("neoforge:fancy-mod-loader") {
+        dependsOn(commonMain, commonForgeLike, commonNeoForge)
 
-        metadata {
-            dependency {
-                modId = "minecraft"
-                type = CommonMetadata.Dependency.Type.Required
-                version {
-                    start = "26.1"
-                }
-            }
-        }
+        minecraftVersion = "1.21.10"
+        loaderVersion = "21.10.64"
 
         dependencies {
-            implementation(target(neoforgeService261))
-        }
-
-        tasks {
-            named<Jar>(lowerCamelCaseGradleName(featureName, "jar")) {
-                manifest {
-                    attributes(
-                        "ForgeVariant" to "NeoForge"
-                    )
+            catalog.reflect.let {
+                api(it)
+                legacyClasspath(it)
+            }
+            catalog.classTransform.let {
+                api(it) {
+                    exclude(group = "org.ow2.asm")
                 }
+                legacyClasspath(it)
+            }
+            catalog.classTransform.additionalClassProvider.let {
+                implementation(it) {
+                    exclude(group = "com.google.guava")
+                    exclude(group = "org.ow2.asm")
+                }
+                legacyClasspath(it)
+            }
+            catalog.classTransform.mixinsTranslator.let {
+                implementation(it) {
+                    exclude(group = "com.google.guava")
+                    exclude(group = "org.ow2.asm")
+                }
+                legacyClasspath(it)
+            }
+            catalog.bytebuddy.agent.let {
+                implementation(it)
+                legacyClasspath(it)
             }
         }
     }
-
-    // endregion
-
-    // region Containers
-
-    // region Fabric Container
-
-    val fabricContainer = container(loader = MinecraftModLoader.fabric) {
-        val metadataDirectory = project.layout.buildDirectory.dir("generated")
-            .map { it.dir("metadata").dir(featureName) }
-        val generateModJson =
-            tasks.register<GenerateFabricModJson>(lowerCamelCaseGradleName(featureName, "generateModJson")) {
-                modId = "${id}_container"
-                metadata = objects.newInstance(FabricMetadata::class.java, fabric201).apply {
-                    license.value(cloche.metadata.license)
-                    dependencies.value(cloche.metadata.dependencies)
-                }
-                loaderDependencyVersion = "0.18"
-                output.set(metadataDirectory.map { it.file("fabric.mod.json") })
-            }
-
-        dependencies {
-            includeTarget(fabric261)
-            includeTarget(fabric211)
-            includeTarget(fabric201)
-        }
-
-        jar {
-            dependsOn(generateModJson)
-            from(metadataDirectory)
-        }
-    }
-
-    // endregion
-
-    // region Forge Container
-
-    val forgeContainer = container(loader = MinecraftModLoader.forge) {
-        embed()
-        dependencies {
-            includeTarget(forgeGame)
-            embed(target(forgeService))
-        }
-
-        jar {
-            manifest {
-                attributes(
-                    "FMLModType" to "GAMELIBRARY"
-                )
-            }
-        }
-    }
-
-    // endregion
-
-    // region NeoForge Container
-
-    val neoforgeContainer = container(loader = MinecraftModLoader.neoforge) {
-        embed()
-
-        val neoforgeMergedJar = tasks.register<ShadowJar>(lowerCamelCaseGradleName(featureName, "mergedJar")) {
-            group = "build"
-            archiveClassifier = "${loader.toString().lowercase()}-merged"
-            destinationDirectory = intermediateOutputsDirectory
-            configurations = emptyList()
-
-            for (target in listOf(neoforgeGame211, neoforgeGame261)) {
-                val output = tasks.named<Jar>(target.includeJarTaskName).flatMap { it.archiveFile }
-                from(project.zipTree(output))
-
-                manifest.fromJars(serviceOf(), output)
-            }
-
-            mergeServiceFiles()
-            append("META-INF/accesstransformer.cfg")
-            transform<PreserveFirstFoundResourceTransformer>()
-            filesMatching("**/*.class") { duplicatesStrategy = DuplicatesStrategy.EXCLUDE }
-        }
-
-        val neoforgeMergedDevJar = tasks.register<ShadowJar>(lowerCamelCaseGradleName(featureName, "mergedDevJar")) {
-            group = "build"
-            archiveClassifier = "${loader.toString().lowercase()}-merged-dev"
-            destinationDirectory = intermediateOutputsDirectory
-            configurations = emptyList()
-
-            for (target in listOf(neoforgeGame211, neoforgeGame261)) {
-                val output = tasks.named<Jar>(target.jarTaskName).flatMap { it.archiveFile }
-                from(project.zipTree(output))
-
-                manifest.fromJars(serviceOf(), output)
-            }
-
-            mergeServiceFiles()
-            append("META-INF/accesstransformer.cfg")
-            transform<PreserveFirstFoundResourceTransformer>()
-            filesMatching("**/*.class") { duplicatesStrategy = DuplicatesStrategy.EXCLUDE }
-        }
-
-        val mergedRuntimeElements =
-            configurations.register(lowerCamelCaseGradleName(featureName, "mergedRuntimeElements")) {
-                isCanBeResolved = false
-                isCanBeConsumed = true
-
-                attributes {
-                    attribute(Usage.USAGE_ATTRIBUTE, objects.named(Usage.JAVA_RUNTIME))
-                    attribute(Category.CATEGORY_ATTRIBUTE, objects.named(Category.LIBRARY))
-                    attribute(LibraryElements.LIBRARY_ELEMENTS_ATTRIBUTE, objects.named(LibraryElements.JAR))
-                    attribute(TargetAttributes.MOD_LOADER, loader)
-                    attribute(INCLUDE_TRANSFORMED_OUTPUT_ATTRIBUTE, false)
-                    attribute(IncludeTransformationStateAttribute.ATTRIBUTE, IncludeTransformationStateAttribute.None)
-                    attribute(REMAPPED_ATTRIBUTE, false)
-                }
-
-                outgoing.artifact(neoforgeMergedJar)
-            }
-
-        val mergedDevRuntimeElements =
-            configurations.register(lowerCamelCaseGradleName(featureName, "mergedDevRuntimeElements")) {
-                isCanBeResolved = false
-                isCanBeConsumed = true
-
-                attributes {
-                    attribute(Usage.USAGE_ATTRIBUTE, objects.named(Usage.JAVA_RUNTIME))
-                    attribute(Category.CATEGORY_ATTRIBUTE, objects.named(Category.LIBRARY))
-                    attribute(LibraryElements.LIBRARY_ELEMENTS_ATTRIBUTE, objects.named(LibraryElements.JAR))
-                    attribute(TargetAttributes.MOD_LOADER, loader)
-                    attribute(INCLUDE_TRANSFORMED_OUTPUT_ATTRIBUTE, false)
-                    attribute(IncludeTransformationStateAttribute.ATTRIBUTE, IncludeTransformationStateAttribute.None)
-                    attribute(REMAPPED_ATTRIBUTE, true)
-                    attribute(RemapNamespaceAttribute.ATTRIBUTE, RemapNamespaceAttribute.INITIAL)
-                }
-
-                outgoing.artifact(neoforgeMergedDevJar)
-            }
-
-        dependencies {
-            include(project(":", mergedRuntimeElements.name))
-            includeDev(project(":", mergedDevRuntimeElements.name))
-            embed(target(neoforgeService))
-            embed(target(neoforgeService261))
-        }
-
-        jar {
-            manifest {
-                attributes(
-                    "FMLModType" to "GAMELIBRARY"
-                )
-            }
-        }
-    }
-
-    // endregion
 
     // endregion
 
@@ -972,38 +506,32 @@ cloche {
     fabric("version:fabric:20.1") {
         minecraftVersion = "1.20.1"
 
-        runs { client() }
-
         dependencies {
-            modRuntimeOnly(skipIncludeTransformation(project(":"))) {
-                isTransitive = false
-            }
+            modRuntimeOnly(target(fabric))
         }
     }
 
     fabric("version:fabric:21.1") {
         minecraftVersion = "1.21.1"
 
-        runs { client() }
-
         dependencies {
-            modRuntimeOnly(skipIncludeTransformation(project(":"))) {
-                isTransitive = false
-            }
+            modRuntimeOnly(target(fabric))
         }
     }
 
     fabric("version:fabric:26.1") {
         minecraftVersion = "26.1.2"
 
-        runs { client() }
-
         dependencies {
-            modRuntimeOnly(skipIncludeTransformation(project(":"))) {
-                isTransitive = false
+            modRuntimeOnly(target(fabric)) {
+                attributes {
+                    attribute(REMAPPED_ATTRIBUTE, true)
+                }
             }
         }
     }
+
+    // https://fabricmc.net/develop/
 
     // endregion
 
@@ -1018,20 +546,8 @@ cloche {
             }
         }
 
-        configurations.named(lowerCamelCaseGradleName(featureName, "legacyClasspath")) {
-            exclude("org.jetbrains.kotlin")
-        }
-
         dependencies {
-            modRuntimeOnly(project(":")) {
-                isTransitive = false
-            }
-
-            legacyClasspath(catalog.preloadingTricks) {
-                isTransitive = false
-            }
-
-            legacyClasspath(catalog.klf.mc20.forge)
+            modRuntimeOnly(target(forgeService))
         }
     }
 
@@ -1049,15 +565,33 @@ cloche {
         }
 
         dependencies {
-            modRuntimeOnly(project(":")) {
+            legacyClasspath(target(neoforgeModlauncher)) {
+                attributes {
+                    attribute(ArtifactTypeDefinition.ARTIFACT_TYPE_ATTRIBUTE, ArtifactTypeDefinition.JAR_TYPE)
+                    attribute(REMAPPED_ATTRIBUTE, false)
+                    attribute(INCLUDE_TRANSFORMED_OUTPUT_ATTRIBUTE, true)
+                    attribute(
+                        IncludeTransformationStateAttribute.ATTRIBUTE,
+                        IncludeTransformationStateAttribute.None
+                    )
+                }
+
                 isTransitive = false
             }
+        }
+    }
 
-            legacyClasspath(catalog.preloadingTricks) {
-                isTransitive = false
+    neoforge("version:neoforge:21.10") {
+        minecraftVersion = "1.21.10"
+
+        runs {
+            client {
+                env("MOD_CLASSES", "")
             }
+        }
 
-            legacyClasspath(catalog.klf.mc21.neoforge)
+        dependencies {
+            runtimeOnly(target(neoforgeFancyModLoader))
         }
     }
 
@@ -1071,106 +605,47 @@ cloche {
         }
 
         dependencies {
-            modRuntimeOnly(project(":")) {
-                isTransitive = false
-            }
-
-            legacyClasspath(catalog.preloadingTricks) {
-                isTransitive = false
-            }
-
-            legacyClasspath(catalog.klf.mc26.neoforge)
+            runtimeOnly(target(neoforgeFancyModLoader))
         }
     }
 
-    // endregion
+    // Version https://projects.neoforged.net/neoforged/neoforge
 
     // endregion
 
-    // region Final Jar
-    tasks {
-        withType<ProcessResources> {
-            duplicatesStrategy = DuplicatesStrategy.WARN
-        }
+    // region Shadow
 
-        withType<Jar> {
-            duplicatesStrategy = DuplicatesStrategy.WARN
-        }
-
-        shadowJar {
-            enabled = false
-        }
-
-        class ForgeMetadataTransformer : ResourceTransformer {
-            private val gson = GsonBuilder().setPrettyPrinting().create()
-            private val collected = JsonArray()
-            private val path = "META-INF/jarjar/metadata.json"
-            private var transformed = false
-
-            override fun canTransformResource(element: FileTreeElement): Boolean {
-                return element.path == path
-            }
-
-            override fun transform(context: TransformerContext) {
-                context.inputStream.use { input ->
-                    val json = gson.fromJson(input.reader(Charsets.UTF_8), JsonObject::class.java)
-                    val jars = json.getAsJsonArray("jars")
-                    jars?.forEach { collected.add(it) }
-                    transformed = true
-                }
-            }
-
-            override fun hasTransformedResource(): Boolean = transformed
-
-            override fun modifyOutputStream(os: ZipOutputStream, preserveFileTimestamps: Boolean) {
-                if (collected.size() == 0) return
-
-                val merged = JsonObject().apply {
-                    add("jars", collected)
-                }
-
-                os.putNextEntry(ZipEntry(path))
-                os.write(gson.toJson(merged).toByteArray(StandardCharsets.UTF_8))
-                os.closeEntry()
-            }
-        }
-
-        val shadowMergedDevJar by registering(ShadowJar::class) {
-            archiveClassifier = "dev"
-            configurations = emptyList()
-
-            for (container in listOf(fabricContainer, forgeContainer, neoforgeContainer)) {
-                val output = container.includeDevJarTask.flatMap { it.archiveFile }
-                from(project.zipTree(output))
-
-                manifest.fromJars(serviceOf(), output)
-            }
-
-            mergeServiceFiles()
-            append("META-INF/accesstransformer.cfg")
-
-            transform<ForgeMetadataTransformer>()
-            transform<PreserveFirstFoundResourceTransformer>()
-            filesMatching("**/*.class") { duplicatesStrategy = DuplicatesStrategy.EXCLUDE }
-        }
-
-        val shadowMergedJar by registering(ShadowJar::class) {
+    project.tasks {
+        val shadowContainersJar by registering(ShadowJar::class) {
             archiveClassifier = ""
-            configurations = emptyList()
 
-            for (container in listOf(fabricContainer, forgeContainer, neoforgeContainer)) {
-                val output = container.includeJarTask.flatMap { it.archiveFile }
-                from(project.zipTree(output))
+            duplicatesStrategy = DuplicatesStrategy.INCLUDE
 
-                manifest.fromJars(serviceOf(), output)
-            }
+            val fabricJar = project.tasks.named<Jar>(fabric.includeJarTaskName)
+            from(fabricJar.map { zipTree(it.archiveFile) })
+            manifest.from(fabricJar.get().manifest)
 
-            mergeServiceFiles()
+            val forgeServiceJar = project.tasks.named<Jar>(forgeService.includeJarTaskName)
+            from(forgeServiceJar.map { zipTree(it.archiveFile) })
+            manifest.from(forgeServiceJar.get().manifest)
+
+            val neoforgeModlauncherJar =
+                project.tasks.named<Jar>(neoforgeModlauncher.includeJarTaskName)
+            from(neoforgeModlauncherJar.map { zipTree(it.archiveFile) })
+            manifest.from(neoforgeModlauncherJar.get().manifest)
+
+            val neoforgeFancyModLoaderJar =
+                project.tasks.named<Jar>(neoforgeFancyModLoader.includeJarTaskName)
+            from(neoforgeFancyModLoaderJar.map { zipTree(it.archiveFile) })
+            manifest.from(neoforgeFancyModLoaderJar.get().manifest)
+
             append("META-INF/accesstransformer.cfg")
 
-            transform<ForgeMetadataTransformer>()
-            transform<PreserveFirstFoundResourceTransformer>()
+            mergeServiceFiles()
+
             filesMatching("**/*.class") { duplicatesStrategy = DuplicatesStrategy.EXCLUDE }
+
+            transform<PreserveFirstFoundResourceTransformer>()
         }
 
         val shadowSourcesJar by registering(ShadowJar::class) {
@@ -1185,68 +660,26 @@ cloche {
                     from(source.filter { it.name.equals("MANIFEST.MF") }.toList())
                 }
             }
+
+            transform<PreserveFirstFoundResourceTransformer>()
         }
 
         build {
-            dependsOn(shadowMergedDevJar, shadowMergedJar, shadowSourcesJar)
+            dependsOn(shadowContainersJar, shadowSourcesJar)
         }
 
         jar {
-            enabled = false
+            finalizedBy(shadowContainersJar)
+            destinationDirectory = shadowContainersJar.flatMap { it.destinationDirectory }
         }
 
         afterEvaluate {
-            (components["java"] as AdhocComponentWithVariants).apply {
-                configurations {
-                    shadowRuntimeElements {
-                        // Shadow plugin registers an extra shadowRuntimeElements variant.
-                        // Keep it out of published metadata to avoid a duplicate runtime slot.
-                        withVariantsFromConfiguration(this) {
-                            skip()
-                        }
-                    }
-
-                    runtimeElements {
-                        // Replace the default jar artifact with shadowMergedJar so that
-                        // run configs that resolve runtimeElements properly depend on shadowMergedJar.
-                        outgoing.artifacts.clear()
-                        outgoing.artifact(shadowMergedJar)
-
-                        // Re-add the dev (remapped=true) variant pointing to shadowMergedDevJar.
-                        outgoing.variants.create("remapped") {
-                            attributes {
-                                attribute(REMAPPED_ATTRIBUTE, true)
-                                attribute(RemapNamespaceAttribute.ATTRIBUTE, RemapNamespaceAttribute.INITIAL)
-                            }
-                            artifact(shadowMergedDevJar)
-                        }
-
-                        addVariantsFromConfiguration(this) {
-                            if (configurationVariant.name in listOf("classes", "resources")) {
-                                skip()
-                            }
-                            mapToMavenScope("runtime")
-                        }
-                    }
-                }
-
-                val testTargets = cloche.targets.filter { it.isVersionTarget() }
-
-                testTargets.forEach { target ->
-                    for (variant in listOf(
-                        "${target.featureName}ApiElements",
-                        "${target.featureName}RuntimeElements"
-                    )) {
-                        configurations.named(variant) {
-                            withVariantsFromConfiguration(this) {
-                                skip()
-                            }
-                        }
-                    }
-                }
+            named("generateMetadataFileForMavenPublication") {
+                dependsOn(shadowContainersJar)
             }
         }
     }
+
     // endregion
 }
 
@@ -1272,6 +705,7 @@ fun String.forgeLoaderVersion(): String? = when (this) {
 
 fun String.neoForgeLoaderVersion(): String? = when (this) {
     "1.21.1" -> "21.1.228"
+    "1.21.10" -> "21.10.64"
     "26.1.2" -> "26.1.2.30-beta"
     else -> null
 }
@@ -1323,3 +757,92 @@ val MinecraftTarget.decompileMinecraftTaskName: String
     get() = lowerCamelCaseGradleName("decompile", featureName, "minecraft")
 
 // endregion
+
+// region Tasks
+
+tasks {
+    withType<ProcessResources> {
+        duplicatesStrategy = DuplicatesStrategy.WARN
+    }
+
+    withType<Jar> {
+        duplicatesStrategy = DuplicatesStrategy.WARN
+    }
+
+    shadowJar {
+        enabled = false
+    }
+
+    afterEvaluate {
+        (components["java"] as AdhocComponentWithVariants).apply {
+            configurations {
+                shadowRuntimeElements {
+                    // Shadow plugin registers an extra shadowRuntimeElements variant.
+                    // Keep it out of published metadata to avoid a duplicate runtime slot.
+                    withVariantsFromConfiguration(this) {
+                        skip()
+                    }
+                }
+
+                runtimeElements {
+                    // Cloche skips common runtimeElements by default for common compilations.
+                    // Re-add it so apiElements has a corresponding runtime variant for the final single jar.
+                    addVariantsFromConfiguration(this) {
+                        if (configurationVariant.name in listOf("classes", "resources")) {
+                            skip()
+                        }
+                        mapToMavenScope("runtime")
+                    }
+                }
+            }
+
+            val testTargets = cloche.targets.filter { it.isVersionTarget() }
+
+            testTargets.forEach { target ->
+                for (variant in listOf(
+                    "${target.featureName}ApiElements",
+                    "${target.featureName}RuntimeElements"
+                )) {
+                    configurations.named(variant) {
+                        withVariantsFromConfiguration(this) {
+                            skip()
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+
+// endregion
+
+publishing {
+    publications {
+        register<MavenPublication>("maven") {
+            from(components["java"])
+
+            artifact(tasks.named("shadowSourcesJar")) {
+                classifier = "sources"
+            }
+
+            pom {
+                name = cloche.metadata.modId
+                description = cloche.metadata.description
+                url = cloche.metadata.sources
+
+                licenses {
+                    license {
+                        name = cloche.metadata.license
+                    }
+                }
+
+                developers {
+                    developer {
+                        name = cloche.metadata.authors.get().first().name
+                        email = cloche.metadata.authors.get().first().contact
+                    }
+                }
+            }
+        }
+    }
+}

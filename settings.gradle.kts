@@ -145,6 +145,24 @@ dependencyResolutionManagement.versionCatalogs.create("catalog") {
     library("mixin-fabric", "net.fabricmc", "sponge-mixin")
         .version("0.17.3+mixin.0.8.7")
 
+    library("reflect", "net.lenni0451", "Reflect").version("1.6.3")
+    library("lenni0451-commons-unchecked", "net.lenni0451.commons", "unchecked").version("1.9.2")
+
+    val classTransform = "1.15.0-SNAPSHOT"
+    library("classTransform", "net.lenni0451.classtransform", "core").version(classTransform)
+    library(
+        "classTransform-AdditionalClassProvider",
+        "net.lenni0451.classtransform",
+        "additionalclassprovider"
+    ).version(classTransform)
+    library(
+        "classTransform-MixinsTranslator",
+        "net.lenni0451.classtransform",
+        "mixinstranslator"
+    ).version(classTransform)
+
+    library("bytebuddy-agent", "net.bytebuddy", "byte-buddy-agent").version("1.18.8")
+
     dependency("mixinextras", "io.github.llamalad7") {
         artifact = "mixinextras"
 
@@ -155,11 +173,6 @@ dependencyResolutionManagement.versionCatalogs.create("catalog") {
             loader("common") { artifact(ArtifactFormatter.dashLoader) }
         }
     }
-
-    library("preloadingTricks", "settingdust.preloading_tricks", "PreloadingTricks")
-        .version("3.5.12")
-
-
 }
 
 // #endregion

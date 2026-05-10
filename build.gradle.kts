@@ -462,8 +462,7 @@ cloche {
     val neoforgeFancyModLoader = neoforge("neoforge:fancy-mod-loader") {
         dependsOn(commonMain, commonForgeLike, commonNeoForge)
 
-        minecraftVersion = "1.21.10"
-        loaderVersion = "21.10.64"
+        minecraftVersion = "26.1.2"
 
         dependencies {
             catalog.reflect.let {
@@ -581,20 +580,6 @@ cloche {
         }
     }
 
-    neoforge("version:neoforge:21.10") {
-        minecraftVersion = "1.21.10"
-
-        runs {
-            client {
-                env("MOD_CLASSES", "")
-            }
-        }
-
-        dependencies {
-            runtimeOnly(target(neoforgeFancyModLoader))
-        }
-    }
-
     neoforge("version:neoforge:26.1") {
         minecraftVersion = "26.1.2"
 
@@ -705,7 +690,6 @@ fun String.forgeLoaderVersion(): String? = when (this) {
 
 fun String.neoForgeLoaderVersion(): String? = when (this) {
     "1.21.1" -> "21.1.228"
-    "1.21.10" -> "21.10.64"
     "26.1.2" -> "26.1.2.30-beta"
     else -> null
 }

@@ -48,6 +48,11 @@ println(version)
 
 base { archivesName = archive_name }
 
+val runTargetPrefix = "run:"
+val minecraftVersion20_1 = "1.20.1"
+val minecraftVersion21_1 = "1.21.1"
+val minecraftVersion26_1_2 = "26.1.2"
+
 // endregion
 
 repositories {
@@ -156,7 +161,7 @@ cloche {
             modId = "minecraft"
             type = CommonMetadata.Dependency.Type.Required
             version {
-                start = "1.20.1"
+                start = minecraftVersion20_1
             }
         }
     }
@@ -245,7 +250,7 @@ cloche {
     val fabric = fabric("platform:fabric") {
         dependsOn(coreCommon)
 
-        minecraftVersion = "1.20.1"
+        minecraftVersion = minecraftVersion20_1
 
         dependencies {
             catalog.reflect.let {
@@ -295,7 +300,7 @@ cloche {
     val forgeModLauncher = forge("platform:forge:modlauncher") {
         dependsOn(coreCommon, sharedModLauncher)
 
-        minecraftVersion = "1.20.1"
+        minecraftVersion = minecraftVersion20_1
 
         dependencies {
             implementation(catalog.mixinextras.common)
@@ -376,7 +381,7 @@ cloche {
     val neoforgeModlauncher = neoforge("platform:neoforge:modlauncher") {
         dependsOn(coreCommon, sharedForgeLike, sharedModLauncher, sharedNeoForge)
 
-        minecraftVersion = "1.21.1"
+        minecraftVersion = minecraftVersion21_1
 
         metadata {
             modLoader = "lowcodefml"
@@ -438,7 +443,7 @@ cloche {
     val neoforgeFancyModLoader = neoforge("platform:neoforge:fancy-mod-loader") {
         dependsOn(coreCommon, sharedForgeLike, sharedNeoForge)
 
-        minecraftVersion = "26.1.2"
+        minecraftVersion = minecraftVersion26_1_2
 
         dependencies {
             catalog.reflect.let {
@@ -493,7 +498,7 @@ cloche {
     // region Fabric Version Targets
 
     fabric("run:fabric:20.1") {
-        minecraftVersion = "1.20.1"
+        minecraftVersion = minecraftVersion20_1
 
         dependencies {
             modRuntimeOnly(target(fabric))
@@ -501,7 +506,7 @@ cloche {
     }
 
     fabric("run:fabric:21.1") {
-        minecraftVersion = "1.21.1"
+        minecraftVersion = minecraftVersion21_1
 
         dependencies {
             modRuntimeOnly(target(fabric))
@@ -509,7 +514,7 @@ cloche {
     }
 
     fabric("run:fabric:26.1") {
-        minecraftVersion = "26.1.2"
+        minecraftVersion = minecraftVersion26_1_2
 
         dependencies {
             modRuntimeOnly(target(fabric)) {
@@ -527,7 +532,7 @@ cloche {
     // region Forge Version Targets
 
     forge("run:forge:20.1") {
-        minecraftVersion = "1.20.1"
+        minecraftVersion = minecraftVersion20_1
 
         runs {
             client {
@@ -545,7 +550,7 @@ cloche {
     // region NeoForge Version Targets
 
     neoforge("run:neoforge:21.1") {
-        minecraftVersion = "1.21.1"
+        minecraftVersion = minecraftVersion21_1
 
         runs {
             client {
@@ -571,7 +576,7 @@ cloche {
     }
 
     neoforge("run:neoforge:26.1") {
-        minecraftVersion = "26.1.2"
+        minecraftVersion = minecraftVersion26_1_2
 
         runs {
             client {
@@ -684,7 +689,7 @@ fun String.neoForgeLoaderVersion(): String? = when (this) {
     else -> null
 }
 
-fun MinecraftTarget.isVersionTarget(): Boolean = name.startsWith("run:")
+fun MinecraftTarget.isVersionTarget(): Boolean = name.startsWith(runTargetPrefix)
 
 fun MinecraftTarget.disableVersionTemplateTasks() {
     tasks {

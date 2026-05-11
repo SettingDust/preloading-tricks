@@ -18,6 +18,7 @@ import net.msrandom.minecraftcodev.core.utils.lowerCamelCaseGradleName
 import net.msrandom.minecraftcodev.core.utils.toPath
 import net.msrandom.minecraftcodev.core.utils.zipFileSystem
 import net.msrandom.minecraftcodev.runs.MinecraftRunConfiguration
+import org.gradle.api.artifacts.ExternalModuleDependency
 import org.gradle.api.component.AdhocComponentWithVariants
 import org.gradle.jvm.tasks.Jar
 import java.nio.file.StandardCopyOption
@@ -33,7 +34,7 @@ plugins {
     id("earth.terrarium.cloche") version "0.18.11-dust.17"
 }
 
-// region Project Properties
+// region Project Properties and Constants
 
 val archive_name: String by rootProject.properties
 val id: String by rootProject.properties
@@ -199,6 +200,14 @@ cloche {
     }
     val sharedNeoForge = common("shared:neoforge") {
         dependsOn(coreCommon, sharedForgeLike)
+    }
+
+    val excludeAsm: ExternalModuleDependency.() -> Unit = {
+        exclude(group = "org.ow2.asm")
+    }
+    val excludeGuavaAndAsm: ExternalModuleDependency.() -> Unit = {
+        exclude(group = "com.google.guava")
+        exclude(group = "org.ow2.asm")
     }
     // endregion
 
@@ -396,23 +405,15 @@ cloche {
                 legacyClasspath(it)
             }
             catalog.classTransform.let {
-                api(it) {
-                    exclude(group = "org.ow2.asm")
-                }
+                api(it, excludeAsm)
                 legacyClasspath(it)
             }
             catalog.classTransform.additionalClassProvider.let {
-                implementation(it) {
-                    exclude(group = "com.google.guava")
-                    exclude(group = "org.ow2.asm")
-                }
+                implementation(it, excludeGuavaAndAsm)
                 legacyClasspath(it)
             }
             catalog.classTransform.mixinsTranslator.let {
-                implementation(it) {
-                    exclude(group = "com.google.guava")
-                    exclude(group = "org.ow2.asm")
-                }
+                implementation(it, excludeGuavaAndAsm)
                 legacyClasspath(it)
             }
             catalog.bytebuddy.agent.let {
@@ -451,23 +452,15 @@ cloche {
                 legacyClasspath(it)
             }
             catalog.classTransform.let {
-                api(it) {
-                    exclude(group = "org.ow2.asm")
-                }
+                api(it, excludeAsm)
                 legacyClasspath(it)
             }
             catalog.classTransform.additionalClassProvider.let {
-                implementation(it) {
-                    exclude(group = "com.google.guava")
-                    exclude(group = "org.ow2.asm")
-                }
+                implementation(it, excludeGuavaAndAsm)
                 legacyClasspath(it)
             }
             catalog.classTransform.mixinsTranslator.let {
-                implementation(it) {
-                    exclude(group = "com.google.guava")
-                    exclude(group = "org.ow2.asm")
-                }
+                implementation(it, excludeGuavaAndAsm)
                 legacyClasspath(it)
             }
             catalog.bytebuddy.agent.let {
@@ -493,9 +486,9 @@ cloche {
 
     // endregion
 
-    // region Version Targets
+    // region Run Targets
 
-    // region Fabric Version Targets
+    // region Fabric Run Targets
 
     fabric("run:fabric:20.1") {
         minecraftVersion = minecraftVersion20_1
@@ -529,7 +522,7 @@ cloche {
 
     // endregion
 
-    // region Forge Version Targets
+    // region Forge Run Targets
 
     forge("run:forge:20.1") {
         minecraftVersion = minecraftVersion20_1
@@ -547,7 +540,7 @@ cloche {
 
     // endregion
 
-    // region NeoForge Version Targets
+    // region NeoForge Run Targets
 
     neoforge("run:neoforge:21.1") {
         minecraftVersion = minecraftVersion21_1
@@ -589,7 +582,7 @@ cloche {
         }
     }
 
-    // Version https://projects.neoforged.net/neoforged/neoforge
+    // Runtime version reference: https://projects.neoforged.net/neoforged/neoforge
 
     // endregion
 

@@ -50,6 +50,7 @@ println(version)
 base { archivesName = archive_name }
 
 val runTargetPrefix = "run:"
+val modClassesEnvName = "MOD_CLASSES"
 val minecraftVersion20_1 = "1.20.1"
 val minecraftVersion21_1 = "1.21.1"
 val minecraftVersion26_1_2 = "26.1.2"
@@ -526,12 +527,7 @@ cloche {
 
     forge("run:forge:20.1") {
         minecraftVersion = minecraftVersion20_1
-
-        runs {
-            client {
-                env("MOD_CLASSES", "")
-            }
-        }
+        configureClientModClassesEnv()
 
         dependencies {
             modRuntimeOnly(target(forgeModLauncher))
@@ -544,12 +540,7 @@ cloche {
 
     neoforge("run:neoforge:21.1") {
         minecraftVersion = minecraftVersion21_1
-
-        runs {
-            client {
-                env("MOD_CLASSES", "")
-            }
-        }
+        configureClientModClassesEnv()
 
         dependencies {
             legacyClasspath(target(neoforgeModlauncher)) {
@@ -570,12 +561,7 @@ cloche {
 
     neoforge("run:neoforge:26.1") {
         minecraftVersion = minecraftVersion26_1_2
-
-        runs {
-            client {
-                env("MOD_CLASSES", "")
-            }
-        }
+        configureClientModClassesEnv()
 
         dependencies {
             runtimeOnly(target(neoforgeFancyModLoader))
@@ -690,6 +676,14 @@ fun MinecraftTarget.disableVersionTemplateTasks() {
         named(jarTaskName) { enabled = false }
         named(remapJarTaskName) { enabled = false }
         named(includeJarTaskName) { enabled = false }
+    }
+}
+
+fun MinecraftTarget.configureClientModClassesEnv() {
+    runs {
+        client {
+            env(modClassesEnvName, "")
+        }
     }
 }
 

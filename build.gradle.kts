@@ -171,7 +171,10 @@ cloche {
 
     common()
 
-    val commonMain = common("common:common") {
+    val apiCommon = common("api")
+
+    val coreCommon = common("core") {
+        dependsOn(apiCommon)
         // mixins.from(file("src/common/common/main/resources/$id.mixins.json"))
         // accessWideners.from(file("src/common/common/main/resources/$id.accessWidener"))
 
@@ -183,14 +186,14 @@ cloche {
     // endregion
 
     // region ForgeLike Common Targets
-    val commonForgeLike = common("common:forgelike") {
-        dependsOn(commonMain)
+    val sharedForgeLike = common("shared:forgelike") {
+        dependsOn(coreCommon)
     }
-    val commonModLauncher = common("common:modlauncher") {
-        dependsOn(commonMain, commonForgeLike)
+    val sharedModLauncher = common("shared:modlauncher") {
+        dependsOn(coreCommon, sharedForgeLike)
     }
-    val commonNeoForge = common("common:neoforge") {
-        dependsOn(commonMain, commonForgeLike)
+    val sharedNeoForge = common("shared:neoforge") {
+        dependsOn(coreCommon, sharedForgeLike)
     }
     // endregion
 
@@ -239,8 +242,8 @@ cloche {
 
     // region Main Targets - Fabric
 
-    val fabric = fabric {
-        dependsOn(commonMain)
+    val fabric = fabric("platform:fabric") {
+        dependsOn(coreCommon)
 
         minecraftVersion = "1.20.1"
 
@@ -289,8 +292,8 @@ cloche {
 
     // region Main Targets - Forge
 
-    val forgeService = forge("forge:service") {
-        dependsOn(commonMain, commonModLauncher)
+    val forgeModLauncher = forge("platform:forge:modlauncher") {
+        dependsOn(coreCommon, sharedModLauncher)
 
         minecraftVersion = "1.20.1"
 
@@ -370,8 +373,8 @@ cloche {
 
     // region Main Targets - NeoForge
 
-    val neoforgeModlauncher = neoforge("neoforge:modlauncher") {
-        dependsOn(commonMain, commonForgeLike, commonModLauncher, commonNeoForge)
+    val neoforgeModlauncher = neoforge("platform:neoforge:modlauncher") {
+        dependsOn(coreCommon, sharedForgeLike, sharedModLauncher, sharedNeoForge)
 
         minecraftVersion = "1.21.1"
 
@@ -432,8 +435,8 @@ cloche {
         }
     }
 
-    val neoforgeFancyModLoader = neoforge("neoforge:fancy-mod-loader") {
-        dependsOn(commonMain, commonForgeLike, commonNeoForge)
+    val neoforgeFancyModLoader = neoforge("platform:neoforge:fancy-mod-loader") {
+        dependsOn(coreCommon, sharedForgeLike, sharedNeoForge)
 
         minecraftVersion = "26.1.2"
 
@@ -489,7 +492,7 @@ cloche {
 
     // region Fabric Version Targets
 
-    fabric("version:fabric:20.1") {
+    fabric("run:fabric:20.1") {
         minecraftVersion = "1.20.1"
 
         dependencies {
@@ -497,7 +500,7 @@ cloche {
         }
     }
 
-    fabric("version:fabric:21.1") {
+    fabric("run:fabric:21.1") {
         minecraftVersion = "1.21.1"
 
         dependencies {
@@ -505,7 +508,7 @@ cloche {
         }
     }
 
-    fabric("version:fabric:26.1") {
+    fabric("run:fabric:26.1") {
         minecraftVersion = "26.1.2"
 
         dependencies {
@@ -523,7 +526,7 @@ cloche {
 
     // region Forge Version Targets
 
-    forge("version:forge:20.1") {
+    forge("run:forge:20.1") {
         minecraftVersion = "1.20.1"
 
         runs {
@@ -533,7 +536,7 @@ cloche {
         }
 
         dependencies {
-            modRuntimeOnly(target(forgeService))
+            modRuntimeOnly(target(forgeModLauncher))
         }
     }
 
@@ -541,7 +544,7 @@ cloche {
 
     // region NeoForge Version Targets
 
-    neoforge("version:neoforge:21.1") {
+    neoforge("run:neoforge:21.1") {
         minecraftVersion = "1.21.1"
 
         runs {
@@ -567,7 +570,7 @@ cloche {
         }
     }
 
-    neoforge("version:neoforge:26.1") {
+    neoforge("run:neoforge:26.1") {
         minecraftVersion = "26.1.2"
 
         runs {
@@ -597,9 +600,9 @@ cloche {
             from(fabricJar.map { zipTree(it.archiveFile) })
             manifest.from(fabricJar.get().manifest)
 
-            val forgeServiceJar = project.tasks.named<Jar>(forgeService.includeJarTaskName)
-            from(forgeServiceJar.map { zipTree(it.archiveFile) })
-            manifest.from(forgeServiceJar.get().manifest)
+            val forgeModLauncherJar = project.tasks.named<Jar>(forgeModLauncher.includeJarTaskName)
+            from(forgeModLauncherJar.map { zipTree(it.archiveFile) })
+            manifest.from(forgeModLauncherJar.get().manifest)
 
             val neoforgeModlauncherJar =
                 project.tasks.named<Jar>(neoforgeModlauncher.includeJarTaskName)
@@ -681,7 +684,7 @@ fun String.neoForgeLoaderVersion(): String? = when (this) {
     else -> null
 }
 
-fun MinecraftTarget.isVersionTarget(): Boolean = name.startsWith("version:")
+fun MinecraftTarget.isVersionTarget(): Boolean = name.startsWith("run:")
 
 fun MinecraftTarget.disableVersionTemplateTasks() {
     tasks {

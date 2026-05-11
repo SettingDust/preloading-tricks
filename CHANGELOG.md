@@ -1,5 +1,28 @@
 fix: `setAccessible` for `setMod`
 
+## [3.6.0] - 2026-05-11
+### :bug: Bug Fixes
+- [`80ece07`](https://github.com/SettingDust/preloading-tricks/commit/80ece0783e5514de4239baacb8c6b42311a113b4) - restore module injector api files *(commit by [@SettingDust](https://github.com/SettingDust))*
+
+### :recycle: Refactors
+- [`089c55e`](https://github.com/SettingDust/preloading-tricks/commit/089c55e6f54e9855d87bdda6be9fcd9d8c8dd4da) - restore build topology after copier update *(commit by [@SettingDust](https://github.com/SettingDust))*
+- [`03196c6`](https://github.com/SettingDust/preloading-tricks/commit/03196c6fe0b5dc3e29378e64acbf1f8fc9fde5f5) - obsolete NeoForge callback artifacts *(commit by [@SettingDust](https://github.com/SettingDust))*
+- [`9f25b22`](https://github.com/SettingDust/preloading-tricks/commit/9f25b2229375b4a35f75df1884ef84eb7ec74aef) - share list-backed mod manager logic *(commit by [@SettingDust](https://github.com/SettingDust))*
+- [`4c719ff`](https://github.com/SettingDust/preloading-tricks/commit/4c719ff9b17791fdc11014153f950f7ac9ebe7bd) - restructure sources into api core shared platform targets *(commit by [@SettingDust](https://github.com/SettingDust))*
+- [`058d9ef`](https://github.com/SettingDust/preloading-tricks/commit/058d9ef06864573f9cce46c35fb6ff9c07a6d642) - extract shared target/version constants in build script *(commit by [@SettingDust](https://github.com/SettingDust))*
+- [`caaf03e`](https://github.com/SettingDust/preloading-tricks/commit/caaf03ea82be09de76d084fac9f6230b7c9823cd) - deduplicate neoforge dependency excludes and rename run regions *(commit by [@SettingDust](https://github.com/SettingDust))*
+- [`eec2d95`](https://github.com/SettingDust/preloading-tricks/commit/eec2d9502958ef5ab2e09c686c91da0514532710) - extract run target MOD_CLASSES env setup *(commit by [@SettingDust](https://github.com/SettingDust))*
+- [`5a8bc34`](https://github.com/SettingDust/preloading-tricks/commit/5a8bc34f1b56a14e849417b5190a6a857710cf34) - align forge modlauncher package naming *(commit by [@SettingDust](https://github.com/SettingDust))*
+- [`ae282c0`](https://github.com/SettingDust/preloading-tricks/commit/ae282c0d536d32d608c14a782819f14b0043c457) - remove unused entrypoint and module injector leftovers *(commit by [@SettingDust](https://github.com/SettingDust))*
+
+### :wrench: Chores
+- [`ee23367`](https://github.com/SettingDust/preloading-tricks/commit/ee23367c06c817d390089b7c8ad674fe040c8f42) - copier update checkpoint B *(commit by [@SettingDust](https://github.com/SettingDust))*
+- [`5a333b4`](https://github.com/SettingDust/preloading-tricks/commit/5a333b401a4f904cd266b40048a39d884f128d89) - **plans**: add copier update execution artifacts and reconciliation gates *(commit by [@SettingDust](https://github.com/SettingDust))*
+- [`83bd560`](https://github.com/SettingDust/preloading-tricks/commit/83bd56075c5dee3252863fa4beca8aab4b145dbe) - remove obsolete copier gate and NeoForge 21.10 setup *(commit by [@SettingDust](https://github.com/SettingDust))*
+- [`6757863`](https://github.com/SettingDust/preloading-tricks/commit/675786300d4324b35128561b7b35aef071fef642) - remove plans *(commit by [@SettingDust](https://github.com/SettingDust))*
+- [`0a66459`](https://github.com/SettingDust/preloading-tricks/commit/0a66459345b486d10ea5dbbeefe4fbc288dc78b4) - remove unused files *(commit by [@SettingDust](https://github.com/SettingDust))*
+
+
 ## [3.5.15] - 2026-05-09
 ### :bug: Bug Fixes
 - [`af9ee68`](https://github.com/SettingDust/preloading-tricks/commit/af9ee68c1ef83621abf771a92a1281e3f87426ba) - build output duplicated classes *(commit by [@SettingDust](https://github.com/SettingDust))*
@@ -461,3 +484,4 @@ fix: `setAccessible` for `setMod`
 [3.5.12]: https://github.com/SettingDust/preloading-tricks/compare/3.5.11...3.5.12
 [3.5.14]: https://github.com/SettingDust/preloading-tricks/compare/3.5.13...3.5.14
 [3.5.15]: https://github.com/SettingDust/preloading-tricks/compare/3.5.14...3.5.15
+[3.6.0]: https://github.com/SettingDust/preloading-tricks/compare/3.5.15...3.6.0

@@ -1,4 +1,4 @@
-package settingdust.preloading_tricks.lexforge.transformer;
+package settingdust.preloading_tricks.forge.modlauncher.transformer;
 
 import cpw.mods.jarhandling.SecureJar;
 import net.minecraftforge.fml.loading.moddiscovery.ModFile;

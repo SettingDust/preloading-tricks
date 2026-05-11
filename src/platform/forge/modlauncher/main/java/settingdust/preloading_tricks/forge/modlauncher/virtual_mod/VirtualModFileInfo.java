@@ -1,4 +1,4 @@
-package settingdust.preloading_tricks.lexforge.virtual_mod;
+package settingdust.preloading_tricks.forge.modlauncher.virtual_mod;
 
 import net.minecraftforge.fml.loading.moddiscovery.ModFile;
 import net.minecraftforge.fml.loading.moddiscovery.ModFileInfo;

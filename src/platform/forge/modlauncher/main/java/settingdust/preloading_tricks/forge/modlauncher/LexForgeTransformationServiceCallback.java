@@ -1,4 +1,4 @@
-package settingdust.preloading_tricks.lexforge;
+package settingdust.preloading_tricks.forge.modlauncher;
 
 import cpw.mods.niofs.union.UnionPath;
 import settingdust.preloading_tricks.PreloadingTricks;
@@ -23,7 +23,7 @@ public class LexForgeTransformationServiceCallback implements TransformationServ
         PreloadingTricksTransformationService.init();
 
         ClassTransformBootstrap.INSTANCE.addConfig(
-            PreloadingTricks.ID + ".lexforge.classtransform.json",
+            PreloadingTricks.ID + ".forge.modlauncher.classtransform.json",
             PreloadingTricksTransformationService.class.getClassLoader()
         );
 

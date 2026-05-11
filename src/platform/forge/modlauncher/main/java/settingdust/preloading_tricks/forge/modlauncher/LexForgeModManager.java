@@ -1,10 +1,10 @@
-package settingdust.preloading_tricks.lexforge;
+package settingdust.preloading_tricks.forge.modlauncher;
 
 import net.minecraftforge.fml.loading.moddiscovery.ModFile;
 import net.minecraftforge.fml.loading.moddiscovery.ModFileInfo;
-import settingdust.preloading_tricks.lexforge.accessor.ModFileInfoAccessor;
-import settingdust.preloading_tricks.lexforge.virtual_mod.VirtualJar;
-import settingdust.preloading_tricks.lexforge.virtual_mod.VirtualModFile;
+import settingdust.preloading_tricks.forge.modlauncher.accessor.ModFileInfoAccessor;
+import settingdust.preloading_tricks.forge.modlauncher.virtual_mod.VirtualJar;
+import settingdust.preloading_tricks.forge.modlauncher.virtual_mod.VirtualModFile;
 import settingdust.preloading_tricks.util.ListBackedModManager;
 
 import java.nio.file.Path;

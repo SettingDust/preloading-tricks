@@ -1,5 +1,5 @@
 {
-  "package": "settingdust.preloading_tricks.lexforge.transformer",
+  "package": "settingdust.preloading_tricks.forge.modlauncher.transformer",
   "transformers": [
     "ModFileTransformer",
     "preloading_callback.ModDiscovererTransformer",

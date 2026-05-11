@@ -1,9 +1,9 @@
-package settingdust.preloading_tricks.lexforge;
+package settingdust.preloading_tricks.forge.modlauncher;
 
 import net.minecraftforge.fml.loading.moddiscovery.ModFile;
 import settingdust.preloading_tricks.api.PreloadingTricksCallbacks;
 import settingdust.preloading_tricks.api.modlauncher.ModLauncherPreloadingCallbacks;
-import settingdust.preloading_tricks.lexforge.mod_candidate.LexForgeAdditionalDependencySourceManager;
+import settingdust.preloading_tricks.forge.modlauncher.mod_candidate.LexForgeAdditionalDependencySourceManager;
 
 import java.util.List;
 

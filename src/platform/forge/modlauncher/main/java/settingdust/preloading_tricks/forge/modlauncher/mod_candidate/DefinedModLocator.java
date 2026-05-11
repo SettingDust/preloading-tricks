@@ -1,4 +1,4 @@
-package settingdust.preloading_tricks.lexforge.mod_candidate;
+package settingdust.preloading_tricks.forge.modlauncher.mod_candidate;
 
 import net.minecraftforge.fml.loading.moddiscovery.AbstractJarFileModLocator;
 import settingdust.preloading_tricks.PreloadingTricks;

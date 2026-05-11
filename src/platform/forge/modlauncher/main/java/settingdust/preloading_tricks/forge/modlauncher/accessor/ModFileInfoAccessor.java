@@ -1,4 +1,4 @@
-package settingdust.preloading_tricks.lexforge.accessor;
+package settingdust.preloading_tricks.forge.modlauncher.accessor;
 
 import net.lenni0451.reflect.stream.RStream;
 import net.lenni0451.reflect.stream.field.FieldWrapper;

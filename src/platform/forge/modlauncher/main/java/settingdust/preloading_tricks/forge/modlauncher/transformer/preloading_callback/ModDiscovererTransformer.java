@@ -1,4 +1,4 @@
-package settingdust.preloading_tricks.lexforge.transformer.preloading_callback;
+package settingdust.preloading_tricks.forge.modlauncher.transformer.preloading_callback;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Iterables;
@@ -45,7 +45,7 @@ public class ModDiscovererTransformer {
         var serviceClassLoader = RStream.of(info).fields().by("cl").<ModuleClassLoader>get();
 
         var callbackClazz = RStream.of(Classes.byName(
-                "settingdust.preloading_tricks.lexforge.PreloadingTricksCallbacksInvoker",
+                "settingdust.preloading_tricks.forge.modlauncher.PreloadingTricksCallbacksInvoker",
                 serviceClassLoader
         ));
         callbackClazz.methods().by("onSetupMods").invokeArgs(mods);
@@ -69,7 +69,7 @@ public class ModDiscovererTransformer {
         var serviceClassLoader = RStream.of(info).fields().by("cl").<ModuleClassLoader>get();
 
         var callbackClazz = RStream.of(Classes.byName(
-                "settingdust.preloading_tricks.lexforge.PreloadingTricksCallbacksInvoker",
+                "settingdust.preloading_tricks.forge.modlauncher.PreloadingTricksCallbacksInvoker",
                 serviceClassLoader
         ));
         additionalDependencySources = callbackClazz.methods().by("onCollectAdditionalDependencySources").invoke();

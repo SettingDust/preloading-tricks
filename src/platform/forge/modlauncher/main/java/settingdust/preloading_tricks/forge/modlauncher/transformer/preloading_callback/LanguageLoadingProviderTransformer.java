@@ -1,4 +1,4 @@
-package settingdust.preloading_tricks.lexforge.transformer.preloading_callback;
+package settingdust.preloading_tricks.forge.modlauncher.transformer.preloading_callback;
 
 import cpw.mods.cl.ModuleClassLoader;
 import cpw.mods.modlauncher.Launcher;
@@ -38,7 +38,7 @@ public class LanguageLoadingProviderTransformer {
         var serviceClassLoader = RStream.of(info).fields().by("cl").<ModuleClassLoader>get();
 
         var invokerClass = RStream.of(Classes.byName(
-            "settingdust.preloading_tricks.lexforge.PreloadingTricksCallbacksInvoker",
+            "settingdust.preloading_tricks.forge.modlauncher.PreloadingTricksCallbacksInvoker",
             serviceClassLoader
         ));
         invokerClass.methods().by("onSetupLanguageAdapter").invoke();

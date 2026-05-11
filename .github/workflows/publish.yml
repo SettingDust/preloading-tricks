@@ -42,7 +42,7 @@ jobs:
 
           # Only include this section if you wish to publish
           # your assets on CurseForge.
-          curseforge-id: 000000
+          curseforge-id: 1372086
           curseforge-token: ${{ secrets.CURSEFORGE_TOKEN }}
 
           files: |
@@ -58,15 +58,9 @@ jobs:
 
           game-versions: |
             1.20.1
-            1.21.1
-            [26.1,26.2)
+            [1.21.1,26.2)
 
           game-version-filter: releases
-
-          dependencies: |
-            fabric-language-kotlin
-            kotlin-lang-forge{curseforge:1244682}
-            preloading-tricks
 
           java: |
             17

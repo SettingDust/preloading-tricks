@@ -103,6 +103,16 @@ cloche {
         dependsOn(coreCommon, sharedModLauncher)
         minecraftVersion = MinecraftVersion.`20_1`.value
 
+        val bootClasspath = project.configurations.register(lowerCamelCaseGradleName(featureName, "bootClasspath")) {
+            isCanBeResolved = true
+            isCanBeConsumed = false
+            isTransitive = false
+        }
+
+        tasks.named<ProcessResources>(sourceSet.processResourcesTaskName) {
+            from(bootClasspath) { into("libs/boot") }
+        }
+
         dependencies {
             implementation(
                 multiversionDependencies.mixinextras.resolve(
@@ -116,6 +126,18 @@ cloche {
             implementation(multiversionDependencies.classTransformAdditionalClassProvider.resolve(project))
             implementation(multiversionDependencies.classTransformMixinsTranslator.resolve(project))
             implementation(multiversionDependencies.byteBuddyAgent.resolve(project))
+        }
+
+        project.dependencies {
+            bootClasspath(multiversionDependencies.commonsUnchecked.resolve(project))
+            bootClasspath(multiversionDependencies.reflect.resolve(project))
+            bootClasspath(multiversionDependencies.classTransform.resolve(project))
+            project.dependencies.add(
+                bootClasspath.name,
+                multiversionDependencies.classTransformAdditionalClassProvider.resolve(project)
+            )
+            bootClasspath(multiversionDependencies.classTransformMixinsTranslator.resolve(project))
+            bootClasspath(multiversionDependencies.byteBuddyAgent.resolve(project))
         }
 
         val noNewerJavaAttribute = Attribute.of("noNewerJava", Boolean::class.javaObjectType)
@@ -161,6 +183,16 @@ cloche {
         dependsOn(coreCommon, sharedForgeLike, sharedModLauncher, sharedNeoForge)
         minecraftVersion = MinecraftVersion.`21_1`.value
 
+        val bootClasspath = project.configurations.register(lowerCamelCaseGradleName(featureName, "bootClasspath")) {
+            isCanBeResolved = true
+            isCanBeConsumed = false
+            isTransitive = false
+        }
+
+        tasks.named<ProcessResources>(sourceSet.processResourcesTaskName) {
+            from(bootClasspath) { into("libs/boot") }
+        }
+
         metadata {
             modLoader = "lowcodefml"
             loaderVersion { start = "0" }
@@ -189,6 +221,18 @@ cloche {
             }
         }
 
+        project.dependencies {
+            bootClasspath(multiversionDependencies.commonsUnchecked.resolve(project))
+            bootClasspath(multiversionDependencies.reflect.resolve(project))
+            bootClasspath(multiversionDependencies.classTransform.resolve(project))
+            project.dependencies.add(
+                bootClasspath.name,
+                multiversionDependencies.classTransformAdditionalClassProvider.resolve(project)
+            )
+            bootClasspath(multiversionDependencies.classTransformMixinsTranslator.resolve(project))
+            bootClasspath(multiversionDependencies.byteBuddyAgent.resolve(project))
+        }
+
         tasks {
             named(generateModsTomlTaskName) { enabled = false }
         }
@@ -197,6 +241,16 @@ cloche {
     val neoforgeFancyModLoader = neoforge("platform:neoforge:fancy-mod-loader") {
         dependsOn(coreCommon, sharedForgeLike, sharedNeoForge)
         minecraftVersion = MinecraftVersion.`26_1`.value
+
+        val bootClasspath = project.configurations.register(lowerCamelCaseGradleName(featureName, "bootClasspath")) {
+            isCanBeResolved = true
+            isCanBeConsumed = false
+            isTransitive = false
+        }
+
+        tasks.named<ProcessResources>(sourceSet.processResourcesTaskName) {
+            from(bootClasspath) { into("libs/boot") }
+        }
 
         dependencies {
             multiversionDependencies.reflect.resolve(project).let {
@@ -221,6 +275,17 @@ cloche {
             }
         }
 
+        project.dependencies {
+            bootClasspath(multiversionDependencies.commonsUnchecked.resolve(project))
+            bootClasspath(multiversionDependencies.reflect.resolve(project))
+            bootClasspath(multiversionDependencies.classTransform.resolve(project))
+            project.dependencies.add(
+                bootClasspath.name,
+                multiversionDependencies.classTransformAdditionalClassProvider.resolve(project)
+            )
+            bootClasspath(multiversionDependencies.classTransformMixinsTranslator.resolve(project))
+            bootClasspath(multiversionDependencies.byteBuddyAgent.resolve(project))
+        }
     }
 
     // region Containers
@@ -258,15 +323,8 @@ cloche {
 
     val forgeContainer = project.container(loader = MinecraftModLoader.forge) {
         embed()
-        embed("boot") { into("libs/boot") }
         dependencies {
             embed(target(forgeModLauncher))
-            embed("boot", multiversionDependencies.commonsUnchecked.resolve(project))
-            embed("boot", multiversionDependencies.reflect.resolve(project))
-            embed("boot", multiversionDependencies.classTransform.resolve(project))
-            embed("boot", multiversionDependencies.classTransformAdditionalClassProvider.resolve(project))
-            embed("boot", multiversionDependencies.classTransformMixinsTranslator.resolve(project))
-            embed("boot", multiversionDependencies.byteBuddyAgent.resolve(project))
         }
 
         jar {
@@ -284,17 +342,10 @@ cloche {
 
     val neoforgeContainer = project.container(loader = MinecraftModLoader.neoforge) {
         embed()
-        embed("boot") { into("libs/boot") }
 
         dependencies {
             embed(target(neoforgeModlauncher))
             embed(target(neoforgeFancyModLoader))
-            embed("boot", multiversionDependencies.commonsUnchecked.resolve(project))
-            embed("boot", multiversionDependencies.reflect.resolve(project))
-            embed("boot", multiversionDependencies.classTransform.resolve(project))
-            embed("boot", multiversionDependencies.classTransformAdditionalClassProvider.resolve(project))
-            embed("boot", multiversionDependencies.classTransformMixinsTranslator.resolve(project))
-            embed("boot", multiversionDependencies.byteBuddyAgent.resolve(project))
         }
 
         jar {

@@ -29,17 +29,17 @@ import org.gradle.api.attributes.AttributeContainer
 import org.gradle.api.attributes.Category
 import org.gradle.api.attributes.LibraryElements
 import org.gradle.api.attributes.Usage
+import org.gradle.api.component.AdhocComponentWithVariants
 import org.gradle.api.file.CopySpec
 import org.gradle.api.provider.Provider
 import org.gradle.api.provider.ProviderConvertible
 import org.gradle.api.tasks.TaskProvider
 import org.gradle.api.tasks.bundling.AbstractArchiveTask
-import org.gradle.language.base.plugins.LifecycleBasePlugin
 import org.gradle.kotlin.dsl.assign
-import org.gradle.kotlin.dsl.project
 import org.gradle.kotlin.dsl.named
 import org.gradle.kotlin.dsl.register
 import org.gradle.kotlin.dsl.support.serviceOf
+import org.gradle.language.base.plugins.LifecycleBasePlugin
 
 private fun MinecraftModLoader.containerFeatureName(): String =
     lowerCamelCaseGradleName("container", toString().lowercase())
@@ -106,24 +106,36 @@ class ContainerScope(
 
         val containerCapability = "${project.group}:${project.name}-$capabilitySuffix:${project.version}"
 
-        project.configurations.register(lowerCamelCaseGradleName(featureName, "runtimeElements")) {
-            isCanBeResolved = false
-            isCanBeConsumed = true
-            attributes {
-                applyRuntimeVariantAttributes(remapped = false)
+        val runtimeElements =
+            project.configurations.register(lowerCamelCaseGradleName(featureName, "runtimeElements")) {
+                isCanBeResolved = false
+                isCanBeConsumed = true
+                attributes {
+                    applyRuntimeVariantAttributes(remapped = false)
+                }
+                outgoing.artifact(includeJarTask)
+                outgoing.capability(containerCapability)
             }
-            outgoing.artifact(includeJarTask)
-            outgoing.capability(containerCapability)
-        }
 
-        project.configurations.register(lowerCamelCaseGradleName(featureName, "devRuntimeElements")) {
-            isCanBeResolved = false
-            isCanBeConsumed = true
-            attributes {
-                applyRuntimeVariantAttributes(remapped = true)
+        val devRuntimeElements =
+            project.configurations.register(lowerCamelCaseGradleName(featureName, "devRuntimeElements")) {
+                isCanBeResolved = false
+                isCanBeConsumed = true
+                attributes {
+                    applyRuntimeVariantAttributes(remapped = true)
+                }
+                outgoing.artifact(includeDevJarTask)
+                outgoing.capability(containerCapability)
             }
-            outgoing.artifact(includeDevJarTask)
-            outgoing.capability(containerCapability)
+
+        project.afterEvaluate {
+            val component = project.components.named("java").get() as AdhocComponentWithVariants
+            component.addVariantsFromConfiguration(runtimeElements.get()) {
+                mapToMavenScope("runtime")
+            }
+            component.addVariantsFromConfiguration(devRuntimeElements.get()) {
+                mapToMavenScope("runtime")
+            }
         }
     }
 
@@ -248,14 +260,14 @@ class ContainerScope(
                 withIncludeDevAttributes()
             }
         }
-        
+
         fun includeTask(task: TaskProvider<out AbstractArchiveTask>) {
             includeJarTask.configure {
                 dependsOn(task)
             }
             addTo(includeConfigurationProvider, project.files(task.flatMap { it.archiveFile }))
         }
-        
+
         fun includeDevTask(task: TaskProvider<out AbstractArchiveTask>) {
             includeDevJarTask.configure {
                 dependsOn(task)

@@ -1,5 +1,10 @@
 fix: `setAccessible` for `setMod`
 
+## [3.6.2] - 2026-05-21
+### :bug: Bug Fixes
+- [`dd19a79`](https://github.com/SettingDust/preloading-tricks/commit/dd19a79944a2110d8f39a26b6668b97fec2df997) - wrong resolver transformer *(commit by [@SettingDust](https://github.com/SettingDust))*
+
+
 ## [3.6.0] - 2026-05-11
 ### :bug: Bug Fixes
 - [`80ece07`](https://github.com/SettingDust/preloading-tricks/commit/80ece0783e5514de4239baacb8c6b42311a113b4) - restore module injector api files *(commit by [@SettingDust](https://github.com/SettingDust))*
@@ -485,3 +490,4 @@ fix: `setAccessible` for `setMod`
 [3.5.14]: https://github.com/SettingDust/preloading-tricks/compare/3.5.13...3.5.14
 [3.5.15]: https://github.com/SettingDust/preloading-tricks/compare/3.5.14...3.5.15
 [3.6.0]: https://github.com/SettingDust/preloading-tricks/compare/3.5.15...3.6.0
+[3.6.2]: https://github.com/SettingDust/preloading-tricks/compare/3.6.1...3.6.2

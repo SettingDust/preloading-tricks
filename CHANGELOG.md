@@ -1,5 +1,10 @@
 fix: `setAccessible` for `setMod`
 
+## [3.6.3] - 2026-05-21
+### :bug: Bug Fixes
+- [`155757b`](https://github.com/SettingDust/preloading-tricks/commit/155757b45540625866043148cedda3e96ad5f90f) - wrong resolver transformer 2 *(commit by [@SettingDust](https://github.com/SettingDust))*
+
+
 ## [3.6.2] - 2026-05-21
 ### :bug: Bug Fixes
 - [`dd19a79`](https://github.com/SettingDust/preloading-tricks/commit/dd19a79944a2110d8f39a26b6668b97fec2df997) - wrong resolver transformer *(commit by [@SettingDust](https://github.com/SettingDust))*
@@ -491,3 +496,4 @@ fix: `setAccessible` for `setMod`
 [3.5.15]: https://github.com/SettingDust/preloading-tricks/compare/3.5.14...3.5.15
 [3.6.0]: https://github.com/SettingDust/preloading-tricks/compare/3.5.15...3.6.0
 [3.6.2]: https://github.com/SettingDust/preloading-tricks/compare/3.6.1...3.6.2
+[3.6.3]: https://github.com/SettingDust/preloading-tricks/compare/3.6.2...3.6.3

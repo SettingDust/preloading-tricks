@@ -28,7 +28,7 @@ public class ResolverTransformer {
             target = "Ljava/lang/module/Resolver;resolveFail(Ljava/lang/String;[Ljava/lang/Object;)V")
     private void preloading_tricks$logMref0(
             ResolutionException exception,
-            @CLocalVariable(ordinal = 0) Map<ResolvedModule, Set<ResolvedModule>> graph,
+            @CLocalVariable(index = 1) Map<ResolvedModule, Set<ResolvedModule>> graph,
             @CLocalVariable ResolvedModule endpoint) {
         Set<ResolvedModule> relateModules = new HashSet<>();
         for (var entry : graph.entrySet()) {
@@ -55,7 +55,7 @@ public class ResolverTransformer {
             target = "Ljava/lang/module/Resolver;failTwoSuppliers(Ljava/lang/module/ModuleDescriptor;Ljava/lang/String;Ljava/lang/module/ModuleDescriptor;Ljava/lang/module/ModuleDescriptor;)V")
     private void preloading_tricks$logMref1(
             ResolutionException exception,
-            @CLocalVariable(ordinal = 0) Map<ResolvedModule, Set<ResolvedModule>> graph,
+            @CLocalVariable(index = 1) Map<ResolvedModule, Set<ResolvedModule>> graph,
             @CLocalVariable ResolvedModule endpoint,
             @CLocalVariable ModuleDescriptor supplier) {
         Set<ResolvedModule> relateModules = new HashSet<>();

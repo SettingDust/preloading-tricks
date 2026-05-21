@@ -47,7 +47,7 @@ jobs:
 
           files: |
             build/libs/!(*-@(*fabric*|*neoforge*|*forge*|sources|dev)).jar
-            build/libs/*-@(*fabric-*|*neoforge-*|*forge-*|sources|dev).jar
+            build/libs/*-@(fabric-*|neoforge-*|forge-*|sources).jar
 
           version: ${{ github.ref_name }}
 

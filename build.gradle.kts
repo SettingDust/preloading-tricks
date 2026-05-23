@@ -5,11 +5,8 @@ import earth.terrarium.cloche.api.metadata.FabricMetadata
 import earth.terrarium.cloche.tasks.GenerateFabricModJson
 import earth.terrarium.cloche.util.target
 import net.msrandom.minecraftcodev.core.utils.lowerCamelCaseGradleName
-import net.msrandom.minecraftcodev.core.utils.toPath
-import net.msrandom.minecraftcodev.core.utils.zipFileSystem
 import settingdust.cloche_template.buildsrc.*
-import java.nio.file.StandardCopyOption
-import kotlin.io.path.*
+import kotlin.io.path.ExperimentalPathApi
 
 plugins {
     id("clocheTemplate.base")
@@ -138,36 +135,6 @@ cloche {
             )
             bootClasspath(multiversionDependencies.classTransformMixinsTranslator.resolve(project))
             bootClasspath(multiversionDependencies.byteBuddyAgent.resolve(project))
-        }
-
-        val noNewerJavaAttribute = Attribute.of("noNewerJava", Boolean::class.javaObjectType)
-
-        abstract class RemoveNewerJavaTransform : TransformAction<TransformParameters.None> {
-            @get:InputArtifact
-            abstract val inputArtifact: Provider<FileSystemLocation>
-
-            override fun transform(outputs: TransformOutputs) {
-                val input = inputArtifact.get().toPath()
-                val newerJavaClasses = zipFileSystem(input).use { it.getPath("META-INF/versions/24").exists() }
-                if (!newerJavaClasses) {
-                    outputs.file(input)
-                    return
-                }
-                val output = outputs.file(input.name.replace(".jar", "-noNewerJava.jar")).toPath()
-                input.copyTo(output, StandardCopyOption.COPY_ATTRIBUTES)
-                zipFileSystem(output).use { fs -> fs.getPath("META-INF/versions/24").deleteRecursively() }
-            }
-        }
-
-        project.dependencies {
-            attributesSchema { attribute(noNewerJavaAttribute) }
-            artifactTypes.named(ArtifactTypeDefinition.JAR_TYPE) {
-                attributes.attribute(noNewerJavaAttribute, false)
-            }
-            registerTransform(RemoveNewerJavaTransform::class) {
-                from.attribute(noNewerJavaAttribute, false)
-                to.attribute(noNewerJavaAttribute, true)
-            }
         }
 
         tasks {

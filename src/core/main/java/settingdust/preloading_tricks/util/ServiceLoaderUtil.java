@@ -24,6 +24,10 @@ public final class ServiceLoaderUtil {
         return findServices(clazz, ServiceLoader.load(layer, clazz), DEFAULT_LOGGER, true);
     }
 
+    public static <T> List<T> findServices(Class<T> clazz) {
+        return findServices(clazz, ServiceLoader.load(clazz), DEFAULT_LOGGER, true);
+    }
+
     public static <T> List<T> findServices(Class<T> clazz, boolean required) {
         return findServices(clazz, ServiceLoader.load(clazz), DEFAULT_LOGGER, required);
     }

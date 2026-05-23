@@ -22,8 +22,8 @@ public class TransformationServiceCallback implements
         PreloadingTricksTransformationService.init();
 
         ClassTransformBootstrap.INSTANCE.addConfig(
-            PreloadingTricks.ID + ".neoforge.modlauncher.classtransform.json",
-            PreloadingTricksTransformationService.class.getClassLoader()
+                PreloadingTricks.ID + ".neoforge.modlauncher.classtransform.json",
+                PreloadingTricksTransformationService.class.getClassLoader()
         );
 
         PreloadingTricksCallbacks.SETUP_MODS.register(_manager -> {
@@ -31,8 +31,8 @@ public class TransformationServiceCallback implements
 
             try {
                 var mod = manager.createVirtualMod(
-                    PreloadingTricks.ID,
-                    Path.of(this.getClass().getProtectionDomain().getCodeSource().getLocation().toURI())
+                        PreloadingTricks.ID,
+                        Path.of(this.getClass().getProtectionDomain().getCodeSource().getLocation().toURI())
                 );
                 manager.add(mod);
             } catch (URISyntaxException e) {

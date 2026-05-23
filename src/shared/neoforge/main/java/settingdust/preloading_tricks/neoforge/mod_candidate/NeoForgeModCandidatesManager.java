@@ -1,4 +1,4 @@
-package settingdust.preloading_tricks.forgelike.neoforge.mod_candidate;
+package settingdust.preloading_tricks.neoforge.mod_candidate;
 
 import settingdust.preloading_tricks.api.ModCandidatesManager;
 import settingdust.preloading_tricks.util.LoaderPredicates;

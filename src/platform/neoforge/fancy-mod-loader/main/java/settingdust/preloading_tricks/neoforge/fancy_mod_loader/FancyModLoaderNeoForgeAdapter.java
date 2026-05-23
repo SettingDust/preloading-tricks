@@ -3,12 +3,13 @@ package settingdust.preloading_tricks.neoforge.fancy_mod_loader;
 import net.bytebuddy.agent.ByteBuddyAgent;
 import net.neoforged.fml.jarcontents.JarContents;
 import net.neoforged.fml.loading.FMLLoader;
-import net.neoforged.neoforgespi.earlywindow.GraphicsBootstrapper;
+import net.neoforged.fml.loading.moddiscovery.ModFile;
 import settingdust.preloading_tricks.PreloadingTricks;
 import settingdust.preloading_tricks.api.PreloadingEntrypoint;
 import settingdust.preloading_tricks.api.PreloadingTricksCallbacks;
 import settingdust.preloading_tricks.forgelike.UcpClassLoaderInjector;
 import settingdust.preloading_tricks.forgelike.specified_forge_variant.ForgeVariants;
+import settingdust.preloading_tricks.neoforge.NeoForgeAdapter;
 import settingdust.preloading_tricks.util.LoaderPredicates;
 import settingdust.preloading_tricks.util.ServiceLoaderUtil;
 import settingdust.preloading_tricks.util.class_transform.ClassTransformBootstrap;
@@ -17,15 +18,28 @@ import java.io.IOException;
 import java.net.URISyntaxException;
 import java.nio.file.Path;
 
-public class PreloadingTricksBootstrapper implements GraphicsBootstrapper {
-    public PreloadingTricksBootstrapper() throws URISyntaxException, IOException {
-        if (!LoaderPredicates.NeoForge.test()) {
-            PreloadingTricks.LOGGER.debug("Looks like we are in wrong loader. Needn't to run");
-            return;
-        }
+public class FancyModLoaderNeoForgeAdapter implements NeoForgeAdapter {
+    public FancyModLoaderNeoForgeAdapter() {
+        LoaderPredicates.NeoForge.throwIfNot();
+    }
 
-        var codeSource = PreloadingTricksBootstrapper.class.getProtectionDomain().getCodeSource();
-        var rootPath = Path.of(codeSource.getLocation().toURI());
+    @Override
+    public void bootstrap(final Class<?> sourceClass) throws URISyntaxException, IOException {
+        var rootPath = getRootPath(sourceClass);
+        injectBootLibraries(rootPath);
+        initClassTransform();
+        PreloadingTricks.LOGGER.info("[{}] Installed", PreloadingTricks.NAME);
+        addClassTransformConfig();
+        loadEntrypoints();
+        hookInstrumentation();
+        registerSetupModsCallback(rootPath);
+    }
+
+    private static Path getRootPath(final Class<?> sourceClass) throws URISyntaxException {
+        return Path.of(sourceClass.getProtectionDomain().getCodeSource().getLocation().toURI());
+    }
+
+    private static void injectBootLibraries(final Path rootPath) throws IOException {
         var contents = JarContents.ofPath(rootPath);
         var prefix = "libs/boot";
         contents.visitContent(
@@ -46,52 +60,47 @@ public class PreloadingTricksBootstrapper implements GraphicsBootstrapper {
                     );
                 }
         );
+    }
 
+    private static void initClassTransform() throws IOException {
         ByteBuddyAgent.install();
-
         new ClassTransformBootstrap(ByteBuddyAgent.getInstrumentation());
-        PreloadingTricks.LOGGER.info("[{}] Installed", PreloadingTricks.NAME);
+    }
+
+    private static void addClassTransformConfig() {
         ClassTransformBootstrap.INSTANCE.addConfig("preloading_tricks.neoforge.fml.classtransform.json");
+    }
 
+    private static void loadEntrypoints() {
         ServiceLoaderUtil.loadServices(PreloadingEntrypoint.class, false);
+    }
 
+    private static void hookInstrumentation() {
         ClassTransformBootstrap.INSTANCE
                 .getTransformerManager()
                 .hookInstrumentation(ByteBuddyAgent.getInstrumentation());
+    }
 
+    private static void registerSetupModsCallback(final Path rootPath) {
         PreloadingTricksCallbacks.SETUP_MODS.register(_manager -> {
             if (!(_manager instanceof final NeoForgeModManager manager)) return;
-
-            try {
-                var mod = manager.createVirtualMod(
-                        PreloadingTricks.ID,
-                        Path.of(this.getClass().getProtectionDomain().getCodeSource().getLocation().toURI())
-                );
-                manager.add(mod);
-            } catch (URISyntaxException e) {
-                throw new RuntimeException(e);
-            }
-
+            var mod = manager.createVirtualMod(PreloadingTricks.ID, rootPath);
+            manager.add(mod);
             manager.removeIf(it -> {
-                var manifest = it.getContents().getManifest();
-                var variantString = manifest.getMainAttributes().getValue(ForgeVariants.MANIFEST_KEY);
+                var variantString = getVariant(it);
                 if (variantString == null) return false;
                 var variant = ForgeVariants.BY_NAME.get(variantString.toLowerCase());
                 var shouldRemove = variant != null && variant != ForgeVariants.NeoForge;
-                if (shouldRemove)
+                if (shouldRemove) {
                     PreloadingTricks.LOGGER.debug("Removing {} for variant {}", it.getFilePath(), variant);
+                }
                 return shouldRemove;
             });
         });
     }
 
-    @Override
-    public String name() {
-        return "Preloading Tricks";
-    }
-
-    @Override
-    public void bootstrap(final String[] arguments) {
-
+    private static String getVariant(final ModFile mod) {
+        var manifest = mod.getContents().getManifest();
+        return manifest.getMainAttributes().getValue(ForgeVariants.MANIFEST_KEY);
     }
 }

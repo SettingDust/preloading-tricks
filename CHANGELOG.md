@@ -1,5 +1,10 @@
 fix: `setAccessible` for `setMod`
 
+## [3.7.0] - 2026-05-24
+### :sparkles: New Features
+- [`6bc4e54`](https://github.com/SettingDust/preloading-tricks/commit/6bc4e54d8bdf25b2b60ede84312439eeefc15879) - add NeoForgeAdapter to use right java version on older NF *(commit by [@SettingDust](https://github.com/SettingDust))*
+
+
 ## [3.6.3] - 2026-05-21
 ### :bug: Bug Fixes
 - [`155757b`](https://github.com/SettingDust/preloading-tricks/commit/155757b45540625866043148cedda3e96ad5f90f) - wrong resolver transformer 2 *(commit by [@SettingDust](https://github.com/SettingDust))*
@@ -497,3 +502,4 @@ fix: `setAccessible` for `setMod`
 [3.6.0]: https://github.com/SettingDust/preloading-tricks/compare/3.5.15...3.6.0
 [3.6.2]: https://github.com/SettingDust/preloading-tricks/compare/3.6.1...3.6.2
 [3.6.3]: https://github.com/SettingDust/preloading-tricks/compare/3.6.2...3.6.3
+[3.7.0]: https://github.com/SettingDust/preloading-tricks/compare/3.6.3...3.7.0

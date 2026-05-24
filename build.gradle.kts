@@ -1,7 +1,11 @@
 @file:OptIn(ExperimentalPathApi::class)
 
+import earth.terrarium.cloche.REMAPPED_ATTRIBUTE
 import earth.terrarium.cloche.api.attributes.MinecraftModLoader
 import earth.terrarium.cloche.api.metadata.FabricMetadata
+import earth.terrarium.cloche.api.target.FabricTarget
+import earth.terrarium.cloche.api.target.ForgeLikeTarget
+import earth.terrarium.cloche.api.target.NeoforgeTarget
 import earth.terrarium.cloche.tasks.GenerateFabricModJson
 import earth.terrarium.cloche.util.target
 import net.msrandom.minecraftcodev.core.utils.lowerCamelCaseGradleName
@@ -29,10 +33,6 @@ cloche {
 
     val coreCommon = common("core") {
         dependsOn(apiCommon)
-
-        dependencies {
-            compileOnly("org.spongepowered:mixin:0.8.7")
-        }
     }
 
     // endregion
@@ -55,6 +55,7 @@ cloche {
         exclude(group = "com.google.guava")
         exclude(group = "org.ow2.asm")
     }
+
     // endregion
 
     // region Main Targets - Fabric
@@ -62,30 +63,6 @@ cloche {
     val fabric = fabric("platform:fabric") {
         dependsOn(coreCommon)
         minecraftVersion = MinecraftVersion.`20_1`.value
-
-        dependencies {
-            multiversionDependencies.reflect.resolve(project).let {
-                api(it)
-                include(it)
-            }
-            include(multiversionDependencies.commonsUnchecked.resolve(project))
-            multiversionDependencies.classTransform.resolve(project).let {
-                api(it)
-                include(it)
-            }
-            multiversionDependencies.classTransformAdditionalClassProvider.resolve(project).let {
-                implementation(it)
-                include(it)
-            }
-            multiversionDependencies.classTransformMixinsTranslator.resolve(project).let {
-                implementation(it)
-                include(it)
-            }
-            multiversionDependencies.byteBuddyAgent.resolve(project).let {
-                api(it)
-                include(it)
-            }
-        }
 
         metadata {
             languageAdapters.put(id, "$group.fabric.PreloadingTricksLanguageAdapter")
@@ -100,43 +77,6 @@ cloche {
         dependsOn(coreCommon, sharedModLauncher)
         minecraftVersion = MinecraftVersion.`20_1`.value
 
-        val bootClasspath = project.configurations.register(lowerCamelCaseGradleName(featureName, "bootClasspath")) {
-            isCanBeResolved = true
-            isCanBeConsumed = false
-            isTransitive = false
-        }
-
-        tasks.named<ProcessResources>(sourceSet.processResourcesTaskName) {
-            from(bootClasspath) { into("libs/boot") }
-        }
-
-        dependencies {
-            implementation(
-                multiversionDependencies.mixinextras.resolve(
-                    MinecraftModLoader.common,
-                    MinecraftVersion.`20_1`,
-                    project
-                )
-            )
-            api(multiversionDependencies.reflect.resolve(project))
-            api(multiversionDependencies.classTransform.resolve(project))
-            implementation(multiversionDependencies.classTransformAdditionalClassProvider.resolve(project))
-            implementation(multiversionDependencies.classTransformMixinsTranslator.resolve(project))
-            implementation(multiversionDependencies.byteBuddyAgent.resolve(project))
-        }
-
-        project.dependencies {
-            bootClasspath(multiversionDependencies.commonsUnchecked.resolve(project))
-            bootClasspath(multiversionDependencies.reflect.resolve(project))
-            bootClasspath(multiversionDependencies.classTransform.resolve(project))
-            project.dependencies.add(
-                bootClasspath.name,
-                multiversionDependencies.classTransformAdditionalClassProvider.resolve(project)
-            )
-            bootClasspath(multiversionDependencies.classTransformMixinsTranslator.resolve(project))
-            bootClasspath(multiversionDependencies.byteBuddyAgent.resolve(project))
-        }
-
         tasks {
             named(generateModsTomlTaskName) { enabled = false }
         }
@@ -150,54 +90,9 @@ cloche {
         dependsOn(coreCommon, sharedForgeLike, sharedModLauncher, sharedNeoForge)
         minecraftVersion = MinecraftVersion.`21_1`.value
 
-        val bootClasspath = project.configurations.register(lowerCamelCaseGradleName(featureName, "bootClasspath")) {
-            isCanBeResolved = true
-            isCanBeConsumed = false
-            isTransitive = false
-        }
-
-        tasks.named<ProcessResources>(sourceSet.processResourcesTaskName) {
-            from(bootClasspath) { into("libs/boot") }
-        }
-
         metadata {
             modLoader = "lowcodefml"
             loaderVersion { start = "0" }
-        }
-
-        dependencies {
-            multiversionDependencies.reflect.resolve(project).let {
-                api(it)
-                legacyClasspath(it)
-            }
-            multiversionDependencies.classTransform.resolve(project).let {
-                api(it, excludeAsm)
-                legacyClasspath(it)
-            }
-            multiversionDependencies.classTransformAdditionalClassProvider.resolve(project).let {
-                implementation(it, excludeGuavaAndAsm)
-                legacyClasspath(it)
-            }
-            multiversionDependencies.classTransformMixinsTranslator.resolve(project).let {
-                implementation(it, excludeGuavaAndAsm)
-                legacyClasspath(it)
-            }
-            multiversionDependencies.byteBuddyAgent.resolve(project).let {
-                implementation(it)
-                legacyClasspath(it)
-            }
-        }
-
-        project.dependencies {
-            bootClasspath(multiversionDependencies.commonsUnchecked.resolve(project))
-            bootClasspath(multiversionDependencies.reflect.resolve(project))
-            bootClasspath(multiversionDependencies.classTransform.resolve(project))
-            project.dependencies.add(
-                bootClasspath.name,
-                multiversionDependencies.classTransformAdditionalClassProvider.resolve(project)
-            )
-            bootClasspath(multiversionDependencies.classTransformMixinsTranslator.resolve(project))
-            bootClasspath(multiversionDependencies.byteBuddyAgent.resolve(project))
         }
 
         tasks {
@@ -208,51 +103,6 @@ cloche {
     val neoforgeFancyModLoader = neoforge("platform:neoforge:fancy-mod-loader") {
         dependsOn(coreCommon, sharedForgeLike, sharedNeoForge)
         minecraftVersion = MinecraftVersion.`26_1`.value
-
-        val bootClasspath = project.configurations.register(lowerCamelCaseGradleName(featureName, "bootClasspath")) {
-            isCanBeResolved = true
-            isCanBeConsumed = false
-            isTransitive = false
-        }
-
-        tasks.named<ProcessResources>(sourceSet.processResourcesTaskName) {
-            from(bootClasspath) { into("libs/boot") }
-        }
-
-        dependencies {
-            multiversionDependencies.reflect.resolve(project).let {
-                api(it)
-                legacyClasspath(it)
-            }
-            multiversionDependencies.classTransform.resolve(project).let {
-                api(it, excludeAsm)
-                legacyClasspath(it)
-            }
-            multiversionDependencies.classTransformAdditionalClassProvider.resolve(project).let {
-                implementation(it, excludeGuavaAndAsm)
-                legacyClasspath(it)
-            }
-            multiversionDependencies.classTransformMixinsTranslator.resolve(project).let {
-                implementation(it, excludeGuavaAndAsm)
-                legacyClasspath(it)
-            }
-            multiversionDependencies.byteBuddyAgent.resolve(project).let {
-                implementation(it)
-                legacyClasspath(it)
-            }
-        }
-
-        project.dependencies {
-            bootClasspath(multiversionDependencies.commonsUnchecked.resolve(project))
-            bootClasspath(multiversionDependencies.reflect.resolve(project))
-            bootClasspath(multiversionDependencies.classTransform.resolve(project))
-            project.dependencies.add(
-                bootClasspath.name,
-                multiversionDependencies.classTransformAdditionalClassProvider.resolve(project)
-            )
-            bootClasspath(multiversionDependencies.classTransformMixinsTranslator.resolve(project))
-            bootClasspath(multiversionDependencies.byteBuddyAgent.resolve(project))
-        }
     }
 
     // region Containers
@@ -311,8 +161,8 @@ cloche {
         embed()
 
         dependencies {
-            embed(target(neoforgeModlauncher))
             embed(target(neoforgeFancyModLoader))
+            embed(target(neoforgeModlauncher))
         }
 
         jar {
@@ -332,56 +182,26 @@ cloche {
 
     fabric("version:fabric:20.1") {
         minecraftVersion = MinecraftVersion.`20_1`.value
-        dependencies {
-            modRuntimeOnly(project(":")) {
-                isTransitive = false
-            }
-        }
     }
 
     fabric("version:fabric:21.1") {
         minecraftVersion = MinecraftVersion.`21_1`.value
-        dependencies {
-            modRuntimeOnly(project(":")) {
-                isTransitive = false
-            }
-        }
     }
 
     fabric("version:fabric:26.1") {
         minecraftVersion = MinecraftVersion.`26_1`.value
-        dependencies {
-            modRuntimeOnly(project(":")) {
-                isTransitive = false
-            }
-        }
     }
 
     forge("version:forge:20.1") {
         minecraftVersion = MinecraftVersion.`20_1`.value
-        dependencies {
-            modRuntimeOnly(project(":")) {
-                isTransitive = false
-            }
-        }
     }
 
     neoforge("version:neoforge:21.1") {
         minecraftVersion = MinecraftVersion.`21_1`.value
-        dependencies {
-            legacyClasspath(project(":")) {
-                isTransitive = false
-            }
-        }
     }
 
     neoforge("version:neoforge:26.1") {
         minecraftVersion = MinecraftVersion.`26_1`.value
-        dependencies {
-            modRuntimeOnly(project(":")) {
-                isTransitive = false
-            }
-        }
     }
 
     // endregion
@@ -389,6 +209,129 @@ cloche {
     // endregion
 
     // endregion
+
+    targets.all {
+        val bootClasspath = if (this@all is ForgeLikeTarget && !isVersionTarget()) {
+            project.configurations.register(lowerCamelCaseGradleName(featureName, "bootClasspath")) {
+                isCanBeResolved = true
+                isCanBeConsumed = false
+                isTransitive = false
+            }.also {
+                tasks.named<ProcessResources>(sourceSet.processResourcesTaskName) {
+                    from(it) { into("libs/boot") }
+                }
+            }
+        } else {
+            null
+        }
+
+        dependencies {
+            operator fun DependencyCollector.invoke(
+                spec: MultiversionDependencySpec,
+                configure: ExternalModuleDependency.() -> Unit = {},
+            ) {
+                add(spec.resolve(this@all, project).apply(configure))
+            }
+
+            when {
+                name == "core" -> compileOnly("org.spongepowered:mixin:0.8.7")
+
+                isVersionTarget() && this@all is FabricTarget -> {
+                    modRuntimeOnly(project(":")) { isTransitive = false }
+                }
+
+                isVersionTarget() && this@all is NeoforgeTarget && minecraftVersionEnum() == MinecraftVersion.`21_1` -> {
+                    legacyClasspath(project(":")) {
+                        isTransitive = false
+
+                        attributes {
+                            attribute(REMAPPED_ATTRIBUTE, false)
+                        }
+                    }
+                }
+
+                isVersionTarget() && this@all is ForgeLikeTarget -> {
+                    modRuntimeOnly(project(":")) { isTransitive = false }
+                }
+
+                this@all is FabricTarget -> {
+                    multiversionDependencies.reflect.resolve(project).let {
+                        api(it)
+                        include(it)
+                    }
+                    include(multiversionDependencies.commonsUnchecked.resolve(project))
+                    multiversionDependencies.classTransform.resolve(project).let {
+                        api(it)
+                        include(it)
+                    }
+                    multiversionDependencies.classTransformAdditionalClassProvider.resolve(project).let {
+                        implementation(it)
+                        include(it)
+                    }
+                    multiversionDependencies.classTransformMixinsTranslator.resolve(project).let {
+                        implementation(it)
+                        include(it)
+                    }
+                    multiversionDependencies.byteBuddyAgent.resolve(project).let {
+                        api(it)
+                        include(it)
+                    }
+                }
+
+                this@all is NeoforgeTarget -> {
+                    multiversionDependencies.reflect.resolve(project).let {
+                        api(it)
+                        legacyClasspath(it)
+                    }
+                    multiversionDependencies.classTransform.resolve(project).let {
+                        api(it, excludeAsm)
+                        legacyClasspath(it)
+                    }
+                    multiversionDependencies.classTransformAdditionalClassProvider.resolve(project).let {
+                        implementation(it, excludeGuavaAndAsm)
+                        legacyClasspath(it)
+                    }
+                    multiversionDependencies.classTransformMixinsTranslator.resolve(project).let {
+                        implementation(it, excludeGuavaAndAsm)
+                        legacyClasspath(it)
+                    }
+                    multiversionDependencies.byteBuddyAgent.resolve(project).let {
+                        implementation(it)
+                        legacyClasspath(it)
+                    }
+                }
+
+                this@all is ForgeLikeTarget -> {
+                    implementation(
+                        multiversionDependencies.mixinextras.resolve(
+                            MinecraftModLoader.common,
+                            MinecraftVersion.`20_1`,
+                            project
+                        )
+                    )
+                    api(multiversionDependencies.reflect.resolve(project))
+                    api(multiversionDependencies.classTransform.resolve(project))
+                    implementation(multiversionDependencies.classTransformAdditionalClassProvider.resolve(project))
+                    implementation(multiversionDependencies.classTransformMixinsTranslator.resolve(project))
+                    implementation(multiversionDependencies.byteBuddyAgent.resolve(project))
+                }
+            }
+        }
+
+        bootClasspath?.let {
+            project.dependencies {
+                it(multiversionDependencies.commonsUnchecked.resolve(project))
+                it(multiversionDependencies.reflect.resolve(project))
+                it(multiversionDependencies.classTransform.resolve(project))
+                project.dependencies.add(
+                    it.name,
+                    multiversionDependencies.classTransformAdditionalClassProvider.resolve(project)
+                )
+                it(multiversionDependencies.classTransformMixinsTranslator.resolve(project))
+                it(multiversionDependencies.byteBuddyAgent.resolve(project))
+            }
+        }
+    }
 
     project.configureFinalJar(
         containers = listOf(fabricContainer, forgeContainer, neoforgeContainer),

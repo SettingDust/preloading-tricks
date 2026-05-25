@@ -8,7 +8,7 @@ import com.google.gson.GsonBuilder
 import com.google.gson.JsonArray
 import com.google.gson.JsonObject
 import earth.terrarium.cloche.REMAPPED_ATTRIBUTE
-import earth.terrarium.cloche.api.attributes.RemapNamespaceAttribute
+import earth.terrarium.cloche.api.attributes.DependencyNamespaceAttribute
 import earth.terrarium.cloche.api.target.MinecraftTarget
 import earth.terrarium.cloche.util.fromJars
 import org.apache.tools.zip.ZipEntry
@@ -87,6 +87,7 @@ fun Project.configureFinalJar(
     val shadowMergedDevJar = tasks.register<ShadowJar>("shadowMergedDevJar") {
         archiveClassifier.set("dev")
         configurations.set(emptyList())
+        enabled = clocheTemplate.remappedDevVariants.get()
 
         for (container in containers) {
             val output = container.includeDevJarTask.flatMap { it.archiveFile }
@@ -137,7 +138,10 @@ fun Project.configureFinalJar(
     }
 
     tasks.named(LifecycleBasePlugin.BUILD_TASK_NAME) {
-        dependsOn(shadowMergedDevJar, shadowMergedJar, shadowSourcesJar)
+        dependsOn(shadowMergedJar, shadowSourcesJar)
+        if (clocheTemplate.remappedDevVariants.get()) {
+            dependsOn(shadowMergedDevJar)
+        }
     }
 
     tasks.named<Jar>("jar") {
@@ -155,12 +159,14 @@ fun Project.configureFinalJar(
             outgoing.artifacts.clear()
             outgoing.artifact(shadowMergedJar)
 
-            outgoing.variants.create("remapped") {
-                attributes {
-                    attribute(REMAPPED_ATTRIBUTE, true)
-                    attribute(RemapNamespaceAttribute.ATTRIBUTE, RemapNamespaceAttribute.INITIAL)
+            if (clocheTemplate.remappedDevVariants.get()) {
+                outgoing.variants.create("remapped") {
+                    attributes {
+                        attribute(REMAPPED_ATTRIBUTE, true)
+                        attribute(DependencyNamespaceAttribute.ARTIFACT, DependencyNamespaceAttribute.NAMED)
+                    }
+                    artifact(shadowMergedDevJar)
                 }
-                artifact(shadowMergedDevJar)
             }
         }
 

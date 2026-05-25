@@ -12,10 +12,10 @@ plugins {
 
 val archive_name: String by rootProject.properties
 val gitVersion: Closure<String> by extra
-
 version = gitVersion()
 
 createClocheTemplatePresetConventions()
+createClocheTemplateDsl()
 createMultiversionDependencies()
 
 cloche {

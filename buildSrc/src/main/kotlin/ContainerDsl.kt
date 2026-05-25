@@ -5,7 +5,7 @@ import earth.terrarium.cloche.INCLUDE_TRANSFORMED_OUTPUT_ATTRIBUTE
 import earth.terrarium.cloche.REMAPPED_ATTRIBUTE
 import earth.terrarium.cloche.api.attributes.IncludeTransformationStateAttribute
 import earth.terrarium.cloche.api.attributes.MinecraftModLoader
-import earth.terrarium.cloche.api.attributes.RemapNamespaceAttribute
+import earth.terrarium.cloche.api.attributes.DependencyNamespaceAttribute
 import earth.terrarium.cloche.api.attributes.TargetAttributes
 import earth.terrarium.cloche.api.target.MinecraftTarget
 import earth.terrarium.cloche.api.target.compilation.ClocheDependencyHandler
@@ -29,17 +29,16 @@ import org.gradle.api.attributes.AttributeContainer
 import org.gradle.api.attributes.Category
 import org.gradle.api.attributes.LibraryElements
 import org.gradle.api.attributes.Usage
-import org.gradle.api.component.AdhocComponentWithVariants
 import org.gradle.api.file.CopySpec
 import org.gradle.api.provider.Provider
 import org.gradle.api.provider.ProviderConvertible
 import org.gradle.api.tasks.TaskProvider
-import org.gradle.api.tasks.bundling.AbstractArchiveTask
+import org.gradle.language.base.plugins.LifecycleBasePlugin
 import org.gradle.kotlin.dsl.assign
+import org.gradle.kotlin.dsl.project
 import org.gradle.kotlin.dsl.named
 import org.gradle.kotlin.dsl.register
 import org.gradle.kotlin.dsl.support.serviceOf
-import org.gradle.language.base.plugins.LifecycleBasePlugin
 
 private fun MinecraftModLoader.containerFeatureName(): String =
     lowerCamelCaseGradleName("container", toString().lowercase())
@@ -75,9 +74,10 @@ class ContainerScope(
 
             attributes {
                 attribute(ArtifactTypeDefinition.ARTIFACT_TYPE_ATTRIBUTE, ArtifactTypeDefinition.JAR_TYPE)
-                attribute(REMAPPED_ATTRIBUTE, false)
+                attribute(REMAPPED_ATTRIBUTE, true)
                 attribute(INCLUDE_TRANSFORMED_OUTPUT_ATTRIBUTE, false)
                 attribute(IncludeTransformationStateAttribute.ATTRIBUTE, IncludeTransformationStateAttribute.None)
+                attribute(DependencyNamespaceAttribute.ARTIFACT, DependencyNamespaceAttribute.NAMED)
             }
         }
 
@@ -101,23 +101,29 @@ class ContainerScope(
 
     init {
         project.tasks.named(LifecycleBasePlugin.BUILD_TASK_NAME) {
-            dependsOn(includeJarTask, includeDevJarTask)
+            dependsOn(includeJarTask)
+            if (project.clocheTemplate.remappedDevVariants.get()) {
+                dependsOn(includeDevJarTask)
+            }
+        }
+
+        includeDevJarTask.configure {
+            enabled = project.clocheTemplate.remappedDevVariants.get()
         }
 
         val containerCapability = "${project.group}:${project.name}-$capabilitySuffix:${project.version}"
 
-        val runtimeElements =
-            project.configurations.register(lowerCamelCaseGradleName(featureName, "runtimeElements")) {
-                isCanBeResolved = false
-                isCanBeConsumed = true
-                attributes {
-                    applyRuntimeVariantAttributes(remapped = false)
-                }
-                outgoing.artifact(includeJarTask)
-                outgoing.capability(containerCapability)
+        project.configurations.register(lowerCamelCaseGradleName(featureName, "runtimeElements")) {
+            isCanBeResolved = false
+            isCanBeConsumed = true
+            attributes {
+                applyRuntimeVariantAttributes(remapped = false)
             }
+            outgoing.artifact(includeJarTask)
+            outgoing.capability(containerCapability)
+        }
 
-        val devRuntimeElements =
+        if (project.clocheTemplate.remappedDevVariants.get()) {
             project.configurations.register(lowerCamelCaseGradleName(featureName, "devRuntimeElements")) {
                 isCanBeResolved = false
                 isCanBeConsumed = true
@@ -126,15 +132,6 @@ class ContainerScope(
                 }
                 outgoing.artifact(includeDevJarTask)
                 outgoing.capability(containerCapability)
-            }
-
-        project.afterEvaluate {
-            val component = project.components.named("java").get() as AdhocComponentWithVariants
-            component.addVariantsFromConfiguration(runtimeElements.get()) {
-                mapToMavenScope("runtime")
-            }
-            component.addVariantsFromConfiguration(devRuntimeElements.get()) {
-                mapToMavenScope("runtime")
             }
         }
     }
@@ -148,7 +145,7 @@ class ContainerScope(
         attribute(IncludeTransformationStateAttribute.ATTRIBUTE, IncludeTransformationStateAttribute.None)
         attribute(REMAPPED_ATTRIBUTE, remapped)
         if (remapped) {
-            attribute(RemapNamespaceAttribute.ATTRIBUTE, RemapNamespaceAttribute.INITIAL)
+            attribute(DependencyNamespaceAttribute.ARTIFACT, DependencyNamespaceAttribute.NAMED)
         }
     }
 
@@ -196,7 +193,7 @@ class ContainerScope(
             attribute(REMAPPED_ATTRIBUTE, true)
             attribute(INCLUDE_TRANSFORMED_OUTPUT_ATTRIBUTE, false)
             attribute(IncludeTransformationStateAttribute.ATTRIBUTE, IncludeTransformationStateAttribute.None)
-            attribute(RemapNamespaceAttribute.ATTRIBUTE, RemapNamespaceAttribute.INITIAL)
+            attribute(DependencyNamespaceAttribute.ARTIFACT, DependencyNamespaceAttribute.NAMED)
         }
     }
 
@@ -249,30 +246,20 @@ class ContainerScope(
             includeJarTask.configure {
                 dependsOn(target.includeJarTaskName)
             }
-            includeDevJarTask.configure {
-                dependsOn(target.jarTaskName)
+            if (project.clocheTemplate.remappedDevVariants.get()) {
+                includeDevJarTask.configure {
+                    dependsOn(target.jarTaskName)
+                }
             }
 
             include(target(target)) {
                 withIncludeAttributes()
             }
-            includeDev(target(target)) {
-                withIncludeDevAttributes()
+            if (project.clocheTemplate.remappedDevVariants.get()) {
+                includeDev(target(target)) {
+                    withIncludeDevAttributes()
+                }
             }
-        }
-
-        fun includeTask(task: TaskProvider<out AbstractArchiveTask>) {
-            includeJarTask.configure {
-                dependsOn(task)
-            }
-            addTo(includeConfigurationProvider, project.files(task.flatMap { it.archiveFile }))
-        }
-
-        fun includeDevTask(task: TaskProvider<out AbstractArchiveTask>) {
-            includeDevJarTask.configure {
-                dependsOn(task)
-            }
-            addTo(includeDevConfigurationProvider, project.files(task.flatMap { it.archiveFile }))
         }
 
         override fun variantOf(
@@ -345,7 +332,10 @@ fun ClocheDependencyHandler.container(container: ContainerScope): Dependency =
         }
 
         attributes {
-            attribute(REMAPPED_ATTRIBUTE, true)
+            attribute(REMAPPED_ATTRIBUTE, project.clocheTemplate.remappedDevVariants.get())
             attribute(IncludeTransformationStateAttribute.ATTRIBUTE, IncludeTransformationStateAttribute.None)
+            if (project.clocheTemplate.remappedDevVariants.get()) {
+                attribute(DependencyNamespaceAttribute.ARTIFACT, DependencyNamespaceAttribute.NAMED)
+            }
         }
     }

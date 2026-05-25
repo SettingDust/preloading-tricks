@@ -1,5 +1,3 @@
-@file:OptIn(ExperimentalPathApi::class)
-
 import earth.terrarium.cloche.REMAPPED_ATTRIBUTE
 import earth.terrarium.cloche.api.attributes.MinecraftModLoader
 import earth.terrarium.cloche.api.metadata.FabricMetadata
@@ -10,7 +8,6 @@ import earth.terrarium.cloche.tasks.GenerateFabricModJson
 import earth.terrarium.cloche.util.target
 import net.msrandom.minecraftcodev.core.utils.lowerCamelCaseGradleName
 import settingdust.cloche_template.buildsrc.*
-import kotlin.io.path.ExperimentalPathApi
 
 plugins {
     id("clocheTemplate.base")
@@ -22,9 +19,15 @@ plugins {
 
 val id: String by rootProject.properties
 
-project.group = "settingdust.preloading_tricks"
+group = "settingdust.preloading_tricks"
 
 // endregion
+
+clocheTemplate {
+    // Generated-project switch for dev/remapped publication & runtime exposure.
+    // Keep default true to preserve current compatibility with existing consumers.
+    remappedDevVariants.set(false)
+}
 
 cloche {
     // region Common Targets
@@ -105,6 +108,8 @@ cloche {
         minecraftVersion = MinecraftVersion.`26_1`.value
     }
 
+    // endregion
+
     // region Containers
 
     // region Fabric Container
@@ -178,7 +183,9 @@ cloche {
 
     // endregion
 
-    // region Run Targets
+    // region Version Targets
+
+    // region Fabric Version Targets
 
     fabric("version:fabric:20.1") {
         minecraftVersion = MinecraftVersion.`20_1`.value
@@ -192,6 +199,10 @@ cloche {
         minecraftVersion = MinecraftVersion.`26_1`.value
     }
 
+    // endregion
+
+    // region Forge Version Targets
+
     forge("version:forge:20.1") {
         minecraftVersion = MinecraftVersion.`20_1`.value
     }
@@ -203,8 +214,6 @@ cloche {
     neoforge("version:neoforge:26.1") {
         minecraftVersion = MinecraftVersion.`26_1`.value
     }
-
-    // endregion
 
     // endregion
 
@@ -338,4 +347,3 @@ cloche {
         allTargets = targets,
     )
 }
-

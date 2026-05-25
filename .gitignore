@@ -41,6 +41,8 @@ bin/
 
 run/*
 
-.qoder
-
 .cache-proxy
+
+### Python ###
+__pycache__/
+*.py[cod]

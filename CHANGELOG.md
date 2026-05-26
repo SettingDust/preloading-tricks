@@ -1,5 +1,13 @@
 fix: `setAccessible` for `setMod`
 
+## [3.7.1] - 2026-05-26
+### :bug: Bug Fixes
+- [`7c3f059`](https://github.com/SettingDust/preloading-tricks/commit/7c3f05906a032cee83bff08c5c9978b3616b9b8b) - **build**: correct embed configuration attributes and resource inclusion for jar tasks *(commit by [@SettingDust](https://github.com/SettingDust))*
+
+### :recycle: Refactors
+- [`3d8e46a`](https://github.com/SettingDust/preloading-tricks/commit/3d8e46a3e11097341fb885cbc18835749b3fe116) - **build**: reconcile copier topology *(commit by [@SettingDust](https://github.com/SettingDust))*
+
+
 ## [3.7.0] - 2026-05-24
 ### :sparkles: New Features
 - [`6bc4e54`](https://github.com/SettingDust/preloading-tricks/commit/6bc4e54d8bdf25b2b60ede84312439eeefc15879) - add NeoForgeAdapter to use right java version on older NF *(commit by [@SettingDust](https://github.com/SettingDust))*
@@ -503,3 +511,4 @@ fix: `setAccessible` for `setMod`
 [3.6.2]: https://github.com/SettingDust/preloading-tricks/compare/3.6.1...3.6.2
 [3.6.3]: https://github.com/SettingDust/preloading-tricks/compare/3.6.2...3.6.3
 [3.7.0]: https://github.com/SettingDust/preloading-tricks/compare/3.6.3...3.7.0
+[3.7.1]: https://github.com/SettingDust/preloading-tricks/compare/3.7.0...3.7.1

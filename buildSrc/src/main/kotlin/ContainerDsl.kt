@@ -206,11 +206,11 @@ class ContainerScope(
 
     private fun Configuration.applyDefaultEmbedAttributes() {
         attributes {
-            attribute(
-                LibraryElements.LIBRARY_ELEMENTS_ATTRIBUTE,
-                project.objects.named(LibraryElements.CLASSES_AND_RESOURCES)
-            )
+            attribute(ArtifactTypeDefinition.ARTIFACT_TYPE_ATTRIBUTE, ArtifactTypeDefinition.JAR_TYPE)
+            attribute(LibraryElements.LIBRARY_ELEMENTS_ATTRIBUTE, project.objects.named(LibraryElements.JAR))
+            attribute(REMAPPED_ATTRIBUTE, false)
             attribute(INCLUDE_TRANSFORMED_OUTPUT_ATTRIBUTE, false)
+            attribute(IncludeTransformationStateAttribute.ATTRIBUTE, IncludeTransformationStateAttribute.None)
         }
     }
 
@@ -305,7 +305,8 @@ class ContainerScope(
         embedConfigurations[name] = configuration
 
         jarTask.configure {
-            from(configuration) {
+            dependsOn(configuration)
+            from(configuration.map { it.files.map(project::zipTree) }) {
                 configure()
             }
         }

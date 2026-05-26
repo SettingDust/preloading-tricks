@@ -7,6 +7,7 @@ import earth.terrarium.cloche.api.target.NeoforgeTarget
 import earth.terrarium.cloche.tasks.GenerateFabricModJson
 import earth.terrarium.cloche.util.target
 import net.msrandom.minecraftcodev.core.utils.lowerCamelCaseGradleName
+import org.gradle.jvm.tasks.Jar
 import settingdust.cloche_template.buildsrc.*
 
 plugins {
@@ -225,9 +226,9 @@ cloche {
                 isCanBeResolved = true
                 isCanBeConsumed = false
                 isTransitive = false
-            }.also {
-                tasks.named<ProcessResources>(sourceSet.processResourcesTaskName) {
-                    from(it) { into("libs/boot") }
+            }.also { configuration ->
+                tasks.named<Jar>(jarTaskName) {
+                    from(configuration) { into("libs/boot") }
                 }
             }
         } else {

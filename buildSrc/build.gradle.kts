@@ -22,7 +22,7 @@ dependencies {
     implementation("earth.terrarium:cloche:0.18.14-dust.2")
     implementation("com.gradleup.shadow:shadow-gradle-plugin:9.4.1")
     implementation("com.palantir.git-version:com.palantir.git-version.gradle.plugin:5.0.0")
-    implementation("org.jetbrains.kotlin.plugin.serialization:org.jetbrains.kotlin.plugin.serialization.gradle.plugin:2.3.20")
+    implementation("org.jetbrains.kotlin.plugin.serialization:org.jetbrains.kotlin.plugin.serialization.gradle.plugin:2.3.21")
     implementation("net.msrandom:minecraft-codev-core:0.6.9-dust.1")
     implementation("net.msrandom:minecraft-codev-fabric:0.7.0-dust.2")
     implementation("net.msrandom:minecraft-codev-forge:0.8.4-dust.1")

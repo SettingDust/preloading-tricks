@@ -20,7 +20,7 @@ dependencies {
     implementation(gradleApi())
     implementation("com.google.code.gson:gson:2.13.1")
     implementation("earth.terrarium:cloche:0.18.14-dust.2")
-    implementation("com.gradleup.shadow:shadow-gradle-plugin:9.4.1")
+    implementation("com.gradleup.shadow:shadow-gradle-plugin:9.4.2")
     implementation("com.palantir.git-version:com.palantir.git-version.gradle.plugin:5.0.0")
     implementation("org.jetbrains.kotlin.plugin.serialization:org.jetbrains.kotlin.plugin.serialization.gradle.plugin:2.3.20")
     implementation("net.msrandom:minecraft-codev-core:0.6.9-dust.1")

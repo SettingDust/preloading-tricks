@@ -1,5 +1,10 @@
 fix: `setAccessible` for `setMod`
 
+## [3.7.3] - 2026-06-29
+### :bug: Bug Fixes
+- [`9285f5d`](https://github.com/SettingDust/preloading-tricks/commit/9285f5db5cff0f5e958e123a364eea77d32470f4) - transformer error *(commit by [@SettingDust](https://github.com/SettingDust))*
+
+
 ## [3.7.1] - 2026-05-26
 ### :bug: Bug Fixes
 - [`7c3f059`](https://github.com/SettingDust/preloading-tricks/commit/7c3f05906a032cee83bff08c5c9978b3616b9b8b) - **build**: correct embed configuration attributes and resource inclusion for jar tasks *(commit by [@SettingDust](https://github.com/SettingDust))*
@@ -512,3 +517,4 @@ fix: `setAccessible` for `setMod`
 [3.6.3]: https://github.com/SettingDust/preloading-tricks/compare/3.6.2...3.6.3
 [3.7.0]: https://github.com/SettingDust/preloading-tricks/compare/3.6.3...3.7.0
 [3.7.1]: https://github.com/SettingDust/preloading-tricks/compare/3.7.0...3.7.1
+[3.7.3]: https://github.com/SettingDust/preloading-tricks/compare/3.7.2...3.7.3

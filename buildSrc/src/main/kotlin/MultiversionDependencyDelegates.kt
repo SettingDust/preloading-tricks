@@ -74,19 +74,19 @@ val MultiversionDependencies.commonsUnchecked: MultiversionDependencySpec by mav
 val MultiversionDependencies.classTransform: MultiversionDependencySpec by maven(
     group = "net.lenni0451.classtransform",
     artifact = "core",
-    version = "1.15.0-SNAPSHOT",
+    version = "1.15.1-SNAPSHOT",
 )
 
 val MultiversionDependencies.classTransformAdditionalClassProvider: MultiversionDependencySpec by maven(
     group = "net.lenni0451.classtransform",
     artifact = "additionalclassprovider",
-    version = "1.15.0-SNAPSHOT",
+    version = "1.15.1-SNAPSHOT",
 )
 
 val MultiversionDependencies.classTransformMixinsTranslator: MultiversionDependencySpec by maven(
     group = "net.lenni0451.classtransform",
     artifact = "mixinstranslator",
-    version = "1.15.0-SNAPSHOT",
+    version = "1.15.1-SNAPSHOT",
 )
 
 val MultiversionDependencies.byteBuddyAgent: MultiversionDependencySpec by maven(

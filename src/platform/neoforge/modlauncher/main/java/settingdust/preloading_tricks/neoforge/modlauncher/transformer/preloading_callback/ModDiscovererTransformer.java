@@ -1,5 +1,6 @@
 package settingdust.preloading_tricks.neoforge.modlauncher.transformer.preloading_callback;
 
+import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Iterables;
 import cpw.mods.cl.ModuleClassLoader;
 import cpw.mods.modlauncher.Launcher;
@@ -15,7 +16,6 @@ import net.lenni0451.reflect.Classes;
 import net.lenni0451.reflect.stream.RStream;
 import net.neoforged.fml.loading.moddiscovery.ModDiscoverer;
 import net.neoforged.fml.loading.moddiscovery.ModFile;
-import org.apache.commons.compress.utils.Lists;
 import org.slf4j.Logger;
 import settingdust.preloading_tricks.neoforge.modlauncher.PreloadingTricksCallbacksInvoker;
 
@@ -98,6 +98,6 @@ public class ModDiscovererTransformer {
         List<ModFile> mods,
         @CShared("additionalDependencySources") List<ModFile> additionalDependencySources
     ) {
-        return List.copyOf(Lists.newArrayList(Iterables.concat(mods, additionalDependencySources).iterator()));
+        return ImmutableList.copyOf(Iterables.concat(mods, additionalDependencySources));
     }
 }
